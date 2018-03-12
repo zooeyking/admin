@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<!-- Generator: Sketch 3.8.3 (29802) - http://www.bohemiancoding.com/sketch -->
+<svg version="1.1" id="svg-draw" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200px" height="200px" xml:space="preserve" xmlns:svgjs="http://svgjs.com/svgjs" viewBox="0 0 200 200">
+    <g id="svg-content">
+        <g id="svg-logo" class="svg-element" transform="matrix(0.802405404139668,0,0,0.802405404139668,15,20)" style="cursor: pointer;">
+            <g id="XMLID_40_">
+                <path id="XMLID_44_" fill="#B5ED1E" d="M113.8,64.9c0-0.5,0-0.9,0-1.4c0-23.2,18.8-42,42-42s42,18.8,42,42s-18.8,42-42,42
+                        c-0.5,0-0.9,0-1.4,0h-40.6V64.9z"></path>
+                <path id="XMLID_43_" fill="#69BDFF" d="M101,154.2c0,0.5,0,0.9,0,1.4c0,23.2-18.8,42-42,42s-42-18.8-42-42s18.8-42,42-42
+                        c0.5,0,0.9,0,1.4,0H101V154.2z"></path>
+                <path id="XMLID_42_" fill="#FFE000" d="M45.6,84.1c-0.5,0-0.9,0-1.4,0c-23.2,0-42-18.8-42-42s18.8-42,42-42s42,18.8,42,42
+                        c0,0.5,0,0.9,0,1.4v40.6C86.2,84.1,45.6,84.1,45.6,84.1z"></path>
+                <path id="XMLID_41_" fill="#ED1C24" d="M152,115.9c0.5,0,0.9,0,1.4,0c23.2,0,42,18.8,42,42s-18.8,42-42,42s-42-18.8-42-42
+                        c0-0.5,0-1,0-1.4v-40.6H152z"></path>
+            </g>
+        </g>    
+    </g>
+</svg>
+
