@@ -1,7 +1,7 @@
 <template>
   <card-modal :visible="visible" @cancel="cancel" @ok="ok" :modalConfig="modalConfig" transition="zoom">
     <table class="table" v-if="modalConfig.detail">
-      <tbody @click = "open">
+      <tbody>
         <tr>
           <td class="leftCol"><strong>用户名</strong></td><td class="rightCol">{{user.userName}}</td>
         </tr>
@@ -32,7 +32,7 @@
       </tbody>
     </table>
     <table class="table" v-if="modalConfig.modify">
-      <tbody @click = "open">
+      <tbody>
         <tr>
           <td class="leftCol"><strong>用户名</strong></td><td class="rightCol">{{user.userName}}</td>
         </tr>
@@ -69,7 +69,7 @@
       </tbody>
     </table>
     <table class="table" v-if="modalConfig.add">
-      <tbody @click = "open">
+      <tbody>
         <tr>
           <td class="leftCol"><strong class="is-must">用户名</strong></td><td class="rightCol"><input v-model="newUser['userName']" type="text" class="input is-primary"></td>
         </tr>
@@ -106,7 +106,7 @@
       </tbody>
     </table>
     <table class="table" v-if="modalConfig.del">
-      <tbody @click = "open">
+      <tbody>
         <tr>
           <td class="leftCol"><strong>用户名</strong></td><td class="rightCol">{{user.userName}}</td>
         </tr>
@@ -120,6 +120,7 @@
 
 <script>
 import { CardModal } from 'vue-bulma-modal'
+import { mapGetters, mapMutations } from 'vuex'
 import MySwitch from 'components/common/MySwitch/MySwitch'
 
 export default {
@@ -138,7 +139,8 @@ export default {
     return {
       user: {},
       newUser: {
-        userEnable: 1
+        userEnable: 1,
+        userGender: 1
       }
     }
   },
@@ -151,16 +153,22 @@ export default {
     cancel () {
       this.$emit('close')
       this.newUser = {
-        userEnable: 1
+        userEnable: 1,
+        userGender: 1
       }
     },
     open () {
-
+    /*
+      this.newUser = {
+        userEnable: 1
+      }
+      */
     },
     close () {
       this.$emit('close')
       this.newUser = {
-        userEnable: 1
+        userEnable: 1,
+        userGender: 1
       }
     },
     ok () {
@@ -169,7 +177,7 @@ export default {
         finnalUser = Object.assign({}, this.user, this.newUser)
       }else if(this.modalConfig.del) {
         let index = this.modalConfig.delIndex
-        console.log(index)
+        
         finnalUser = Object.assign({}, this.user, {delFlag: 1, index: index})
         this.$emit('close')
       }else {
@@ -220,7 +228,27 @@ export default {
     }
   },
 
+  computed: {
+    userList(){
+      return this.$store.getters.listData;
+    },
+    ...mapGetters([
+      'systemControl/listData'
+    ])
+  },
+
+  mounted() {
+    console.log(this.userList)
+    //console.log(this['systemControl/listData'])
+  },
+
   watch: {
+    userList(val) {
+      this.newUser = {
+        userEnable: 1,
+        userGender: 1
+      }
+    },
     modalConfig(newVal, oldVal){
       this.user = newVal.userMessage;
     }

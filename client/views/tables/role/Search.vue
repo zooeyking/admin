@@ -1,34 +1,12 @@
 <template>
-  <div class="search" v-if="searchConfig.flag">
+  <div class="search">
     <ul class="content">
-      <li v-if="searchConfig.userName" class="item text">
-        <input class="input is-primary" v-model="params.userName" @keyup.enter="search" placeholder="用户名"/>
-      </li>
-      <li v-if="searchConfig.role" class="item text">
+      
+      <li class="item text">
         <input class="input is-primary" v-model="params.id" @keyup.enter="search" placeholder="角色名"/>
       </li>
-      <li v-if="searchConfig.optioner" class="item text">
-        <input class="input is-primary" v-model="params.id" @keyup.enter="search" placeholder="操作人"/>
-      </li>
-      <li v-if="searchConfig.userRealName" class="item text">
-        <input class="input is-primary" v-model="params.userRealName" @keyup.enter="search" placeholder="姓名"/>
-      </li>
-      <li v-if="searchConfig.sex" class="item sexBox">
-        <div class="control is-horizontal">
-          <div class="control">
-            <div class="select is-fullwidth">
-              <select  v-model="params.sex">
-                <option value="men">男</option>
-                <option value="women">女</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </li>
-      <li v-if="searchConfig.date" class="item dateBox">
-        <datepicker @sendValue="setDateValue"></datepicker>
-      </li>
-      <li v-if="searchConfig.system" class="item systemBox">
+      
+      <li class="item systemBox">
         <div class="control is-horizontal">
           <div class="control">
             <div class="select is-fullwidth">
@@ -52,8 +30,6 @@
 import jsonp from 'tools/js/jsonp'
 import Datepicker from 'components/common/datepicker/Datepicker'
 
-const URL = 'http://192.168.1.80:8093/modular/sso_base_modular/saveDeptJson'
-
 const options = {
   param: 'callback'
 }
@@ -63,14 +39,10 @@ export default {
     Datepicker
   },
   props: {
-    url: {
-      type: String,
-      default: ''
-    },
-    searchConfig: {
-      type: [Object, Array],
-      default(){
-        return {}
+    appList: {
+      type: Array,
+      default() {
+        return []
       }
     }
   },
@@ -78,7 +50,9 @@ export default {
     return {
       keyWords: "",
       result: "",
-      params: {},
+      params: {
+        system: 'windows'
+      },
     }
   },
   methods: {

@@ -1,7 +1,8 @@
 <template>
 	<div class="loading">
 		<div class="content">
-			<img width="24" height="24" src="./loading.gif">
+			<!--<img width="24" height="24" src="./loading.gif">-->
+			<p class="control is-loading"></p>
 			<p class="desc">{{title}}</p>
 		</div>
 	</div>
@@ -27,6 +28,7 @@ export default{
 	position: relative;
 	text-align: center;
 	background: #333;
+	opacity: 0.5;
 	align-content: center;
 }
 .content {

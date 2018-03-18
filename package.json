@@ -1,7 +1,7 @@
 {
-  "name": "vue-admin",
-  "version": "0.1.12",
-  "description": "Vue Admin Panel Framework",
+  "name": "SSO-admin",
+  "version": "0.0.1",
+  "description": "SSO Admin Panel Framework",
   "repository": "vue-bulma/vue-admin",
   "homepage": "https://admin.vuebulma.com",
   "license": "MIT",
@@ -16,7 +16,8 @@
     "dashboard",
     "data",
     "visualization",
-    "vue"
+    "vue",
+    "SSO"
   ],
   "engines": {
     "node": ">=4",
@@ -70,6 +71,7 @@
     "vue-nprogress": "0.1.5",
     "vue-peity": "0.5.0",
     "vue-router": "^2.3.0",
+    "vue-simple-tree": "^2.3.2",
     "vuex": "^2.2.1",
     "vuex-router-sync": "^4.1.2",
     "wysiwyg.css": "0.0.2"

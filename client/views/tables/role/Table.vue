@@ -4,35 +4,40 @@
       <div class="tile is-parent">
         <article class="tile is-child box">
           <div class="pageHeader">
-            <search :searchConfig="searchConfig" @paramsSearch="paramsSearch"></search>
-            <button class="button is-primary"  @click="showAdd">添加用户</button>
+            <search @paramsSearch="paramsSearch" :appList="appList"></search>
+            <button class="button is-primary"  @click="showAdd">添加角色</button>
           </div>
           <table class="table">
             <thead>
               <tr>
                 <th></th>
-                <th v-for="item in tableConfig.tHeader">{{item}}</th>
+                <th>角色名称</th>
+                <th>角色描述</th>
+                <th>创建时间</th>
+                <th>操作</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(user, index) in currentUsers">
+              <tr v-for="(role, index) in currentRoles">
                 <td>
                   <input type="checkbox">
                 </td>
-                <td v-for="(k,v,index) in user" v-if="index + 1 < tableConfig.tHeader.length">{{k}}</td>
-                
+                <td>{{role.roleName}}</td>
+                <td>{{role.roleRemark}}</td>
+                <td>{{role.createDate}}</td>
                 <td>
                   <div class="optionWrapper">
-                    <button class="button is-primary is-small"  @click="showDetail(user)">详情</button>
-                    <button class="button is-warning is-small"  @click="showModify(user)">修改</button>
-                    <button class="button is-danger is-small" @click="showDel(user, index)">删除</button>
-                    <my-switch :user="user" @toggleChange="enableUpdate(user, index)"></my-switch>
+                    <button class="button is-primary is-small"  @click="showCopy(role)">复制角色</button>
+                    <button class="button is-primary is-small"  @click="showModify(role)">绑定权限</button>
+                    <button class="button is-primary is-small"  @click="showModify(role)">绑定用户</button>
+                    <button class="button is-danger is-small" @click="showDel(role, index)">删除</button>
+                    
                   </div>
                 </td>
               </tr>
             </tbody>
           </table>
-          <pagination :allItems = "tableConfig.listData" @changeIndex="getIndex"></pagination>
+          <pagination :allItems = "tableData" @changeIndex="getIndex"></pagination>
           
           <div class="loadingWrapper" v-show="isShow">
             <loading></loading>
@@ -47,17 +52,15 @@
 
 <script>
 import Pagination from 'components/common/pagination/Pagination'
-import Search from 'components/common/search/Search'
 import Loading from 'components/common/loading/Loading'
-import Confirm from 'components/common/modal/Modal'
-import MySwitch from 'components/common/MySwitch/MySwitch'
-
+import Search from './Search'
+import Confirm from './Modal'
 
 import { mapGetters, mapMutations } from 'vuex'
 import jsonp from 'tools/js/jsonp'
 import axios from 'axios'
 
-const PERNUM = 12
+const PERNUM = 10
 
 const options = {
   param: 'callback'
@@ -68,13 +71,24 @@ export default {
     Pagination,
     Search,
     Loading,
-    Confirm,
-    MySwitch
+    Confirm
   },
   props: {
-    tableConfig: {
-      type: Object,
-      dafault: {}
+    tableData: {
+      type: Array,
+      dafault() {
+        return []
+      }
+    },
+    confirmClose: {
+      type: Boolean,
+      default: true
+    },
+    listData: {
+      type: Array,
+      default() {
+        return []
+      }
     }
   },
   data () {
@@ -82,40 +96,36 @@ export default {
       isShow: false,
       confirmShow: false,
       currentIndex: 0,
-      searchConfig: [],
+      appList: [],
       modalConfig: {}
     }
   },
   mounted(){
-    //搜索组件配置
-    this._setConfig(this.tableConfig)
+    
   },
   methods: {
     getIndex(num) {
       this.currentIndex = num-1
     },
-    enableUpdate(user) {
-      this.$emit('enableUpdate', user)
-    },
-    showDetail(user) {
+    showCopy(role) {
       this.modalConfig = {
-        detail: 1,
-        title: '用户详情',
+        copy: 1,
+        title: '复制角色',
         footerShow: false,
-        userMessage: user
+        roleMessage: role
       }
       
       this.confirmShow = true
     },
-    showModify(user) {
+    showModify(role) {
       this.modalConfig = {
         modify: 1,
         title: '资料修改',
         footerShow: true,
-        userMessage: user
+        roleMessage: role
       }
-      //vuex 系统管理选中的用户
-      this.setSysUser(user)
+      
+      
       this.confirmShow = true
     },
     showAdd() {
@@ -136,20 +146,18 @@ export default {
           "userRemark": "userRemark"
         }
       }
-      //vuex 系统管理选中的用户
-      //this.setSysUser(user)
+      
       this.confirmShow = true
     },
-    showDel(user, index) {
+    showDel(role, index) {
       this.modalConfig = {
         del: 1,
         title: '确认删除该用户吗？',
         footerShow: true,
-        userMessage: user,
+        roleMessage: role,
         delIndex: index
       }
-      //vuex 系统管理选中的用户
-      //this.setSysUser(user)
+      
       this.confirmShow = true
     },
     closeDetail() {
@@ -159,38 +167,30 @@ export default {
       this.$emit('paramsSearch', params)
     },
     ok(data) {
-      if(data.delFlag) {
+      if(data.delFlag == '1') {
         this._del(data, data.index)
       }
       this.$emit('ok', data)
     },
     _del(user,index) {
       this.$emit('delUser', user),
-      this.currentUsers.splice(index, 1)
+      this.currentRoles.splice(index, 1)
     },
-    _setConfig(obj) {
-      switch(obj.tableName){
-        case 'users':
-          this.searchConfig = {userName:'用户名', userRealName:'姓名', date:'选择时间段', flag: true};
-          break;
-        case 'role':
-          this.searchConfig = {role:'角色名', system:'操作系统', flag: true};
-          break;
-        case 'logs':
-          this.searchConfig = {optioner:'操作人', date:'选择时间段', system:'操作系统', flag: true};
-          break;
-        default:
-          this.searchConfig = {}
-      }
-    },
+    /*
     ...mapMutations({
       setSysUser: 'SET_SYS_USER'
     })
+    */
+  },
+  watch: {
+    confirmClose() {
+      this.confirmShow = false
+    }
   },
   computed: {
-    currentUsers() {
+    currentRoles() {
       let arr = [];
-      let listData = this.tableConfig.listData;
+      let listData = this.tableData.length > 0 ? this.tableData : [];
       if(listData.length <= PERNUM) {
         arr = listData;
         return arr;

@@ -11,7 +11,11 @@
             <thead>
               <tr>
                 <th></th>
-                <th v-for="item in tableConfig.tHeader">{{item}}</th>
+                <th>用户名</th>
+                <th>姓名</th>
+                <th>性别</th>
+                <th>创建时间</th>
+                <th>操作</th>
               </tr>
             </thead>
             <tbody>
@@ -19,8 +23,11 @@
                 <td>
                   <input type="checkbox">
                 </td>
-                <td v-for="(k,v,index) in user" v-if="index + 1 < tableConfig.tHeader.length">{{k}}</td>
-                
+                <td>{{user.userName}}</td>
+                <td>{{user.userRealName}}</td>
+                <td>{{user.userGenderString}}</td>
+                <td>{{user.createDate}}</td>
+
                 <td>
                   <div class="optionWrapper">
                     <button class="button is-primary is-small"  @click="showDetail(user)">详情</button>
@@ -47,17 +54,16 @@
 
 <script>
 import Pagination from 'components/common/pagination/Pagination'
-import Search from 'components/common/search/Search'
 import Loading from 'components/common/loading/Loading'
-import Confirm from 'components/common/modal/Modal'
 import MySwitch from 'components/common/MySwitch/MySwitch'
-
+import Search from './Search'
+import Confirm from './Modal'
 
 import { mapGetters, mapMutations } from 'vuex'
 import jsonp from 'tools/js/jsonp'
 import axios from 'axios'
 
-const PERNUM = 12
+const PERNUM = 10
 
 const options = {
   param: 'callback'
@@ -75,6 +81,16 @@ export default {
     tableConfig: {
       type: Object,
       dafault: {}
+    },
+    confirmClose: {
+      type: Boolean,
+      default: true
+    },
+    listData: {
+      type: Array,
+      default() {
+        return []
+      }
     }
   },
   data () {
@@ -115,7 +131,7 @@ export default {
         userMessage: user
       }
       //vuex 系统管理选中的用户
-      this.setSysUser(user)
+      //this.setSysUser(user)
       this.confirmShow = true
     },
     showAdd() {
@@ -159,7 +175,7 @@ export default {
       this.$emit('paramsSearch', params)
     },
     ok(data) {
-      if(data.delFlag) {
+      if(data.delFlag == '1') {
         this._del(data, data.index)
       }
       this.$emit('ok', data)
@@ -186,6 +202,11 @@ export default {
     ...mapMutations({
       setSysUser: 'SET_SYS_USER'
     })
+  },
+  watch: {
+    confirmClose() {
+      this.confirmShow = false
+    }
   },
   computed: {
     currentUsers() {

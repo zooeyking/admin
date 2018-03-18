@@ -1,141 +1,124 @@
 <template>
   <div>
-    <user-table :tableConfig = "tableConfig"></user-table>
+    <user-table :tableConfig="tableConfig" @paramsSearch="search" @enableUpdate="enableUpdate" @delUser="delUser" @ok="renew" :confirmClose="confirmClose"></user-table>
+    <my-message v-if="showMessage" @dispear="dispear" :messageType="messageType"></my-message>
   </div>
 </template>
 
 <script>
-import UserTable from 'components/common/table/Table'
+import UserTable from './user/Table'
+import MyMessage from 'components/common/message/Message'
+import systemModule from 'vuex-store/modules/systemControl'
 
-import Confirm from 'views/components/modals/Modal'
 
+import { mapGetters, mapMutations } from 'vuex'
 import jsonp from 'tools/js/jsonp'
-import axios from 'axios'
+//import axios from 'axios'
+import { userListUrl, userUpdateUrl, userSaveUrl } from 'base/askUrl'
 
-const PERNUM = 12
-const ITEMKEY = ['userName','userRealName','userGender','createDate','fromSacName','email','address','role','partment']
 
 const options = {
   param: 'callback'
 }
+const InitParams = {
+        "ssoAppKey": "122",
+        "ssoTimestamp": "123",
+        "ssoNonce": "aaa",
+        "ssoSinatrue": "4fe34eb88a20d87703bf6230779426700397a8a5",
+        "ssoUserId": "admin",
+        "pageNum":1,
+        "pageSize": 100,
+        "userName":"",
+        "userRealName":"",
+        "startDate":"",
+        "endDate":"",
+        "fromSacId":""
+      }
+
+const CommonParams = {
+        "ssoAppKey": "122",
+        "ssoTimestamp": "123",
+        "ssoNonce": "aaa",
+        "ssoSinatrue": "4fe34eb88a20d87703bf6230779426700397a8a5",
+        "ssoUserId": "admin",
+        "pageNum":1,
+        "pageSize": 100,
+      }
 
 
 export default {
   components: {
-    Confirm,
-    UserTable
+    UserTable,
+    MyMessage
   },
   data () {
     return {
       isShow: false,
       currentIndex: 0,
+      showMessage: false,
+      messageType: 'success',
+      confirmClose: true,
       tableConfig: {
         tableName: 'users',
-        tHeader: ['用户名', '姓名', '性别', '创建时间', '系统来源', '操作'],
         listData: []
-      },
-      allUsers: [
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false, re: true, del: true},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false, re: true, del: true},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false, re: true, del: true},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false, re: true, del: true},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false, re: true, del: true},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false, re: true, del: true},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false}
-      ]
+      }
     }
   },
   methods: {
     getIndex(num) {
       this.currentIndex = num-1
     },
+    search(params) {
+      let me = this;
+      let searchParams = Object.assign({}, CommonParams, params);
+      this._getUsersData(searchParams).then((res)=>{
+        let result = res.value.list;
+        me.tableConfig.listData = result
+      })
+    },
+    delUser(user) {
+      let updateParams = Object.assign({}, CommonParams, {userId: user.userId, delFlag: user.delFlag});
+      jsonp(userUpdateUrl, user, options).then((res)=>{
+        console.log(res);
+      })
+    },
+    enableUpdate(user) {
+      let me = this;
+      
+      let updateParams = Object.assign({}, CommonParams, {userId: user.userId, userEnable: user.userEnable});
+      jsonp(userUpdateUrl, updateParams, options).then((res)=>{
+        console.log(res);
+      })
+    },
+    renew(user) {
+      let url = ''
+      if(user.userId) {
+        url = userUpdateUrl
+      }else {
+        url = userSaveUrl
+      }
+      let params = Object.assign({}, CommonParams, user);
+
+      jsonp(url, params, options).then((res)=>{
+        if(res.value == 1) {
+          this.showMessage = true
+          this.messageType = 0
+          this.confirmClose = !this.confirmClose
+          this._initDate()
+        }else {
+          this.showMessage = true
+          this.messageType = 1
+        }
+        console.log(res);
+      })
+    },
+    dispear() {
+      this.showMessage = false
+    },
+
+    /*  
+    格式化请求的数据，已经无用
+    const ITEMKEY = ['userName','userRealName','userGenderString','createDate','userMail','userMobilePhone','userAddress','userId','userEnable','userRemark']
     _formatData(data) {
       let arr = [];
       for (let i=0; i<data.length; i++) {
@@ -149,39 +132,54 @@ export default {
       }
       return arr;
     },
-    _getUsersData() {
-      let url = 'http://192.168.1.15:8091/sso_base_modular/getUserPageJson'
-      return jsonp(url, {pageNum:1, pageSize:20, total:80}, options)
-    }
+    */
+    _getUsersData(params) {
+      let url = userListUrl
+      return jsonp(url, params, options)
+    },
+    _initDate() {
+      let me = this; 
+      this._getUsersData(InitParams).then((res)=>{
+        let result = res.value.list;
+        
+        me.tableConfig.listData = result;
+        me.setUserList(result);
+        
+      })
+    },
+    ...mapMutations(
+      { setUserList : 'SET_SYS_USERUSERLIST' }
+    )
   },
   mounted() {
-    let me = this; 
-    this._getUsersData().then((res)=>{
-      let result = res.value.list;
-      console.log(result);
-      me.tableConfig.listData = me._formatData(result);
-      console.log(me.tableConfig.listData)
-    })
-    //this.tableConfig.listData = this.allUsers
+    this._initDate()
+    //this.userList = systemModule.state.systems/userList
+    
+  },
+  watch: {
+    
+    userList : {
+      handler(val, oldval) {
+        if(val != oldval) {
+          
+          this.search({})
+        }  
+      },  
+      deep:true     //对象内部的属性监听，也叫深度监听
+    }
+    
   },
   computed: {
-    currentUsers() {
-      let arr = [];
-      if(this.allUsers.length <= PERNUM) {
-        arr = this.allUsers;
-        return arr;
-      }else {
-        let cut = this.currentIndex * PERNUM;
-        for(let i=0; i < PERNUM; i++) {
-          if(this.allUsers[i + cut]) {
-            arr.push(this.allUsers[i + cut])
-          }else {
-            break
-          }
-        }
-        return arr;
-      }
+    
+    userList(){
+      return this.$store.getters.listData;
     }
+    /*
+    ...mapGetters([
+      store.getters.listData
+    ])
+    */
+
   }
 }
 </script>

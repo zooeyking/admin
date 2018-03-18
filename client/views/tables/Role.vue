@@ -1,265 +1,166 @@
 <template>
   <div>
-    <user-table :tableConfig = "tableConfig"></user-table>
+    <role-table :tableData="tableData" @paramsSearch="search" @delRole="delRole" @ok="renew" :confirmClose="confirmClose"></role-table>
+    <my-message v-if="showMessage" @dispear="dispear" :messageType="messageType"></my-message>
   </div>
 </template>
 
 <script>
-import UserTable from 'components/common/table/Table'
+import RoleTable from './role/Table'
+import MyMessage from 'components/common/message/Message'
+import systemModule from 'vuex-store/modules/systemControl'
 
-import Confirm from 'views/components/modals/Modal'
 
+import { mapGetters, mapMutations } from 'vuex'
 import jsonp from 'tools/js/jsonp'
-import axios from 'axios'
 
-const PERNUM = 12
+import { roleListUrl, roleUpdateUrl, roleSaveUrl, appSrcListUrl} from 'base/askUrl'
 
 
 const options = {
   param: 'callback'
 }
+const InitParams = {
+        "ssoAppKey": "122",
+        "ssoTimestamp": "123",
+        "ssoNonce": "aaa",
+        "ssoSinatrue": "4fe34eb88a20d87703bf6230779426700397a8a5",
+        "ssoUserId": "admin",
+        "pageNum":1,
+        "pageSize": 100
+      }
 
+const CommonParams = {
+        "ssoAppKey": "122",
+        "ssoTimestamp": "123",
+        "ssoNonce": "aaa",
+        "ssoSinatrue": "4fe34eb88a20d87703bf6230779426700397a8a5",
+        "ssoUserId": "admin",
+        "pageNum": 1,
+        "pageSize": 100,
+      }
 
 export default {
   components: {
-    Confirm,
-    UserTable
+    RoleTable,
+    MyMessage
   },
   data () {
     return {
       isShow: false,
       currentIndex: 0,
-      tableConfig: {
-        tableName: 'role',
-        tHeader: ['角色名称', '角色描述', '创建时间', '操作'],
-        listData: []
-      },
-      allUsers: [
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false, re: true, del: true},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false, re: true, del: true},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false, re: true, del: true},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false, re: true, del: true},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false, re: true, del: true},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false, re: true, del: true},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false, re: true, del: true},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false, re: true, del: true},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false, re: true, del: true},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false, re: true, del: true},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false, re: true, del: true},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false, re: true, del: true},
-        {name: 'qing', role: 'admin', remark: 'constructor', lock: false, re: true, del: true}
-      ]
+      showMessage: false,
+      messageType: 'success',
+      confirmClose: true,
+      tableData: []
     }
   },
   methods: {
     getIndex(num) {
       this.currentIndex = num-1
     },
-    getUsersData() {
-      let url = 'http://192.168.1.15:8091/sso_base_log/getLogJson'
-      return jsonp(url, {pageNum:1,pageSize:2}, options)
-      /*
-      return axios.get(url,{}).then((res)=>{
-        return res.data
-      }).catch((err)=>{
-        return err
-      })*/
-    }
+    search(params) {
+      let me = this;
+      let searchParams = Object.assign({}, CommonParams, params);
+      this._getRolesData(searchParams).then((res)=>{
+        let result = res.value.list;
+        me.tableData = result
+      })
+    },
+    delRole(role) {
+      let updateParams = Object.assign({}, CommonParams, {roleId: role.roleId, delFlag: role.delFlag});
+      jsonp(roleUpdateUrl, role, options).then((res)=>{
+        console.log(res);
+      })
+    },
+    renew(role) {
+      let url = ''
+      if(role.roleId) {
+        url = roleUpdateUrl
+      }else {
+        url = roleSaveUrl
+      }
+      let params = Object.assign({}, CommonParams, role);
+
+      jsonp(url, params, options).then((res)=>{
+        if(res.value == 1) {
+          this.showMessage = true
+          this.messageType = 0
+          this.confirmClose = !this.confirmClose
+          this._initDate()
+        }else {
+          this.showMessage = true
+          this.messageType = 1
+        }
+        console.log(res);
+      })
+    },
+    dispear() {
+      this.showMessage = false
+    },
+
+    _getRolesData(params) {
+      let url = roleListUrl
+      console.log(url)
+      return jsonp(url, params, options)
+    },
+    _getAppList(params) {
+      let url = appSrcListUrl
+      console.log(url)
+      return jsonp(url, params, options)
+    },
+    _initDate() {
+      let me = this; 
+      this._getRolesData(InitParams).then((res)=>{
+        let result = res.value.list;
+        me.tableData = result;
+        me.setRoleList(result);
+      })
+    },
+    _initAppList() {
+      let me = this; 
+      this._getAppList(InitParams).then((res)=>{
+        me.setAppList(res.value)
+      })
+    },
+    ...mapMutations(
+      { 
+        setRoleList : 'SET_SYS_ROLELIST', 
+        setAppList : 'SET_SYS_APPSRCLIST'
+      }
+    )
+  },
+  created() {
+    this._initAppList()
   },
   mounted() {
-    this.getUsersData().then((res)=>{
-      console.log(res)
-    })
-    this.tableConfig.listData = this.allUsers
+    this._initDate()
+    //this._initAppList()     //一个生命周期  同时jsonp请求报错
+  },
+  watch: {
+    
+    roleList : {
+      handler(val, oldval) {
+        if(val != oldval) {
+          
+          this.search({})
+        }  
+      },  
+      deep:true     //对象内部的属性监听
+    }
+    
   },
   computed: {
-    currentUsers() {
-      let arr = [];
-      if(this.allUsers.length <= PERNUM) {
-        arr = this.allUsers;
-        return arr;
-      }else {
-        let cut = this.currentIndex * PERNUM;
-        for(let i=0; i < PERNUM; i++) {
-          if(this.allUsers[i + cut]) {
-            arr.push(this.allUsers[i + cut])
-          }else {
-            break
-          }
-        }
-        return arr;
-      }
+    
+    roleList(){
+      return this.$store.getters.rolesData;
     }
+    /*
+    ...mapGetters([
+      store.getters.listData
+    ])
+    */
+
   }
 }
 </script>

@@ -12,21 +12,46 @@ export default {
     VbSwitch
   },
 
+  props: {
+    user: {
+      type: Object,
+      default() {
+        return {}
+      }
+    }
+  },
+
   data () {
     return {
-      value: false
+      value: this.user.userEnable === 1 ? true : false
     }
+  },
+
+  mounted() {
+    //console.log( this.user)
   },
 
   methods: {
     toggle(val) {
-      this.$emit('toggle', val)
+      if(val) {
+        this.user.userEnable = 1
+      }else {
+        this.user.userEnable = 0
+      }
+      
+      //this.$emit('toggle', val)
     }
   },
 
   computed: {
     switchStat () {
       return this.value ? 'On' : 'Off'
+    }
+  },
+
+  watch: {
+    value () {
+      this.$emit('toggleChange')
     }
   }
 }
