@@ -7,6 +7,7 @@ const state = {
     currentUser: {},
     roleList: [],
     role: {},
+    roleOperats: [],
     appSrcList: [],
     optionLogs: {},
     department: {},
@@ -23,6 +24,9 @@ const getters = {
   },
   appList (state) {
     return state.systems.appSrcList
+  },
+  operats (state) {
+    return state.systems.roleOperats
   }
 }
 
@@ -38,7 +42,11 @@ const mutations = {
   },
   [types.SET_SYS_APPSRCLIST] (state, list) {
     state.systems.appSrcList = list
+  },
+  [types.SET_SYS_OPERATS] (state, list) {
+    state.systems.roleOperats = list
   }
+  
 }
 
 export default {

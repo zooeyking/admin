@@ -3,7 +3,7 @@
     <ul class="content">
       
       <li class="item text">
-        <input class="input is-primary" v-model="params.id" @keyup.enter="search" placeholder="角色名"/>
+        <input class="input is-primary" v-model="params.roleName" @keyup.enter="search" placeholder="角色名"/>
       </li>
       
       <li class="item systemBox">
@@ -11,11 +11,8 @@
           <div class="control">
             <div class="select is-fullwidth">
               <select v-model="params.system">
-                <option value="windows">Windows</option>
-                <option value="linux">LINUX</option>
-                <option value="unix">UNIX</option>
-                <option value="xenix">XENIX</option>
-                <option value="netware">Netware</option>
+                <option value="" >全部</option>
+                <option v-for="item in appList" :value="item.sacId" >{{item.sacName}}</option>
               </select>
             </div>
           </div>
@@ -28,6 +25,7 @@
 
 <script>
 import jsonp from 'tools/js/jsonp'
+
 import Datepicker from 'components/common/datepicker/Datepicker'
 
 const options = {
@@ -40,7 +38,7 @@ export default {
   },
   props: {
     appList: {
-      type: Array,
+      type: [Array, Object],
       default() {
         return []
       }
@@ -51,7 +49,7 @@ export default {
       keyWords: "",
       result: "",
       params: {
-        system: 'windows'
+        system: ''
       },
     }
   },
@@ -67,6 +65,17 @@ export default {
       this.params.startDate = val.substr(0,10)
       this.params.endDate = val.substr(-10,10)
     }
+  },
+  watch: {
+    
+    /*
+    appList(newVal) {
+      this.params.system = newVal[0].sacId
+    }
+    ...mapGetters({
+      'appList' :
+    })
+    */
   }
 }
 </script>

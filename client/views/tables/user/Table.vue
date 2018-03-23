@@ -4,13 +4,12 @@
       <div class="tile is-parent">
         <article class="tile is-child box">
           <div class="pageHeader">
-            <search :searchConfig="searchConfig" @paramsSearch="paramsSearch"></search>
+            <search @paramsSearch="paramsSearch"></search>
             <button class="button is-primary"  @click="showAdd">添加用户</button>
           </div>
           <table class="table">
             <thead>
               <tr>
-                <th></th>
                 <th>用户名</th>
                 <th>姓名</th>
                 <th>性别</th>
@@ -20,9 +19,6 @@
             </thead>
             <tbody>
               <tr v-for="(user, index) in currentUsers">
-                <td>
-                  <input type="checkbox">
-                </td>
                 <td>{{user.userName}}</td>
                 <td>{{user.userRealName}}</td>
                 <td>{{user.userGenderString}}</td>
@@ -39,7 +35,7 @@
               </tr>
             </tbody>
           </table>
-          <pagination :allItems = "tableConfig.listData" @changeIndex="getIndex"></pagination>
+          <pagination :allItems = "tableConfig.listData" @changeIndex="getIndex" :pernum="10"></pagination>
           
           <div class="loadingWrapper" v-show="isShow">
             <loading></loading>
@@ -98,13 +94,11 @@ export default {
       isShow: false,
       confirmShow: false,
       currentIndex: 0,
-      searchConfig: [],
       modalConfig: {}
     }
   },
   mounted(){
-    //搜索组件配置
-    this._setConfig(this.tableConfig)
+    
   },
   methods: {
     getIndex(num) {
@@ -138,19 +132,7 @@ export default {
       this.modalConfig = {
         add: 1,
         title: '添加用户',
-        footerShow: true,
-        userMessage: {
-          "userName":"userName1",
-          "userRealName": "userRealName",
-          "userPassWord": "userPassWord",
-          "userGender": 1,
-          "userMobilePhone": "userMobilePhone",
-          "userMail": "userMail",
-          "fromSacId": "fromSacId",
-          "userEnable": 1,
-          "userMail": "userMail",
-          "userRemark": "userRemark"
-        }
+        footerShow: true
       }
       //vuex 系统管理选中的用户
       //this.setSysUser(user)
@@ -183,21 +165,6 @@ export default {
     _del(user,index) {
       this.$emit('delUser', user),
       this.currentUsers.splice(index, 1)
-    },
-    _setConfig(obj) {
-      switch(obj.tableName){
-        case 'users':
-          this.searchConfig = {userName:'用户名', userRealName:'姓名', date:'选择时间段', flag: true};
-          break;
-        case 'role':
-          this.searchConfig = {role:'角色名', system:'操作系统', flag: true};
-          break;
-        case 'logs':
-          this.searchConfig = {optioner:'操作人', date:'选择时间段', system:'操作系统', flag: true};
-          break;
-        default:
-          this.searchConfig = {}
-      }
     },
     ...mapMutations({
       setSysUser: 'SET_SYS_USER'

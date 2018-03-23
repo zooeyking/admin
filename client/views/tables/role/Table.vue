@@ -4,45 +4,44 @@
       <div class="tile is-parent">
         <article class="tile is-child box">
           <div class="pageHeader">
-            <search @paramsSearch="paramsSearch" :appList="appList"></search>
+            <search @paramsSearch="paramsSearch" :appList="searchList"></search>
             <button class="button is-primary"  @click="showAdd">添加角色</button>
           </div>
           <table class="table">
             <thead>
               <tr>
-                <th></th>
                 <th>角色名称</th>
                 <th>角色描述</th>
+                <th>系统名称</th>
                 <th>创建时间</th>
                 <th>操作</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(role, index) in currentRoles">
-                <td>
-                  <input type="checkbox">
-                </td>
+                
                 <td>{{role.roleName}}</td>
                 <td>{{role.roleRemark}}</td>
+                <td>{{role.sacName}}</td>
                 <td>{{role.createDate}}</td>
                 <td>
                   <div class="optionWrapper">
                     <button class="button is-primary is-small"  @click="showCopy(role)">复制角色</button>
-                    <button class="button is-primary is-small"  @click="showModify(role)">绑定权限</button>
-                    <button class="button is-primary is-small"  @click="showModify(role)">绑定用户</button>
-                    <button class="button is-danger is-small" @click="showDel(role, index)">删除</button>
+                    <button class="button is-primary is-small"  @click="showPower(role)">绑定权限</button>
+                    <button class="button is-primary is-small"  @click="showUser(role)">绑定用户</button>
+                    <button class="button is-danger is-small" @click="showDel(role)">删除</button>
                     
                   </div>
                 </td>
               </tr>
             </tbody>
           </table>
-          <pagination :allItems = "tableData" @changeIndex="getIndex"></pagination>
+          <pagination :allItems = "roleList" @changeIndex="getIndex"></pagination>
           
           <div class="loadingWrapper" v-show="isShow">
             <loading></loading>
           </div>
-          <confirm :visible="confirmShow" @close="closeDetail" :modalConfig="modalConfig" @ok="ok"></confirm>
+          <confirm :visible="confirmShow" @close="closeDetail" :modalConfig="modalConfig" @ok="ok" @userSearch="userSearch"></confirm>
           
         </article>
       </div>
@@ -58,13 +57,9 @@ import Confirm from './Modal'
 
 import { mapGetters, mapMutations } from 'vuex'
 import jsonp from 'tools/js/jsonp'
-import axios from 'axios'
+import { CommonParams, options, powerListUrl } from 'base/askUrl'
 
 const PERNUM = 10
-
-const options = {
-  param: 'callback'
-}
 
 export default {
   components: {
@@ -74,30 +69,20 @@ export default {
     Confirm
   },
   props: {
-    tableData: {
-      type: Array,
-      dafault() {
-        return []
-      }
-    },
     confirmClose: {
       type: Boolean,
       default: true
     },
-    listData: {
-      type: Array,
-      default() {
-        return []
-      }
-    }
+    userSearchResult: [Array, String]
   },
   data () {
     return {
       isShow: false,
       confirmShow: false,
       currentIndex: 0,
-      appList: [],
-      modalConfig: {}
+      searchList: [],
+      modalConfig: {},
+      currentRoles: []
     }
   },
   mounted(){
@@ -111,70 +96,91 @@ export default {
       this.modalConfig = {
         copy: 1,
         title: '复制角色',
-        footerShow: false,
+        footerShow: true,
         roleMessage: role
       }
       
       this.confirmShow = true
     },
-    showModify(role) {
-      this.modalConfig = {
-        modify: 1,
-        title: '资料修改',
-        footerShow: true,
-        roleMessage: role
-      }
+    showPower(role) {
+      let me = this
+      this._getPowerList(role).then((res)=>{
+        
+        if(res.status == true) {
+          console.log(res)
+          me.modalConfig = {
+            power: 1,
+            title: '绑定权限',
+            footerShow: true,
+            roleMessage: role,
+            powerList: res.value
+          }
+        }
+      })
       
+      this.confirmShow = true
+    },
+    showUser(role) {
+      this.modalConfig = {
+        user: 1,
+        title: '绑定用户',
+        footerShow: false,
+        roleMessage: role,
+        searchResult: []
+      }
       
       this.confirmShow = true
     },
     showAdd() {
       this.modalConfig = {
         add: 1,
-        title: '添加用户',
-        footerShow: true,
-        userMessage: {
-          "userName":"userName1",
-          "userRealName": "userRealName",
-          "userPassWord": "userPassWord",
-          "userGender": 1,
-          "userMobilePhone": "userMobilePhone",
-          "userMail": "userMail",
-          "fromSacId": "fromSacId",
-          "userEnable": 1,
-          "userMail": "userMail",
-          "userRemark": "userRemark"
-        }
+        title: '添加角色',
+        footerShow: true
       }
       
       this.confirmShow = true
     },
-    showDel(role, index) {
+
+    showDel(role) {
       this.modalConfig = {
         del: 1,
-        title: '确认删除该用户吗？',
+        title: '确认删除该角色吗？',
         footerShow: true,
-        roleMessage: role,
-        delIndex: index
+        roleMessage: role
       }
-      
       this.confirmShow = true
     },
+
     closeDetail() {
       this.confirmShow = false
     },
+
+    //角色列表搜索
     paramsSearch(params) {
       this.$emit('paramsSearch', params)
     },
-    ok(data) {
-      if(data.delFlag == '1') {
-        this._del(data, data.index)
-      }
-      this.$emit('ok', data)
+
+    //用户绑定搜索
+    userSearch(user) {
+      this.$emit('userSearch', user)
     },
-    _del(user,index) {
-      this.$emit('delUser', user),
-      this.currentRoles.splice(index, 1)
+
+    ok(role) {
+      
+      if(role.delFlag === 1) {
+        this._del(role)
+      }else {
+        this.$emit('ok', role)
+      }
+    
+    },
+    _del(role, index) {
+      this.$emit('delRole', role)
+    },
+    _getPowerList(role) {
+      let params = Object.assign({}, CommonParams, { roleId : role.roleId });
+      
+      return jsonp(powerListUrl, params, options)
     },
     /*
     ...mapMutations({
@@ -185,26 +191,38 @@ export default {
   watch: {
     confirmClose() {
       this.confirmShow = false
-    }
-  },
-  computed: {
-    currentRoles() {
+    },
+    appList(newVal) {
+      //console.log(newVal)
+      this.searchList = newVal
+    },
+    roleList(newVal) {
       let arr = [];
-      let listData = this.tableData.length > 0 ? this.tableData : [];
-      if(listData.length <= PERNUM) {
-        arr = listData;
-        return arr;
+
+      if(newVal.length <= PERNUM) {
+        arr = newVal;
       }else {
         let cut = this.currentIndex * PERNUM;
         for(let i=0; i < PERNUM; i++) {
-          if(listData[i + cut]) {
-            arr.push(listData[i + cut])
+          if(newVal[i + cut]) {
+            arr.push(newVal[i + cut])
           }else {
             break
           }
         }
-        return arr;
       }
+      this.currentRoles = arr
+    },
+    userSearchResult(newVal) {
+      this.modalConfig.searchResult = newVal
+    }
+  },
+  computed: {
+    appList(){
+      return this.$store.getters.appList;
+    },
+    roleList(){
+      return this.$store.getters.rolesData;
     }
   }
 }

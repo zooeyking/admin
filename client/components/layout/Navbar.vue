@@ -18,22 +18,43 @@
           </a>
         </div>
         <div class="nav-right is-flex">
-          <router-link v-if="!$auth.check()" to="/login" class="nav-item">登录</router-link>
-          <a v-if="$auth.check()" @click="logout" class="nav-item">退出</a>
+          <!--<router-link v-if="!$auth.check()" to="/login" class="nav-item">登录</router-link>
+              <a v-if="$auth.check()" @click="logout" class="nav-item">退出</a>
+          -->
+          <a @click="goOut" class="nav-item">退出</a>
         </div>
       </nav>
     </div>
+    <confirm :visible="visible" :modalConfig="modalConfig" @ok="ok" @close="close"></confirm> 
   </section>
 </template>
 
 <script>
 import Tooltip from 'vue-bulma-tooltip'
+import Confirm from 'components/common/modal/Modal'
+
 import { mapGetters, mapActions } from 'vuex'
+import { logOut } from 'base/author'
 
 export default {
+  data() {
+    return {
+      modalConfig: {
+        logOut: 1,
+        title: '确认退出吗？',
+        footerShow: true
+      },
+      visible: false,
+    }
+  },
 
   components: {
-    Tooltip
+    Tooltip,
+    Confirm
+  },
+
+  mounted() {
+    
   },
 
   props: {
@@ -49,7 +70,10 @@ export default {
     ...mapActions([
       'toggleSidebar'
     ]),
-    logout () {
+    goOut () {
+      this.visible = true
+      
+      /*
       this.$auth.logout({
         redirect: 'Home',
         makeRequest: false
@@ -58,6 +82,13 @@ export default {
         // error: function () {},
         // etc...
       })
+      */
+    },
+    ok() {
+      logOut()
+    },
+    close() {
+      this.visible = false
     }
   }
 }
@@ -69,7 +100,7 @@ export default {
 .app-navbar {
   position: fixed;
   min-width: 100%;
-  z-index: 1024;
+  z-index: 124;
   box-shadow: 0 2px 3px rgba(17, 17, 17, 0.1), 0 0 0 1px rgba(17, 17, 17, 0.1);
 
   .container {

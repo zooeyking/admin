@@ -184,6 +184,47 @@ export default {
         finnalUser = this.newUser
       }
       this.$emit('ok', finnalUser)
+    },
+
+    Zname(args) {
+      let str = ''
+      switch (args) {
+        case 'userName' :
+          str = '用户名'
+          break;
+        case 'userRealName' :
+          str = '姓名'
+          break;
+        case 'userPassWord' :
+          str = '密码'
+          break;
+        case 'createDate' :
+          str = '创建时间'
+          break;
+        case 'userGenderString' :
+        case 'userGender' :
+          str = '性别'
+          break;
+        case 'userMobilePhone' :
+          str = '联系方式'
+          break;
+        case 'userAddress' :
+          str = '地址'
+          break;
+        case 'userId' :
+          str = '用户id'
+          break;
+        case 'userMail' :
+          str = '邮箱'
+          break;
+        case 'userEnable' :
+          str = '是否启用'
+          break;
+        case 'userRemark' :
+          str = '备注'
+          break;
+        }
+      return str;
     }
   },
 
@@ -197,7 +238,7 @@ export default {
   },
 
   mounted() {
-    //console.log(this.userList)
+    console.log(this.userList)
     //console.log(this['systemControl/listData'])
   },
 

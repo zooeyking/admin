@@ -1,37 +1,18 @@
 <template>
 	<!--（ztree－🌲）-->
 	<div class="tile is-parent">
-		<article class="tile is-child box">
-			<div class="pageHeader partmentHeader">
-				<h3 class="subtitle is-5"><strong>新部门名称 :</strong></h3>
-				<p class="control textBox"><input type="text"  v-model="newPartment['dName']" class="input is-primary is-small"></p>
-				<h3 class="subtitle is-5"><strong>上级部门 :</strong></h3>
-				<div class="select textBox is-small">
-	                <select v-model="newPartment['parentId']">
-	                  <option value="">无</option>
-	                  <option v-for="item in allPartments" :value="item.dId">{{item.dName}}</option>
-	                </select>
-	            </div>
-	            <h3 class="subtitle is-5"><strong>备注 :</strong></h3>
-				<p class="control textBox"><input type="text"  v-model="newPartment['dRemark']" class="input is-primary is-small"></p>
-		        <button class="button is-primary is-small"  @click="add">添  加</button>
-		    </div>
-			<ul class="ztree">
-				<ztree-item v-for='(m,i) in treeDataSource' :key='i' :model="m" :num='i' root='0' :nodes='treeDataSource.length' :callback='func' :expandfunc='expand' :cxtmenufunc='contextmenu' :trees='treeDataSource' @remove="remove" @edit="edit"></ztree-item>
-			</ul>
-		</article>
-		<!--
-		<article class="tile is-child box" v-else>
-			<div class="pageHeader partmentHeader">
-				<h3 class="subtitle is-5"><strong>暂无数据</strong></h3>
-		    </div>
-		</article>
-		-->
+		
+		<ul class="ztree">
+			<ztree-item v-for='(m,i) in treeDataSource' :key='i' :model="m" :num='i' root='0' :nodes='treeDataSource.length' :callback='func'  :trees='treeDataSource'></ztree-item>
+		</ul>
+		
 	</div>
 </template>
 
 <script>
 import Vue from 'vue'
+import { mapGetters, mapMutations } from 'vuex'
+
 export default{
 	data(){
        return {
@@ -55,18 +36,7 @@ export default{
 			type:Function,
 			default:null
 		},
-		// 点击展开回调
-		expand:{
-            type:Function,
-            default:null
-		},
-		// 右击事件
-		contextmenu:{
-            type:Function,
-            default:function(){
-            	console.log("defalt click contextmenu");
-            }
-		},
+		
 		// 是否展开
 		isOpen:{
 			type:Boolean,
@@ -80,6 +50,16 @@ export default{
             },
             deep:true
         }
+	},
+	computed: {
+	    operats: {
+	    	get() {
+	    		return this.$store.getters.operats;
+	    	},
+	    	set(value) {
+	    		this.$store.commit('SET_SYS_OPERATS', value)
+	    	}
+	    }
 	},
 	methods:{
         initTreeData(){
@@ -102,7 +82,7 @@ export default{
 	               		m.isExpand =  m.hasOwnProperty("open") ? m.open : this.isOpen;
 	               	}
 
-	               	m.loadNode = 0; 
+	               	//m.loadNode = 0; 
 
 	               	if(m.children) {
 	               		recurrenceFunc(m.children);
@@ -118,12 +98,6 @@ export default{
         add() {
         	console.log(this.newPartment)
         	this.$emit('addPartment', this.newPartment);
-        },
-        remove(item) {
-        	this.$emit('remove',item)
-        },
-        edit(item) {
-        	this.$emit('edit',item)
         }
 	},
 	components:{
@@ -151,12 +125,7 @@ export default{
         		callback:{
 					type:Function
 				},
-				expandfunc:{
-					type:Function
-				},
-				cxtmenufunc:{
-					type:Function
-				}
+				
         	},
         	methods:{
                 Func(m){
@@ -196,19 +165,28 @@ export default{
                         m.isFolder = !m.isFolder;
 	                }
                 },
-                //删除方法
-                del(item){
-                	this.$emit('remove',item)
-                	//console.log(item)
+                //选则开关
+                toggleCheck(model) {
+                	model.checked = !model.checked
+                	//console.log(model)
+
+                	this._toggleChildren(model, model.checked)
                 },
-                remove(item) {
-		        	this.$emit('remove',item)
-		        	//console.log(item)
-		        },
-		        //编辑
-		        edit(item) {
-		        	this.$emit('edit',item)
-		        }
+
+                _toggleChildren(arr, flag) {
+                	let children = arr.children
+                	
+                	if(null!=children && children.length > 0) {
+                		children.forEach((item)=>{
+                			item.checked = flag
+                			this._toggleChildren(children, flag);
+                		})
+                	}else{
+                		return
+                	}
+                	
+                }
+
         	},
         	computed:{
         		// 给（根 和 子树）赋值不同的样式
@@ -264,25 +242,29 @@ export default{
                 },
                 ulClassVal(){
                 	return this.isChildren && this.model.children.length>0 ?"level"+this.num+' line':"level"+this.num;
-                }
+                },
+                operats: {
+			    	get() {
+			    		return this.$store.getters.operats;
+			    	},
+			    	set(value) {
+			    		this.$store.commit('SET_SYS_OPERATS', value)
+			    	}
+			    }
         	},
             template: 
             `<li>
-				<span class="icon is-small" @click='open(model)'><i class="fa" :class="prefixClass === 'close' ? 'fa-plus' : 'fa-minus'"></i></span>
-				<p @click='Func(model)' @contextmenu.prevent='cxtmenufunc(model)'>
+				<span class="icon is-small my-fold" @click='open(model)'><i class="fa" :class="prefixClass === 'close' ? 'fa-plus' : 'fa-minus'"></i></span>
+				<p @click='Func(model)' >
 					<div class="info mebox">
-						<span :class="{loadSyncNode:model.loadNode==1}" v-if='model.loadNode==1'></span>
+						
 					    <span :class='model.iconClass' v-show='model.iconClass' v-else></span>
-						<span class="node_name">{{model.dName}}--{{model.dId}}</span>
+						<span class="node_name">{{model.operateName}}</span>
+						<label class="checkbox treeCheck" @click="toggleCheck(model)"><input type="checkbox" v-model="model.checked" :value="model.operateId"></span></label>
 					</div>
-				    
-				    <div class="option mebox">
-				    	<a class="button is-primary is-small" @click="edit(model)"><span>编辑</span></a>
-				    	<a class="button is-danger is-small" @click="del(model)"><span>删除</span></a>
-				    </div>
 				</p>
 				<ul :class="ulClassVal" v-show='model.isFolder'>
-					<ztree-item v-for="(item,i) in model.children" :key='i' :callback='callback' :expandfunc='expandfunc' :cxtmenufunc='cxtmenufunc' :model="item" :num='i' root='1' :nodes='model.children.length' :trees='trees' @remove="remove" @edit="edit"></ztree-item>
+					<ztree-item v-for="(item,i) in model.children" :key='i' :callback='callback' :model="item" :num='i' root='1' :nodes='model.children.length' :trees='trees' ></ztree-item>
 				</ul>
 			</li>`
 		}
@@ -293,6 +275,7 @@ export default{
 	mounted(){
 		this.$nextTick(()=>{
 			this.initTreeData();
+			console.log(this.operats)
 		})
 	}
 }
@@ -319,6 +302,11 @@ export default{
 		margin:0; 
 		padding:0 0 0 18px
 	}
+
+	.ztree li .treeCheck{
+		padding: 8px;
+		margin-left: 10px;
+	}
 	
 	.ztree li p {
 		padding:1px 3px 0 5px; 
@@ -330,6 +318,9 @@ export default{
 		text-decoration:none; 
 		vertical-align:top; 
 		display: inline-block
+	}
+	.ztree .my-fold {
+		cursor: pointer
 	}
 	.ztree li p:hover {
 		text-decoration:underline; 

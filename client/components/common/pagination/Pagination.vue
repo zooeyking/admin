@@ -23,11 +23,13 @@ export default {
   props: {
     allItems: {
       type: Array,
-      default: []
+      default() {
+        return []
+      }
     },
     pernum: {
       type: Number,
-      default: 12
+      default: 10
     }
   },
   data() {

@@ -8,55 +8,23 @@
 <script>
 import UserTable from './user/Table'
 import MyMessage from 'components/common/message/Message'
-import systemModule from 'vuex-store/modules/systemControl'
-
 
 import { mapGetters, mapMutations } from 'vuex'
 import jsonp from 'tools/js/jsonp'
-//import axios from 'axios'
-import { userListUrl, userUpdateUrl, userSaveUrl } from 'base/askUrl'
-
-
-const options = {
-  param: 'callback'
-}
-const InitParams = {
-        "ssoAppKey": "122",
-        "ssoTimestamp": "123",
-        "ssoNonce": "aaa",
-        "ssoSinatrue": "4fe34eb88a20d87703bf6230779426700397a8a5",
-        "ssoUserId": "admin",
-        "pageNum":1,
-        "pageSize": 100,
-        "userName":"",
-        "userRealName":"",
-        "startDate":"",
-        "endDate":"",
-        "fromSacId":""
-      }
-
-const CommonParams = {
-        "ssoAppKey": "122",
-        "ssoTimestamp": "123",
-        "ssoNonce": "aaa",
-        "ssoSinatrue": "4fe34eb88a20d87703bf6230779426700397a8a5",
-        "ssoUserId": "admin",
-        "pageNum":1,
-        "pageSize": 100,
-      }
-
+import { CommonParams, options, userListUrl, userUpdateUrl, userSaveUrl } from 'base/askUrl'
+import { authority } from 'base/author'
 
 export default {
   components: {
     UserTable,
     MyMessage
   },
+
   data () {
     return {
       isShow: false,
-      currentIndex: 0,
       showMessage: false,
-      messageType: 'success',
+      messageType: 0,
       confirmClose: true,
       tableConfig: {
         tableName: 'users',
@@ -64,32 +32,48 @@ export default {
       }
     }
   },
+
   methods: {
-    getIndex(num) {
-      this.currentIndex = num-1
-    },
     search(params) {
       let me = this;
       let searchParams = Object.assign({}, CommonParams, params);
       this._getUsersData(searchParams).then((res)=>{
-        let result = res.value.list;
-        me.tableConfig.listData = result
+        if(res.value.list) {
+          let result = res.value.list;
+          me.tableConfig.listData = result
+        }else{
+          me.tableConfig.listData = []
+        }
       })
     },
+
     delUser(user) {
       let updateParams = Object.assign({}, CommonParams, {userId: user.userId, delFlag: user.delFlag});
       jsonp(userUpdateUrl, user, options).then((res)=>{
-        console.log(res);
+        this.showMessage = true
+        if(res.status == true) {
+          this.messageType = 0
+          this.search({})
+        }else{
+          this.messageType = 1
+        }
       })
     },
+
     enableUpdate(user) {
       let me = this;
       
       let updateParams = Object.assign({}, CommonParams, {userId: user.userId, userEnable: user.userEnable});
       jsonp(userUpdateUrl, updateParams, options).then((res)=>{
-        console.log(res);
+        this.showMessage = true
+        if(res.status == true) {
+          this.messageType = 0
+        }else{
+          this.messageType = 1
+        }
       })
     },
+
     renew(user) {
       let url = ''
       if(user.userId) {
@@ -100,46 +84,31 @@ export default {
       let params = Object.assign({}, CommonParams, user);
 
       jsonp(url, params, options).then((res)=>{
-        if(res.value == 1) {
-          this.showMessage = true
+        this.showMessage = true
+        if(res.status == true) {
           this.messageType = 0
           this.confirmClose = !this.confirmClose
           this._initDate()
         }else {
-          this.showMessage = true
           this.messageType = 1
         }
-        console.log(res);
       })
     },
+
     dispear() {
       this.showMessage = false
     },
 
-    /*  
-    格式化请求的数据，已经无用
-    const ITEMKEY = ['userName','userRealName','userGenderString','createDate','userMail','userMobilePhone','userAddress','userId','userEnable','userRemark']
-    _formatData(data) {
-      let arr = [];
-      for (let i=0; i<data.length; i++) {
-        let keyArr = ITEMKEY;
-        let item = {};
-        for(let j=0; j<keyArr.length; j++){
-          let key = keyArr[j];
-          item[key] = data[i][key];
-        }
-        arr.push(item);
-      }
-      return arr;
-    },
-    */
     _getUsersData(params) {
       let url = userListUrl
+      console.log(userListUrl)
+      console.log(params)
       return jsonp(url, params, options)
     },
+
     _initDate() {
       let me = this; 
-      this._getUsersData(InitParams).then((res)=>{
+      this._getUsersData(CommonParams).then((res)=>{
         let result = res.value.list;
         
         me.tableConfig.listData = result;
@@ -147,21 +116,25 @@ export default {
         
       })
     },
+    
     ...mapMutations(
       { setUserList : 'SET_SYS_USERUSERLIST' }
     )
   },
+  created() {
+    authority()
+  },
   mounted() {
-    this._initDate()
-    //this.userList = systemModule.state.systems/userList
-    
+    this.$nextTick(()=>{
+        this._initDate()
+      })
   },
   watch: {
     
-    userList : {
+    'userList' : {
       handler(val, oldval) {
         if(val != oldval) {
-          
+          //console.log(val)
           this.search({})
         }  
       },  
@@ -174,17 +147,12 @@ export default {
     userList(){
       return this.$store.getters.listData;
     }
-    /*
-    ...mapGetters([
-      store.getters.listData
-    ])
-    */
 
   }
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .table-responsive {
   display: block;
   width: 100%;

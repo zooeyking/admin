@@ -40,6 +40,8 @@
     "axios": "^0.15.3",
     "bulma": "^0.3.2",
     "font-awesome": "4.7.0",
+    "good-storage": "^1.0.1",
+    "js-md5": "^0.7.3",
     "jsonp": "^0.2.1",
     "mdi": "^1.8.36",
     "plotly.js": "^1.24.2",

@@ -17,7 +17,7 @@
 		        <button class="button is-primary is-small"  @click="add">添  加</button>
 		    </div>
 			<ul class="ztree">
-				<ztree-item v-for='(m,i) in treeDataSource' :key='i' :model="m" :num='i' root='0' :nodes='treeDataSource.length' :callback='func' :expandfunc='expand' :cxtmenufunc='contextmenu' :trees='treeDataSource' @remove="remove" @edit="edit"></ztree-item>
+				<ztree-item v-for='(m,i) in treeDataSource' :key='i' :model="m" :num='i' root='0' :nodes='treeDataSource.length' :callback='func'  :trees='treeDataSource' @remove="remove" @editUser="editUser"></ztree-item>
 			</ul>
 		</article>
 		<!--
@@ -43,9 +43,7 @@ export default{
 	},
 	props:{
 		//所有部门列表
-		allPartments: {
-			type: Array,
-		},
+		allPartments: [Array, Object],
 		// 树数据
         list:{
        	  	type:Array,
@@ -60,13 +58,7 @@ export default{
             type:Function,
             default:null
 		},
-		// 右击事件
-		contextmenu:{
-            type:Function,
-            default:function(){
-            	console.log("defalt click contextmenu");
-            }
-		},
+		
 		// 是否展开
 		isOpen:{
 			type:Boolean,
@@ -102,7 +94,7 @@ export default{
 	               		m.isExpand =  m.hasOwnProperty("open") ? m.open : this.isOpen;
 	               	}
 
-	               	m.loadNode = 0; 
+	               	//m.loadNode = 0; 
 
 	               	if(m.children) {
 	               		recurrenceFunc(m.children);
@@ -124,6 +116,9 @@ export default{
         },
         edit(item) {
         	this.$emit('edit',item)
+        },
+        editUser(item) {
+        	this.$emit('editUser',item)
         }
 	},
 	components:{
@@ -150,13 +145,8 @@ export default{
         		},
         		callback:{
 					type:Function
-				},
-				expandfunc:{
-					type:Function
-				},
-				cxtmenufunc:{
-					type:Function
 				}
+				
         	},
         	methods:{
                 Func(m){
@@ -182,12 +172,12 @@ export default{
                     recurFunc(this.trees,this.trees);
                 },
                 open(m){
-                	//
+                	
                 	m.isExpand = !m.isExpand;
            
                 	if(typeof this.expandfunc == "function" && m.isExpand) {
                 		if(m.loadNode!=2) {
-		                	//
+		                	
 		                    this.expandfunc.call(null,m);
 		                }else {
 		                	m.isFolder = !m.isFolder;
@@ -208,6 +198,10 @@ export default{
 		        //编辑
 		        edit(item) {
 		        	this.$emit('edit',item)
+		        },
+		        //管理职员
+		        editUser(item) {
+		        	this.$emit('editUser',item)
 		        }
         	},
         	computed:{
@@ -268,21 +262,24 @@ export default{
         	},
             template: 
             `<li>
-				<span class="icon is-small" @click='open(model)'><i class="fa" :class="prefixClass === 'close' ? 'fa-plus' : 'fa-minus'"></i></span>
-				<p @click='Func(model)' @contextmenu.prevent='cxtmenufunc(model)'>
+				<span class="icon is-small my-fold" @click='open(model)'><i class="fa" :class="prefixClass === 'close' ? 'fa-plus' : 'fa-minus'"></i></span>
+				<p class="item-content" @click='Func(model)' >
 					<div class="info mebox">
-						<span :class="{loadSyncNode:model.loadNode==1}" v-if='model.loadNode==1'></span>
-					    <span :class='model.iconClass' v-show='model.iconClass' v-else></span>
-						<span class="node_name">{{model.dName}}--{{model.dId}}</span>
+						<!-- <span :class="{loadSyncNode:model.loadNode==1}" v-if='model.loadNode==1'></span> -->
+					    <span :class='model.iconClass' v-show='model.iconClass'></span>
+						<span class="node_name">{{model.dName}}</span>
+						
 					</div>
-				    
-				    <div class="option mebox">
-				    	<a class="button is-primary is-small" @click="edit(model)"><span>编辑</span></a>
+					
+					<span class="item-line" v-show="model.children.length == 0"></span>
+					<div class="option mebox"  v-show="model.children.length == 0">
+				    	<!-- <a class="button is-primary is-small" @click="edit(model)"><span>编辑</span></a> -->
+				    	<a class="button is-primary is-small" @click="editUser(model)"><span>管理职员</span></a>
 				    	<a class="button is-danger is-small" @click="del(model)"><span>删除</span></a>
-				    </div>
+					</div>
 				</p>
 				<ul :class="ulClassVal" v-show='model.isFolder'>
-					<ztree-item v-for="(item,i) in model.children" :key='i' :callback='callback' :expandfunc='expandfunc' :cxtmenufunc='cxtmenufunc' :model="item" :num='i' root='1' :nodes='model.children.length' :trees='trees' @remove="remove" @edit="edit"></ztree-item>
+					<ztree-item v-for="(item,i) in model.children" :key='i' :callback='callback' :model="item" :num='i' root='1' :nodes='model.children.length' :trees='trees' @remove="remove" @editUser="editUser"></ztree-item>
 				</ul>
 			</li>`
 		}
@@ -301,7 +298,7 @@ export default{
 
 <style>
 	.partmentHeader{
-		justify-content: flex-start
+		justify-content: flex-start !important;
 	}
 	.textBox{
 		margin: 0 1rem
@@ -340,6 +337,16 @@ export default{
 		content: '';
 		clear: both;
 	}
+	.ztree .item-content {
+		position: relative;
+	}
+	.ztree .item-line{
+		position: absolute;
+		top: 16px;
+		border-top: dotted 1px #369;
+		margin-left: 10%;
+		width: 60%;
+	}
 	.ztree li .mebox {
 		display: inline-block;
 	}
@@ -347,13 +354,26 @@ export default{
 		margin-left: 10rem;
 		float: right;
 	}
+	
 	.ztree li .option {
-		margin-left: 10rem;
 		float: right;
 	}
+	
+	
+	@media screen and (max-width:1219px) {
+ 	   .ztree .item-line{
+			margin-left: 5%;
+			width: 50%;
+		}	
+	}
+	
 	.ztree .icon {
 		line-height: 2;
 	}
+	.ztree .my-fold {
+		cursor: pointer
+	}
+	
 	.loadSyncNode {
 		width: 16px;
         height: 16px;
