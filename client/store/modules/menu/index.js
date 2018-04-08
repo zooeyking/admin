@@ -3,7 +3,7 @@ import lazyLoading from './lazyLoading'
 import charts from './charts'
 import uifeatures from './uifeatures'
 import components from './components'
-import tables from './tables'
+import sysCtl from './sysCtl'
 
 // show: meta.label -> name
 // name: component name
@@ -11,6 +11,7 @@ import tables from './tables'
 
 const state = {
   items: [
+  /*
     {
       name: 'Dashboard',
       path: '/dashboard',
@@ -30,10 +31,11 @@ const state = {
       },
       component: lazyLoading('axios', true)
     },
-    charts,
-    uifeatures,
-    components,
-    tables
+  */
+    //charts,
+    //uifeatures,
+    //components,
+    sysCtl
   ]
 }
 

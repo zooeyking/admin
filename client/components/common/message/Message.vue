@@ -41,9 +41,27 @@ export default {
         type: 'success',
         duration: 2000
       })
-    }else {
+    }else if(this.messageType === 1) {
+      openMessage({
+        message: '-----------请求失败,必要参数为空----------',
+        type: 'danger',
+        duration: 2000
+      })
+    }else if(this.messageType === 2) {
+      openMessage({
+        message: '-----------重复添加/操作失败----------',
+        type: 'danger',
+        duration: 2000
+      })
+    }else if(this.messageType === 3 ) {
       openMessage({
         message: '-----------操作失败----------',
+        type: 'danger',
+        duration: 2000
+      })
+    }else if(this.messageType === 4) {
+      openMessage({
+        message: '网络异常，请求失败，请稍后重试',
         type: 'danger',
         duration: 2000
       })

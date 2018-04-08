@@ -1,90 +1,171 @@
-import goodStorage from 'good-storage'
-import { safe } from './safe'
+import goodStorage from 'good-storage';
+import jsonp from 'tools/js/jsonp'
+import { safe } from './safe';
 
 //请求ip
-const ip = "http://192.168.1.80:8093/base/sso_base_modular"
-
-function getParams() {
-	let user = goodStorage.session.get('USERINFO')
-	console.log(user)
-	let safeUser = null
-	if(user != undefined) {
-		console.log(user)
-		safeUser = safe(user)
-		console.log(safeUser)
-	}else{
-		return
-	}
-	return Object.assign({}, safeUser, {"pageNum": 1,"pageSize": 100})
-}
-
-//公共请求参数
-const CommonParams = getParams()
-
+const ip = "http://192.168.1.80:8093/base/sso-base-modular";
 
 //公共回调
 const options = {
   param: 'callback'
-}
+};
+
+//公共参数方法
+function _getParams() {
+	let user = goodStorage.get('USERINFO');
+	let safeUser = null;
+	if(user != undefined) {
+		safeUser = safe(user);
+		return Object.assign({}, safeUser, { "pageSize": 20});
+	}else{
+		return;
+	}
+};
+
+//公共请求方法
+const unitCall = function(_callBackSuccess, _callBackErr, _url, _params={}) {
+	//公共请求参数
+	let CommonParams = _getParams();
+
+	//将实际传入请求参数与公共参数合并
+	let finalParams = Object.assign({}, CommonParams, _params);
+
+	jsonp(_url, finalParams, options).then((res)=>{
+        if(res.status == true) {
+          	_callBackSuccess(res);
+        }else{
+        	console.log('参数错误！');
+          	_callBackErr(res);
+          	//window.location.href = 'http://192.168.1.80:8092/sso_login/login?serviceUrl=http://192.168.1.138:8080&ssoAppKey=46b70e45ee2d40cbb30431f89b032247';
+        }
+    }).catch((err)=>{
+    	console.log(err);
+    	_callBackErr(err);
+    	window.location.href = 'http://192.168.1.80:8092/sso-login/login?serviceUrl=http://192.168.1.138:8080&ssoAppKey=46b70e45ee2d40cbb30431f89b032247';
+    })
+};
+
+//用户登录
+const logInUrl = 'http://192.168.1.80:8092/sso-login/login?serviceUrl=http://192.168.1.138:8080&ssoAppKey=46b70e45ee2d40cbb30431f89b032247';
 
 //用户退出
-const logOutUrl = 'http://192.168.1.80:8092/sso_login/doLogoutJson'
+const logOutUrl = 'http://192.168.1.80:8092/sso-login/doLogoutJson';
 
 //用户列表
-const userListUrl = ip + '/getUserPageJson'
+const userListUrl = ip + '/getUserPageJson';
+
+//用户角色信息查询
+const userRoleUrl = ip + '/getRoleNameByUserIdJson';
+
+//用户部门信息查询
+const userDepartmentUrl = ip + '/getDeptByUserIdJson';
 
 //用户数据更新
-const userUpdateUrl = ip + '/updateUserInfoByIdJson'
+const userUpdateUrl = ip + '/updateUserInfoByIdJson';
 
 //新用户
-const userSaveUrl = ip + '/saveUserJson'
+const userSaveUrl = ip + '/saveUserJson';
 
 //角色列表
-const roleListUrl = ip + '/getRolePageJson'
+const roleListUrl = ip + '/getRolePageJson';
 
 //新角色
-const roleSaveUrl = ip + '/saveRole'
+const roleSaveUrl = ip + '/saveRole';
+
+//复制角色
+const roleCopyUrl = ip + '/copyRoleJson';
 
 //删除角色
-const roleDelUrl = ip + '/delRoleJson'
+const roleDelUrl = ip + '/delRoleJson';
 
 //更新角色权限
-const roleUpdateUrl = ip + '/saveRoleAndUpOperJson'
+const roleUpdateUrl = ip + '/saveRoleAndUpOperJson';
 
 //权限列表数据
-const powerListUrl = ip + '/getOperateListAllJson'
+const powerListUrl = ip + '/getOperateListAllJson';
+
+//查询角色已绑定的用户
+const roleUserUrl = ip + '/selectUserByRoleIdJson';
+
+//角色未绑定的用户搜索
+const unbindedRoleUsersUrl = ip + '/selectRoleExistsUserByRIdJson';
+
+//用户绑定到角色上
+const roleBindUrl = ip + '/addRoleAndUserJson';
+
+//单个移除角色下的用户
+const roleUnbindUrl = ip + '/delRoleUserJson';
 
 //部门列表
-const partmentListUrl = ip + '/getDeptListJson'
+const partmentListUrl = ip + '/getDeptListJson';
 
 //新部门
-const partmentSaveUrl = ip + '/saveDeptJson'
+const partmentSaveUrl = ip + '/saveDeptJson';
 
+//获取某个部门下所有绑定的用户
+const partmentUserUrl = ip + '/getDeptUserByDUIdJson';
+
+//获取某个部门下所有未绑定的用户
+const unbindedPartmentUsersUrl = ip + '/selectDeptExistsUserByDIdJson';
+
+//用户绑定到部门上
+const partmentBindUrl = ip + '/saveDeptAndUserJson';
+
+//单个移除部门下的用户
+const partmentUnbindUrl = ip + '/delDeptByIdJson';
+
+//移除部门
+const partmentDelUrl = ip + '/delDeptByTDIdJson';
+
+//生成权限
+const operateAddUrl = ip + '/addOperateJson';
+
+//搜索权限
+const operateSearchUrl = ip + '/searchOperatePageJson';
+
+//注销权限
+const operateDelUrl = ip + '/delOperateJson';
 
 //系统配置列表
-const systemListUrl = ip + '/getAppConfigPageJson'
+const systemListUrl = ip + '/getAppConfigPageJson';
 
 //下拉列表系统配置名称
-const appSrcListUrl = ip + '/getAppConfigAllListJson'
+const appSrcListUrl = ip + '/getAppConfigAllListJson';
 
 //添加系统
-const systemSaveUrl = ip + '/saveAppConfig'
+const systemSaveUrl = ip + '/saveAppConfig';
 
 //日志列表
-const logListUrl = ip + '/getLogPageJson'
+const logListUrl = ip + '/getLogPageJson';
 
+//流量统计
+const requestsUrl = ip + '/getHttpCountNumPageJson';
+
+//用户统计
+const customersUrl = ip + '/getUserCountBysacIdJson';
 
 
 export {
+	logInUrl,
+	logOutUrl,
 	CommonParams,
+	_refreshCommonParams,
 	options,
+	unitCall,
 	userListUrl,
+	userRoleUrl,
+	userDepartmentUrl,
 	userUpdateUrl,
 	userSaveUrl,
 	roleListUrl,
 	roleSaveUrl,
+	roleCopyUrl,
 	roleDelUrl,
 	roleUpdateUrl,
+	roleUserUrl,
+	roleBindUrl,
+	roleUnbindUrl,
+	unbindedRoleUsersUrl,
 	powerListUrl,
 	logsListUrl,
 	appSrcListUrl,
@@ -92,6 +173,17 @@ export {
 	systemSaveUrl,
 	partmentListUrl,
 	partmentSaveUrl,
+	partmentUserUrl,
+	unbindedPartmentUsersUrl,
+	partmentUnbindUrl,
+	partmentBindUrl,
+	partmentDelUrl,
+	operateAddUrl,
+	operateSearchUrl,
+	operateDelUrl,
 	logListUrl,
-	logOutUrl
+	requestsUrl,
+	customersUrl
 }
+
+

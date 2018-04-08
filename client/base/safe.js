@@ -27,8 +27,7 @@ const safe = function(params) {
 					ssoNonce : ssoNonce,
 					ssoSinatrue : ssoSinatrue
 					}
-
-	return newParams
+	return newParams;
 }
 
 export { safe }

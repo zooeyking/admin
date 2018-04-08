@@ -22,14 +22,12 @@
 export default {
   props: {
     allItems: {
-      type: Array,
-      default() {
-        return []
-      }
+      type: Number,
+      default: 100
     },
     pernum: {
       type: Number,
-      default: 10
+      default: 20
     }
   },
   data() {
@@ -41,7 +39,7 @@ export default {
   },
   computed: {
     pages() {
-      let allNum = this.allItems.length;
+      let allNum = this.allItems;
       return Math.ceil(allNum / this.pernum);
     },
     goNum() {

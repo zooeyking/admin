@@ -4,10 +4,10 @@
       <img width="200" src="~assets/logo.svg" :alt="description">
     </p>
 
-    <h1 class="is-title is-bold">SSO</h1>
+    <h1 class="is-title is-bold">联鹏</h1>
 
     <p>
-      <strong>单点登录系统</strong>
+      <strong>统一身份认证系统</strong>
     </p>
 
     <p>©联鹏应用软件(上海)有限公司</p>
@@ -15,36 +15,26 @@
 </template>
 
 <script>
-import { authority, UserInfo } from 'base/author'
+import { authority, UserInfo } from 'base/author';
 
 export default {
 
   data () {
-    return this.$store.state.pkg
+    return this.$store.state.pkg;
   },
 
   created() {
-    UserInfo()
+    UserInfo();
 
-    authority()
+    authority();
 
-    //let request = this.GetRequest()
-    //console.log(request)
+    window.location.search = "";
+    this.$router.push({path: '/'});
+    
   },
 
   methods : {
-    GetRequest() {   
-        let url = window.location.search;   //获取url中"?"符后的字串   
-        let theRequest = new Object();   
-        if (url.indexOf("?") != -1) {   
-          let str = url.substr(1);   
-          let strs = str.split("&");   
-          for(let i = 0; i < strs.length; i ++) {   
-             theRequest[strs[i].split("=")[0]] = decodeURI(strs[i].split("=")[1]);   
-          }   
-        }   
-        return theRequest;   
-    }
+    
   }
 
 }

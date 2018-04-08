@@ -12,7 +12,7 @@
             <img src="~assets/logo.svg" :alt="pkginfo.description">
             <tooltip :label="'v' + pkginfo.version" placement="right" type="success" size="small" :no-animate="true" :always="true" :rounded="true">
               <div class="is-hidden-mobile">
-                <span class="vue">SSO</span><strong class="admin">单点登录</strong>
+                <span class="vue">联鹏</span><strong class="admin">统一身份认证系统</strong>
               </div>
             </tooltip>
           </a>
@@ -70,6 +70,7 @@ export default {
     ...mapActions([
       'toggleSidebar'
     ]),
+
     goOut () {
       this.visible = true
       
@@ -84,9 +85,11 @@ export default {
       })
       */
     },
+
     ok() {
       logOut()
     },
+    
     close() {
       this.visible = false
     }

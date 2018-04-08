@@ -7,11 +7,6 @@ const menuitems = state => state.menu.items
 const componententry = state => {
   return state.menu.items.filter(c => c.meta && c.meta.label === 'Components')[0]
 }
-////以下是SSO数据管理
-const systems = state => state.systemControl.systems
-const userList = state => state.systemControl.systems.userList
-const currentUser = state => state.systemControl.systems.currentUser
-//const systems = state => state.systemControl.systems
 
 export {
   pkg,
@@ -21,8 +16,5 @@ export {
   effect,
   menuitems,
   componententry,
-  systems,
-  userList,
-  currentUser
 }
 
