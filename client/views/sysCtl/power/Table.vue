@@ -21,7 +21,7 @@
             <tbody>
               <tr v-for="(power, index) in powers">
                 <td>{{power.operateName}}</td>
-                <td>{{power.parentName || '' }}</td>
+                <td>{{power.parentOperateName || '' }}</td>
                 <td>{{power.operateType}}</td>
                 <td>{{power.createDate}}</td>
 

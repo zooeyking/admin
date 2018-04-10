@@ -114,7 +114,7 @@ export default {
   data () {
     return {
       newUser: {
-        userEnable: 1,
+        userEnable: 0,
         userGender: 1
       }
     }
@@ -132,7 +132,7 @@ export default {
         this.newUser = Object.assign({}, this.currentUser);
       }else {
         this.newUser = {
-          userEnable: 1,
+          userEnable: 0,
           userGender: 1
         }
       }
@@ -147,7 +147,7 @@ export default {
         this.newUser = Object.assign({}, this.currentUser);
       }else {
         this.newUser = {
-          userEnable: 1,
+          userEnable: 0,
           userGender: 1
         }
       }
@@ -161,6 +161,7 @@ export default {
       }else if(this.modalConfig.del) {
         let index = this.modalConfig.delIndex;
         finnalUser = Object.assign({}, this.currentUser, {delFlag: 1});
+        //finnalUser = Object.assign({}, {delFlag: 1});
       }else {
         finnalUser = this.newUser;
       }

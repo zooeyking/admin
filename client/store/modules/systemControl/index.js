@@ -3,6 +3,12 @@ import * as types from '../../mutation-types';
 
 const state = {
   systems: {
+    //提示信息显示/隐藏
+    infoShow: false,  
+
+    //提示信息类型
+    infoType: 1,
+
     //用户管理/用户列表数据
     userList: [],
 
@@ -60,6 +66,17 @@ const state = {
 }
 
 const getters = {
+
+  //提示信息显示/隐藏
+  messageShow (state) {
+    return state.systems.infoShow;
+  },  
+
+  //提示信息类型
+  messageType (state) {
+    return state.systems.infoType;
+  }, 
+
   //用户管理数据列表
   userData (state) {
     return state.systems.userList;
@@ -146,6 +163,16 @@ const getters = {
 }
 
 const mutations = {
+  //设置提示信息显示/隐藏
+  [types.SET_SYS_MESSAGESHOW] (state, flag) {
+    state.systems.infoShow = flag;
+  },
+
+  //设置提示信息类型
+  [types.SET_SYS_MESSAGETYPE] (state, type) {
+    state.systems.infoType = type;
+  },
+
   //设置用户管理数据列表
   [types.SET_SYS_USERLIST] (state, list) {
     state.systems.userList = list;

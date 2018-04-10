@@ -16,6 +16,7 @@
 
 <script>
 import { authority, UserInfo } from 'base/author';
+import { unitCall, userPowerUrl } from 'base/askUrl';
 
 export default {
 
@@ -33,7 +34,17 @@ export default {
     
   },
 
+  mounted() {
+    //debugger
+    unitCall(this.__powerSuccess, this.__failed, userPowerUrl);
+  },
+
   methods : {
+
+    //获取当前登录用户的权限
+    __powerSuccess(res) {
+      console.log(res);
+    }
     
   }
 

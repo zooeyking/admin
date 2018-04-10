@@ -16,9 +16,9 @@
             <div class="control">
               <div class="select is-fullwidth">
                 <select v-model="newPower['operateType']">
-                  <option value="module" >模块</option>
-                  <option value="function" >功能</option>
-                  <option value="button" >按钮</option>
+                  <option value="module">模块</option>
+                  <option value="function">功能</option>
+                  <option value="button">按钮</option>
                 </select>
               </div>
             </div>
@@ -56,9 +56,9 @@
             <div class="control">
               <div class="select is-fullwidth">
                 <select v-model="newPower['operateType']">
-                  <option value="module" >模块</option>
-                  <option value="function" >功能</option>
-                  <option value="button" >按钮</option>
+                  <option value="module">模块</option>
+                  <option value="function">功能</option>
+                  <option value="button">按钮</option>
                 </select>
               </div>
             </div>
@@ -143,6 +143,7 @@ export default {
     ok () {
       let finalPower = {};
       if(this.modalConfig.addRoot) {
+
         this.newPower.operateIndex = 0;
 
         finalPower = Object.assign({}, this.newPower);
@@ -163,7 +164,6 @@ export default {
     //用户绑定界面搜索
     userSearch(user) {
       let optionType = this.$refs.tabs.optionType;
-      console.log(optionType);
       let typeUser = Object.assign({}, user, { optionType: optionType});
       this.$emit('userSearch', typeUser);
     },
@@ -175,21 +175,6 @@ export default {
   },
 
   computed: {
-    fatherName() {
-      let name = '';
-      let fathers = this.departments;
-      let children = this.currentDepartmet;
-      if(children.parentId == "" || children.parentId === null) {
-        return name;
-      }else {
-        let father = fathers.find((item)=>{
-                      return item.dId === children.parentId;
-                    });
-        console.log(father);
-        name = father.dName;
-      }
-      return name;
-    },
 
     //vuex引入部门数据
     ...mapGetters({
@@ -206,11 +191,17 @@ export default {
     'modalConfig': {
       handler: function(newVal){
         if(newVal.add) {
-          console.log(this.currentPower);
-          this.newPower.parentName = this.currentPower.operateName;
-          this.newPower.parentOperateId = this.currentPower.operateId;
-          this.newPower.sacId = this.currentPower.sacId;
-          this.newPower.operateIndex = this.currentPower.operateIndex + 1;
+          this.newPower = {
+            parentOperateName : this.currentPower.operateName,
+            parentOperateId : this.currentPower.operateId,
+            sacId : this.currentPower.sacId,
+            operateIndex : this.currentPower.operateIndex + 1
+          };
+        } else {
+          this.newPower = {
+            operateIndex : 0,
+            sacId: this.appList != undefined ? this.appList[0]['sacId'] : ''
+          };
         }
       },
       deep:true
@@ -219,7 +210,6 @@ export default {
 
   //系统来源列表数据监听
   appList(val) {
-    console.log(val);
     this.newPower = {
       sacId: val != undefined ? val[0]['sacId'] : ''
     };

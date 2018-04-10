@@ -32,7 +32,7 @@ export default {
   },
 
   mounted() {
-    //console.log( this.user)
+    console.log( this.user.userEnable, this.value);
   },
 
   methods: {

@@ -41,7 +41,7 @@
             <a v-for="item in userRoleInfo" class=" is-outlined userBtn"> <span>{{item.roleName}}</span></a>
           </tab-pane>
           <tab-pane label="部门信息">
-            <a v-for="item in userDeptInfo" class=" is-outlined userBtn"> <span>{{item.d_Name}}</span></a>
+            <a v-for="item in userDeptInfo" class=" is-outlined userBtn"> <span>{{item.d_name}}</span></a>
           </tab-pane>
         </tabs>
       </div>
@@ -67,7 +67,7 @@ export default {
   },
 
   mounted () {
-    //console.log(this.userRoleInfo)
+    console.log(this.userRoleInfo)
   },
 
   watch: {

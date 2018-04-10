@@ -19,7 +19,7 @@
 import UserTable from './user/Table';
 import MyMessage from 'components/common/message/Message';
 import { mapGetters, mapMutations } from 'vuex';
-import { unitCall, userListUrl, userUpdateUrl, userSaveUrl, userRoleUrl, userDepartmentUrl } from 'base/askUrl';
+import { unitCall, userPowerUrl, userListUrl, userUpdateUrl, userSaveUrl, userRoleUrl, userDepartmentUrl } from 'base/askUrl';
 import { authority } from 'base/author';
 
 export default {
@@ -97,14 +97,21 @@ export default {
         let result = data.value.list;
         this.totalNum = data.value.total;
         this.setUserList(result);
+        unitCall(this.__powerSuccess, this.__failed, userPowerUrl, { pageNum : 1});
       }else{
         this.setUserList([]);
       }
     },
 
+    __powerSuccess(res) {
+      console.log(res);
+    },
+
     //失败回调
     __failed(err) {
       this.showMessage = true;
+      //console.log(111);
+      /*
       switch(err) {
         case 'Timeout':
           this.messageType = 1;
@@ -121,7 +128,8 @@ export default {
         case err.code === 404 :
           this.messageType = 5;
           break;
-      }
+        }
+      */
     },
 
     //用户角色信息查询回调
