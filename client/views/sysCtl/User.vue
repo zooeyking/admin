@@ -2,13 +2,15 @@
   <div>
     <user-table 
 
-    @paramsSearch="search" 
+    @paramsSearch="paramsSearch"
+    @pageSearch="pageSearch" 
     @enableUpdate="enableUpdate" 
     @delUser="delUser" 
     @ok="renew"
     @getUserInfo="getUserInfo" 
     :confirmClose="confirmClose" 
     :totalNum="totalNum"
+    :initPage="initPage"
 
     ></user-table>
     <my-message v-if="showMessage" @dispear="dispear" :messageType="messageType"></my-message>
@@ -19,10 +21,14 @@
 import UserTable from './user/Table';
 import MyMessage from 'components/common/message/Message';
 import { mapGetters, mapMutations } from 'vuex';
-import { unitCall, userPowerUrl, userListUrl, userUpdateUrl, userSaveUrl, userRoleUrl, userDepartmentUrl } from 'base/askUrl';
+import { unitCall, userListUrl, userUpdateUrl, userSaveUrl, userRoleUrl, userDepartmentUrl } from 'base/askUrl';
 import { authority } from 'base/author';
+import { Mixin } from 'base/mixin';
 
 export default {
+
+  mixins: [Mixin],
+
   components: {
     UserTable,
     MyMessage
@@ -42,13 +48,23 @@ export default {
   methods: {
 
     //用户查询方法
-    search(args) {
+    paramsSearch(args) {
       if (args.userName || args.userRealName || args.startDate) {
         this.searchParams = args;
       }
       let params = Object.assign({}, this.searchParams, args);
       console.log(params);
-      unitCall(this.__searchSuccess, this.__failed, userListUrl, params);
+      unitCall(this.__paramsSearchSuccess, this.__failed, userListUrl, params);
+    },
+
+    //用户查询方法
+    pageSearch(args) {
+      if (args.userName || args.userRealName || args.startDate) {
+        this.searchParams = args;
+      }
+      let params = Object.assign({}, this.searchParams, args);
+      console.log(params);
+      unitCall(this.__pageSearchSuccess, this.__failed, userListUrl, params);
     },
 
     //删除用户
@@ -88,48 +104,30 @@ export default {
 
     //初始化列表数据
     __initDate() {
-      unitCall(this.__searchSuccess, this.__failed, userListUrl, { pageNum : 1});
+      unitCall(this.__pageSearchSuccess, this.__failed, userListUrl, { pageNum : 1});
     },
 
     //用户查询成功回调
-    __searchSuccess(data) {
+    __pageSearchSuccess(data) {
       if(data.value.list) {
         let result = data.value.list;
-        this.totalNum = data.value.total;
         this.setUserList(result);
-        unitCall(this.__powerSuccess, this.__failed, userPowerUrl, { pageNum : 1});
       }else{
         this.setUserList([]);
       }
+      this.totalNum = data.value.total ? data.value.total : 0;
     },
 
-    __powerSuccess(res) {
-      console.log(res);
-    },
-
-    //失败回调
-    __failed(err) {
-      this.showMessage = true;
-      //console.log(111);
-      /*
-      switch(err) {
-        case 'Timeout':
-          this.messageType = 1;
-          break;
-        case err.code === 402 :
-          this.messageType = 2;
-          break;
-        case err.code === 401 :
-          this.messageType = 3;
-          break;
-        case err.code === 404 :
-          this.messageType = 4;
-          break;
-        case err.code === 404 :
-          this.messageType = 5;
-          break;
-        }
-      */
+    //用户查询成功回调
+    __paramsSearchSuccess(data) {
+      if(data.value.list) {
+        let result = data.value.list;
+        this.setUserList(result);
+      }else{
+        this.setUserList([]);
+      }
+      this.totalNum = data.value.total ? data.value.total : 0;
+      this.initPage = !this.initPage;
     },
 
     //用户角色信息查询回调
@@ -139,6 +137,7 @@ export default {
       this.__getUserPartments();
     },
 
+    //用户部门信息查询
     __getUserPartments() {
       let user = this.currentUser;
       unitCall(this.__userPartmentInfoSuccess, this.__failed, userDepartmentUrl, { userId: user.userId });
@@ -169,7 +168,7 @@ export default {
 
   //权限校验
   created() {
-    authority();
+    //authority();
   },
 
   //挂载后初始化列表数据

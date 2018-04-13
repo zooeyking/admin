@@ -5,11 +5,12 @@
         <article class="tile is-child box">
           <div class="pageHeader">
             <search @paramsSearch="paramsSearch"></search>
-            <button class="button is-primary"  @click="showAdd">添加角色</button>
+            <button v-if="userPermission.role_add" class="button is-primary"  @click="showAdd">添加角色</button>
           </div>
           <table class="table">
             <thead>
               <tr>
+                <th>序号</th>
                 <th>角色名称</th>
                 <th>角色描述</th>
                 <th>系统名称</th>
@@ -19,24 +20,24 @@
             </thead>
             <tbody>
               <tr v-for="(role, index) in roleList">
-                
+                <td>{{ pernum*currentPage+index+1 }}</td>
                 <td>{{role.roleName}}</td>
                 <td>{{role.roleRemark}}</td>
                 <td>{{role.sacName}}</td>
                 <td>{{role.createDate}}</td>
                 <td>
                   <div class="optionWrapper">
-                    <button class="button is-primary is-small"  @click="showCopy(role)">复制角色</button>
-                    <button class="button is-primary is-small"  @click="showPower(role)">绑定权限</button>
-                    <button class="button is-primary is-small"  @click="showUser(role)">绑定用户</button>
-                    <button class="button is-danger is-small" @click="showDel(role)">删除</button>
+                    <button v-if="userPermission.role_copy" class="button is-primary is-small"  @click="showCopy(role)">复制角色</button>
+                    <button v-if="userPermission.role_bind_power" class="button is-primary is-small"  @click="showPower(role)">绑定权限</button>
+                    <button v-if="userPermission.role_bind_user" class="button is-primary is-small"  @click="showUser(role)">绑定用户</button>
+                    <button v-if="userPermission.role_delete" class="button is-danger is-small" @click="showDel(role)">删除</button>
                   </div>
                 </td>
               </tr>
             </tbody>
           </table>
 
-          <pagination :allItems="totalNum" @changeIndex="getIndex" :pernum="20"></pagination>
+          <pagination ref="pages" :allItems="totalNum" @changeIndex="getIndex" :pernum="pernum"></pagination>
 
           <div class="loadingWrapper" v-show="isShow">
             <loading></loading>
@@ -56,10 +57,12 @@ import Search from './Search';
 import Confirm from './Modal';
 import { mapGetters, mapMutations } from 'vuex';
 import { CommonParams, options, powerListUrl, roleUserUrl,  roleBindUrl, roleUnbindUrl } from 'base/askUrl';
-
-const PERNUM = 10;
+import { ButtonMixin } from 'base/mixin'
 
 export default {
+
+  mixins: [ButtonMixin],
+
   components: {
     Pagination,
     Search,
@@ -86,7 +89,6 @@ export default {
       confirmShow: false,
       currentIndex: 0,
       modalConfig: {},
-      currentRoles: []
     }
   },
 
@@ -95,16 +97,6 @@ export default {
   },
 
   methods: {
-
-    //分页当前页码
-    getIndex(num) {
-      this.$emit('paramsSearch', {pageNum: num});
-    },
-
-     //角色列表搜索
-    paramsSearch(params) {
-      this.$emit('paramsSearch', params);
-    },
 
     //复制角色操作面板设置
     showCopy(role) {
@@ -168,11 +160,6 @@ export default {
       this.$emit('getPowers', role);
     },
 
-    //发出获得角色下绑定的用户的请求
-    getUsers(role) {
-      this.$emit('getUsers', role);
-    },
-
     //操作面板关闭
     closeDetail() {
       this.confirmShow = false;
@@ -202,27 +189,6 @@ export default {
     //操作面板隐藏
     confirmClose() {
       this.confirmShow = false;
-    },
-
-    //角色列表数据监听
-    roleList(newVal) {
-      let arr = [];
-      if(newVal == undefined) {
-        return;
-      }
-      if(newVal.length <= PERNUM) {
-        arr = newVal;
-      }else {
-        let cut = this.currentIndex * PERNUM;
-        for(let i=0; i < PERNUM; i++) {
-          if(newVal[i + cut]) {
-            arr.push(newVal[i + cut]);
-          }else {
-            break;
-          }
-        }
-      }
-      this.currentRoles = arr;
     },
 
     //用户绑定面板/用户搜索结果监听

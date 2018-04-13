@@ -9,6 +9,7 @@
           <table class="table">
             <thead>
               <tr>
+                <th>序号</th>
                 <th>接口名称</th>
                 <th>系统名称</th>
                 <th>请求次数</th>
@@ -16,13 +17,14 @@
             </thead>
             <tbody>
               <tr v-for="(request, index) in requests">
+                <td>{{ pernum*currentPage+index+1 }}</td>
                 <td>{{request.classMethod}}</td>
                 <td>{{request.sacName}}</td>
                 <td>{{request.countNum}}</td>
               </tr>
             </tbody>
           </table>
-          <pagination :allItems="totalNum" @changeIndex="getIndex" :pernum="20"></pagination>
+          <pagination ref="pages" :allItems="totalNum" @changeIndex="getIndex" :pernum="pernum"></pagination>
           
           <div class="loadingWrapper" v-show="isShow">
             <loading></loading>
@@ -40,10 +42,12 @@ import Pagination from 'components/common/pagination/Pagination';
 import Loading from 'components/common/loading/Loading';
 import Search from './Search';
 import { mapGetters, mapMutations } from 'vuex';
-
-const PERNUM = 10;
+import { ButtonMixin } from 'base/mixin';
 
 export default {
+
+  mixins: [ButtonMixin],
+  
   components: {
     Pagination,
     Search,
@@ -72,16 +76,6 @@ export default {
 
   methods: {
     
-    //分页当前页码
-    getIndex(num) {
-      this.$emit('paramsSearch', {pageNum: num});
-    },
-    
-    //搜索事件
-    paramsSearch(params) {
-      this.$emit('paramsSearch', params);
-    }
-    
   },
   watch: {
 
@@ -92,25 +86,6 @@ export default {
   },
 
   computed: {
-    //当前页显示数据
-    currentRequests() {
-      let arr = [];
-      let listData = this.requests;
-      if(listData.length <= PERNUM) {
-        arr = listData;
-        return arr;
-      }else {
-        let cut = this.currentIndex * PERNUM;
-        for(let i=0; i < PERNUM; i++) {
-          if(listData[i + cut]) {
-            arr.push(listData[i + cut]);
-          }else {
-            break;
-          }
-        }
-        return arr;
-      }
-    },
 
     //vuex中引入日志所需数据
     ...mapGetters({

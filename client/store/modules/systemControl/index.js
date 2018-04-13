@@ -9,6 +9,9 @@ const state = {
     //提示信息类型
     infoType: 1,
 
+    //当前登录用户拥有的权限
+    permission: [],
+
     //用户管理/用户列表数据
     userList: [],
 
@@ -75,7 +78,12 @@ const getters = {
   //提示信息类型
   messageType (state) {
     return state.systems.infoType;
-  }, 
+  },
+
+  //当前登录用户拥有的权限
+  userPermission (state) {
+    return state.systems.permission;
+  },
 
   //用户管理数据列表
   userData (state) {
@@ -171,6 +179,11 @@ const mutations = {
   //设置提示信息类型
   [types.SET_SYS_MESSAGETYPE] (state, type) {
     state.systems.infoType = type;
+  },
+
+  //设置当前登录用户拥有的权限
+  [types.SET_SYS_PERMISSION] (state, list) {
+    state.systems.permission = list;
   },
 
   //设置用户管理数据列表

@@ -3,12 +3,14 @@
 
     <my-table
 
-    @paramsSearch="search"
+    @paramsSearch="paramsSearch"
+    @pageSearch="pageSearch"
     @userSearch="userSearch"
     @ok="ok"
     :confirmClose="confirmClose"
     :userSearchResult="userSearchResult" 
     :totalNum="totalNum"
+    :initPage="initPage"
 
     ></my-table>
 
@@ -18,6 +20,7 @@
 
 <script>
 import { authority } from 'base/author';
+import { Mixin } from 'base/mixin';
 import { unitCall, unbindedPartmentUsersUrl, partmentListUrl, partmentSaveUrl, partmentUserUrl, partmentBindUrl, partmentUnbindUrl, partmentDelUrl } from 'base/askUrl';
 import { mapGetters, mapMutations } from 'vuex';
 import MyMessage from 'components/common/message/Message';
@@ -26,6 +29,9 @@ import Confirm from './department/Modal';
 import { __treesData } from 'tools/js/util';
 
 export default {
+
+  mixins: [Mixin],
+
   components: {
     Confirm,
     MyTable,
@@ -59,8 +65,8 @@ export default {
       unitCall(this.__searchSuccess, this.__failed, url, params);
     },
 
-    //页面部门列表数据搜索
-    search(args) {
+    //页面部门列表数据页码搜索
+    pageSearch(args) {
 
       if (args.dName) {
         this.searchParams = args;
@@ -68,6 +74,17 @@ export default {
       let params = Object.assign({}, this.searchParams, args);
 
       unitCall(this.__pageDataSuccess, this.__failed, partmentListUrl, params);
+    },
+
+    //页面部门列表数据搜索
+    paramsSearch(args) {
+
+      if (args.dName) {
+        this.searchParams = args;
+      }
+      let params = Object.assign({}, this.searchParams, args);
+
+      unitCall(this.__paramsSearchSuccess, this.__failed, partmentListUrl, params);
     },
 
     //关闭编辑面板
@@ -136,18 +153,23 @@ export default {
     __pageDataSuccess(data) {
       if(data.value.list) {
         let result = data.value.list;
-        this.totalNum = data.value.total;
         this.setDepartments(result);
       }else{
         this.setDepartments([]);
       }
+      this.totalNum = data.value.total ? data.value.total : 0;
     },
 
-    //失败回调
-    __failed(err) {
-      console.log(err);
-      this.showMessage = true;
-      this.messageType = 1;
+    //初始化数据成功回调
+    __paramsSearchSuccess(data) {
+      if(data.value.list) {
+        let result = data.value.list;
+        this.setDepartments(result);
+      }else{
+        this.setDepartments([]);
+      }
+      this.totalNum = data.value.total ? data.value.total : 0;
+      this.initPage = !this.initPage;
     },
 
     //查询用户成功回调
@@ -174,7 +196,7 @@ export default {
   },
 
   created() {
-    authority()
+    //authority()
   },
 
   mounted() {

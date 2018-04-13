@@ -36,6 +36,7 @@ const state = {
     //uifeatures,
     //components,
     sysCtl
+
   ]
 }
 
@@ -48,6 +49,12 @@ const mutations = {
     } else if (menuItem.item && 'expanded' in menuItem.item.meta) {
       menuItem.item.meta.expanded = menuItem.expanded
     }
+  },
+
+  [types.SET_SYS_MENU] (state, list) {
+    //console.log(list);
+    //state.items.children = list;
+    state.items = list;
   }
 }
 

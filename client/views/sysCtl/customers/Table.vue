@@ -9,18 +9,20 @@
           <table class="table">
             <thead>
               <tr>
+                <th>序号</th>
                 <th>系统名称</th>
                 <th>用户数量</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(customer, index) in customers">
+                <td>{{ pernum*currentPage+index+1 }}</td>
                 <td>{{customer.sacName}}</td>
                 <td>{{customer.count}}</td>
               </tr>
             </tbody>
           </table>
-          <pagination :allItems="totalNum" @changeIndex="getIndex" :pernum="20"></pagination>
+          <pagination ref="pages" :allItems="totalNum" @changeIndex="getIndex" :pernum="pernum"></pagination>
           
           <div class="loadingWrapper" v-show="isShow">
             <loading></loading>
@@ -37,10 +39,12 @@
 import Pagination from 'components/common/pagination/Pagination';
 import Loading from 'components/common/loading/Loading';
 import { mapGetters } from 'vuex';
-
-const PERNUM = 10;
+import { ButtonMixin } from 'base/mixin';
 
 export default {
+
+  mixins: [ButtonMixin],
+  
   components: {
     Pagination,
     Loading
@@ -66,12 +70,7 @@ export default {
   },
 
   methods: {
-    //分页当前页码
-    getIndex(num) {
-      this.$emit('paramsSearch', {pageNum: num});
-      //this.currentIndex = num - 1;
-      //console,log(this.currentIndex);
-    },
+    
   },
 
   watch: {
@@ -79,25 +78,6 @@ export default {
   },
 
   computed: {
-    //当前页显示数据
-    currentCustomers() {
-      let arr = [];
-      let listData = this.customers;
-      if(listData.length <= PERNUM) {
-        arr = listData;
-        return arr;
-      }else {
-        let cut = this.currentIndex * PERNUM;
-        for(let i=0; i < PERNUM; i++) {
-          if(listData[i + cut]) {
-            arr.push(listData[i + cut]);
-          }else {
-            break;
-          }
-        }
-        return arr;
-      }
-    },
 
     //vuex中引入日志所需数据
     ...mapGetters({customers : 'customerData'})

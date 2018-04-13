@@ -5,12 +5,13 @@
         <article class="tile is-child box">
           <div class="pageHeader">
             <search @paramsSearch="paramsSearch"></search>
-            <button class="button is-primary"  @click="showAddRoot">添加根权限</button>
+            <button v-if="userPermission.power_add" class="button is-primary"  @click="showAddRoot">添加根权限</button>
           </div>
 
           <table class="table">
             <thead>
               <tr>
+                <th>序号</th>
                 <th>权限名称</th>
                 <th>继承上级</th>
                 <th>类别</th>
@@ -20,6 +21,7 @@
             </thead>
             <tbody>
               <tr v-for="(power, index) in powers">
+                <td>{{ pernum*currentPage+index+1 }}</td>
                 <td>{{power.operateName}}</td>
                 <td>{{power.parentOperateName || '' }}</td>
                 <td>{{power.operateType}}</td>
@@ -27,15 +29,15 @@
 
                 <td>
                   <div class="optionWrapper">
-                    <button class="button is-warning is-small"  @click="showAdd(power)">添加子权限</button>
-                    <button class="button is-danger is-small" @click="showDel(power)">删除</button>
+                    <button v-if="userPermission.power_add" class="button is-warning is-small"  @click="showAdd(power)">添加子权限</button>
+                    <button v-if="userPermission.power_delete" v-show="power.childCount == 0" class="button is-danger is-small" @click="showDel(power)">删除</button>
                   </div>
                 </td>
               </tr>
             </tbody>
           </table>
           
-          <pagination :allItems="totalNum" @changeIndex="getIndex" :pernum="20"></pagination>
+          <pagination ref="pages" :allItems="totalNum" @changeIndex="getIndex" :pernum="pernum"></pagination>
           
           <div class="loadingWrapper" v-show="isShow">
             <loading></loading>
@@ -55,11 +57,15 @@ import Loading from 'components/common/loading/Loading';
 import Confirm from './Modal';
 import Search from './Search';
 import { mapGetters, mapMutations } from 'vuex';
+import { ButtonMixin } from 'base/mixin';
 
 //每页显示的数量
 const PERNUM = 20;
 
 export default {
+
+  mixins: [ButtonMixin],
+
   components: {
     Pagination,
     Loading,
@@ -99,16 +105,6 @@ export default {
   },
 
   methods: {
-
-    //分页当前页码
-    getIndex(num) {
-      this.$emit('paramsSearch', {pageNum: num});
-    },
-
-    //搜索操作
-    paramsSearch(params) {
-      this.$emit('paramsSearch', params);
-    },
 
     //添加跟权限
     showAddRoot() {
@@ -230,6 +226,6 @@ export default {
 }
 .optionWrapper {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
 }
 </style>

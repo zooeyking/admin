@@ -1,6 +1,6 @@
 <template>
   <div>
-    <logs-table @paramsSearch="search" :totalNum="totalNum"></logs-table>
+    <logs-table @paramsSearch="paramsSearch" @pageSearch="pageSearch" :totalNum="totalNum" :initPage="initPage"></logs-table>
     <my-message v-if="showMessage" :messageType="messageType"></my-message>
   </div>
 </template>
@@ -10,9 +10,14 @@ import LogsTable from './logs/Table';
 import MyMessage from 'components/common/message/Message';
 import { mapGetters, mapMutations } from 'vuex';
 import { authority } from 'base/author';
+import { Mixin } from 'base/mixin';
 import { unitCall, appSrcListUrl, logListUrl } from 'base/askUrl';
 
 export default {
+
+  mixins: [Mixin],
+
+
   components: {
     LogsTable,
     MyMessage
@@ -29,24 +34,46 @@ export default {
   methods: {
 
     //日志搜索
-    search(args) {
+    paramsSearch(args) {
       if (args.userName || args.sacId || args.startDate) {
         this.searchParams = args;
       }
       let params = Object.assign({}, this.searchParams, args);
       
-      unitCall(this.__searchSuccess, this.__failed, logListUrl, params);
+      unitCall(this.__paramsSearchSuccess, this.__failed, logListUrl, params);
+    },
+
+    //根据页码搜索
+    pageSearch(args) {
+      if (args.userName || args.sacId || args.startDate) {
+        this.searchParams = args;
+      }
+      let params = Object.assign({}, this.searchParams, args);
+      
+      unitCall(this.__pageSearchSuccess, this.__failed, logListUrl, params);
     },
 
     //搜索成功回调
-    __searchSuccess(data) {
+    __pageSearchSuccess(data) {
       if(data.value.list) {
         let result = data.value.list;
-        this.totalNum = data.value.total;
         this.setLogs(result);
       }else{
         this.setLogs([]);
       }
+      this.totalNum = data.value.total ? data.value.total : 0;
+    },
+
+    //搜索成功回调
+    __paramsSearchSuccess(data) {
+      if(data.value.list) {
+        let result = data.value.list;
+        this.setLogs(result);
+      }else{
+        this.setLogs([]);
+      }
+      this.totalNum = data.value.total ? data.value.total : 0;
+      this.initPage = !this.initPage;
     },
 
     //初始化列表成功回调
@@ -65,12 +92,6 @@ export default {
     __initAppListSuccess(data) {
       let result = data.value;
       this.setAppList(result);
-    },
-
-    //失败回调
-    __failed(err) {
-      this.showMessage = true;
-      this.messageType = 1;
     },
 
     //初始化数据
@@ -95,12 +116,13 @@ export default {
 
   created() {
     //权限验证
-    authority();
+    //authority();
   },
   
   mounted() {
     //初始化页面数据
     this.__initDate();
+    console.log(this.initPage);
   }
 }
 </script>

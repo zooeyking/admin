@@ -5,11 +5,12 @@
         <article class="tile is-child box">
           <div class="pageHeader">
             <search @paramsSearch="paramsSearch"></search>
-            <button class="button is-primary"  @click="showAdd">添加用户</button>
+            <button v-if="userPermission.user_add" class="button is-primary"  @click="showAdd">添加用户</button>
           </div>
           <table class="table">
             <thead>
               <tr>
+                <th>序号</th>
                 <th>用户名</th>
                 <th>姓名</th>
                 <th>性别</th>
@@ -19,6 +20,7 @@
             </thead>
             <tbody>
               <tr v-for="(user, index) in userList">
+                <td>{{ pernum*currentPage+index+1 }}</td>
                 <td>{{user.userName}}</td>
                 <td>{{user.userRealName}}</td>
                 <td>{{user.userGenderString}}</td>
@@ -26,16 +28,16 @@
 
                 <td>
                   <div class="optionWrapper">
-                    <button class="button is-primary is-small"  @click="showDetail(user)">详情</button>
-                    <button class="button is-warning is-small"  @click="showModify(user)">修改</button>
-                    <button class="button is-danger is-small" @click="showDel(user)">删除</button>
-                    <my-switch :user="user" @toggleChange="enableUpdate()"></my-switch>
+                    <button v-if="userPermission.user_detail" class="button is-primary is-small"  @click="showDetail(user)">详情</button>
+                    <button v-if="userPermission.user_modify" class="button is-warning is-small"  @click="showModify(user)">修改</button>
+                    <button v-if="userPermission.user_delete" class="button is-danger is-small" @click="showDel(user)">删除</button>
+                    <my-switch v-if="userPermission.user_off" :user="user" @toggleChange="enableUpdate()"></my-switch>
                   </div>
                 </td>
               </tr>
             </tbody>
           </table>
-          <pagination :allItems="totalNum" @changeIndex="getIndex" :pernum="20"></pagination>
+          <pagination ref="pages" :allItems="totalNum" @changeIndex="getIndex" :pernum="pernum"></pagination>
           
           <div class="loadingWrapper" v-show="isShow">
             <loading></loading>
@@ -55,11 +57,12 @@ import MySwitch from './Switch';
 import Search from './Search';
 import Confirm from './Modal';
 import { mapGetters, mapMutations } from 'vuex';
-
-//每页显示的数量
-const PERNUM = 20;
+import { ButtonMixin } from 'base/mixin'
 
 export default {
+
+  mixins: [ButtonMixin],
+
   components: {
     Pagination,
     Search,
@@ -92,21 +95,10 @@ export default {
   },
 
   mounted(){
-    
+    //console.log(this.userPermission);
   },
 
   methods: {
-
-    //分页当前页码
-    getIndex(num) {
-      this.$emit('paramsSearch', {pageNum: num});
-
-    },
-
-    //搜索操作
-    paramsSearch(params) {
-      this.$emit('paramsSearch', params);
-    },
 
     //是否启用操作
     enableUpdate(user) {
@@ -191,25 +183,6 @@ export default {
   },
 
   computed: {
-    //当前页面显示数据
-    currentUsers() {
-      let arr = [];
-      let listData = this.userList;
-      if(listData.length <= PERNUM) {
-        arr = listData;
-        return arr;
-      }else {
-        let cut = this.currentIndex * PERNUM;
-        for(let i=0; i < PERNUM; i++) {
-          if(listData[i + cut]) {
-            arr.push(listData[i + cut]);
-          }else {
-            break;
-          }
-        }
-        return arr;
-      }
-    },
 
     //vuex引入用户数据
     ...mapGetters({

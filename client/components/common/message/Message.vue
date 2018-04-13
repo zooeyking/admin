@@ -49,19 +49,49 @@ export default {
       })
     }else if(this.messageType === 2) {
       openMessage({
-        message: '-----------重复添加/操作失败----------',
+        message: '-----------操作失败----------',
         type: 'danger',
         duration: 2000
       })
     }else if(this.messageType === 3 ) {
       openMessage({
+        message: '-----------认证失败----------',
+        type: 'danger',
+        duration: 2000
+      })
+    }else if(this.messageType === 4 ) {
+      openMessage({
+        message: '-----------404，请求页面不存在----------',
+        type: 'danger',
+        duration: 2000
+      })
+    }else if(this.messageType === 5 ) {
+      openMessage({
+        message: '-----------请求的方式错误----------',
+        type: 'danger',
+        duration: 2000
+      })
+    }else if(this.messageType === 6 ) {
+      openMessage({
         message: '-----------操作失败----------',
         type: 'danger',
         duration: 2000
       })
-    }else if(this.messageType === 4) {
+    }else if(this.messageType === 7 ) {
       openMessage({
-        message: '网络异常，请求失败，请稍后重试',
+        message: '-----------系统异常，请稍后重试!----------',
+        type: 'danger',
+        duration: 2000
+      })
+    }else if(this.messageType === 8) {
+      openMessage({
+        message: '非法用户名或密码',
+        type: 'danger',
+        duration: 2000
+      })
+    }else if(this.messageType === 9) {
+      openMessage({
+        message: '链接已断开，请退出后，重新登录',
         type: 'danger',
         duration: 2000
       })

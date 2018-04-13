@@ -1,6 +1,6 @@
 <template>
   <div>
-    <customers-table :totalNum="totalNum"></customers-table>
+    <customers-table :totalNum="totalNum" :initPage="initPage"></customers-table>
     <my-message v-if="showMessage" :messageType="messageType"></my-message>
   </div>
 </template>
@@ -10,9 +10,13 @@ import CustomersTable from './customers/Table';
 import MyMessage from 'components/common/message/Message';
 import { mapGetters, mapMutations } from 'vuex';
 import { authority } from 'base/author';
+import { Mixin } from 'base/mixin';
 import { unitCall, customersUrl } from 'base/askUrl';
 
 export default {
+
+  mixins: [Mixin],
+
   components: {
     CustomersTable,
     MyMessage
@@ -31,15 +35,13 @@ export default {
 
     //初始化列表成功回调
     __initDateSuccess(data) {
-      let result = data.value.list;
-      this.totalNum = data.value.total;
-      this.setCustomers(result);
-    },
-
-    //失败回调
-    __failed(err) {
-      this.showMessage = true;
-      this.messageType = 1;
+      if(data.value.list) {
+        let result = data.value.list;
+        this.setCustomers(result);
+      }else{
+        this.setCustomers([]);
+      }
+      this.totalNum = data.value.total ? data.value.total : 0;
     },
 
     //初始化数据
@@ -57,7 +59,7 @@ export default {
 
   created() {
     //权限验证
-    authority();
+    //authority();
   },
   
   mounted() {

@@ -5,12 +5,13 @@
         <article class="tile is-child box">
           <div class="pageHeader">
             <search @paramsSearch="paramsSearch"></search>
-            <button class="button is-primary"  @click="showAddRoot">添加跟部门</button>
+            <button v-if="userPermission.department_add" class="button is-primary"  @click="showAddRoot">添加跟部门</button>
           </div>
 
           <table class="table">
             <thead>
               <tr>
+                <th>序号</th>
                 <th>部门名称</th>
                 <th>上级部门</th>
                 <th>备注</th>
@@ -20,6 +21,7 @@
             </thead>
             <tbody>
               <tr v-for="(department, index) in departments">
+                <td>{{ pernum*currentPage+index+1 }}</td>
                 <td>{{department.dName}}</td>
                 <td>{{department.parentName || '' }}</td>
                 <td>{{department.dRemark}}</td>
@@ -27,15 +29,15 @@
 
                 <td>
                   <div class="optionWrapper">
-                    <button v-show="department.childCount === 0" class="button is-primary is-small"  @click="showDetail(department)">管理职员</button>
-                    <button v-show="department.userCount === 0" class="button is-warning is-small"  @click="showAdd(department)">添加子部门</button>
-                    <button v-show="department.childCount === 0 && department.userCount === 0" class="button is-danger is-small" @click="showDel(department)">删除</button>
+                    <button v-if="userPermission.department_bind_user" v-show="department.childCount === 0" class="button is-primary is-small"  @click="showDetail(department)">管理职员</button>
+                    <button v-if="userPermission.department_add" v-show="department.userCount === 0" class="button is-warning is-small"  @click="showAdd(department)">添加子部门</button>
+                    <button v-if="userPermission.department_delete" v-show="department.childCount === 0 && department.userCount === 0" class="button is-danger is-small" @click="showDel(department)">删除</button>
                   </div>
                 </td>
               </tr>
             </tbody>
           </table>
-          <pagination :allItems="totalNum" @changeIndex="getIndex" :pernum="20"></pagination>
+          <pagination ref="pages" :allItems="totalNum" @changeIndex="getIndex" :pernum="pernum"></pagination>
           
           <div class="loadingWrapper" v-show="isShow">
             <loading></loading>
@@ -55,8 +57,12 @@ import Loading from 'components/common/loading/Loading';
 import Confirm from './Modal';
 import Search from './Search';
 import { mapGetters, mapMutations } from 'vuex';
+import { ButtonMixin } from 'base/mixin';
 
 export default {
+
+  mixins: [ButtonMixin],
+
   components: {
     Pagination,
     Loading,
@@ -94,16 +100,6 @@ export default {
 
   methods: {
 
-    //分页当前页码
-    getIndex(num) {
-      this.$emit('paramsSearch', {pageNum: num});
-    },
-
-    //搜索操作
-    paramsSearch(params) {
-      this.$emit('paramsSearch', params);
-    },
-
     //员工管理详情
     showDetail(partment) {
       this.modalConfig = {
@@ -134,7 +130,6 @@ export default {
         title: '添加子部门',
         footerShow: true
       };
-      console.log(partment);
       this.setCurrentDepartment(partment);
       this.confirmShow = true;
     },
@@ -185,25 +180,6 @@ export default {
   },
 
   computed: {
-    //当前页面显示数据
-    currentUsers() {
-      let arr = [];
-      let listData = this.userList;
-      if(listData.length <= PERNUM) {
-        arr = listData;
-        return arr;
-      }else {
-        let cut = this.currentIndex * PERNUM;
-        for(let i=0; i < PERNUM; i++) {
-          if(listData[i + cut]) {
-            arr.push(listData[i + cut]);
-          }else {
-            break;
-          }
-        }
-        return arr;
-      }
-    },
 
     //vuex引入用户数据
     ...mapGetters({

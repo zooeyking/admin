@@ -5,12 +5,13 @@
         <article class="tile is-child box">
           <div class="pageHeader">
             <search @paramsSearch="paramsSearch"></search>
-            <button class="button is-primary"  @click="showAdd">添加系统</button>
+            <button v-if="userPermission.system_add" permitno='addsystem' class="button is-primary"  @click="showAdd">添加系统</button>
           </div>
 
           <table class="table">
             <thead>
               <tr>
+                <th>序号</th>
                 <th>系统名称</th>
                 <th>系统Key</th>
                 <th>有效时间</th>
@@ -19,6 +20,7 @@
             </thead>
             <tbody>
               <tr v-for="(system, index) in systems">
+                <td>{{ pernum*currentPage+index+1 }}</td>
                 <td>{{system.sacName}}</td>
                 <td>{{system.sacKey}}</td>
                 <td>{{system.sacLnvalidTime}}</td>
@@ -27,7 +29,7 @@
             </tbody>
           </table>
 
-          <pagination :allItems = "totalNum" @changeIndex="getIndex" :pernum="20"></pagination>
+          <pagination ref="pages" :allItems = "totalNum" @changeIndex="getIndex" :pernum="pernum"></pagination>
 
           <confirm :visible="confirmShow" @close="closeDetail" :modalConfig="modalConfig" @ok="ok" ></confirm>
           
@@ -42,13 +44,17 @@
 </template>
 
 <script>
-import Pagination from 'components/common/pagination/Pagination'
-import Loading from 'components/common/loading/Loading'
+import Pagination from 'components/common/pagination/Pagination';
+import Loading from 'components/common/loading/Loading';
 import Search from './Search';
 import Confirm from './Modal';
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex';
+import { ButtonMixin } from 'base/mixin';
 
 export default {
+
+  mixins: [ButtonMixin],
+
   components: {
     Pagination,
     Loading,
@@ -81,20 +87,10 @@ export default {
   },
 
   mounted(){
-
+    
   },
 
   methods: {
-    
-    //分页当前页码
-    getIndex(num) {
-      this.$emit('paramsSearch', {pageNum: num});
-    },
-
-    //搜索操作
-    paramsSearch(params) {
-      this.$emit('paramsSearch', params);
-    },
 
     //添加系统
     showAdd() {

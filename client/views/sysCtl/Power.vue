@@ -2,11 +2,12 @@
   <div>
     <my-table
 
-    @pageSearch="search"
-    @paramsSearch="search"
+    @pageSearch="pageSearch"
+    @paramsSearch="paramsSearch"
     @ok="ok"
     :confirmClose="confirmClose"
     :totalNum="totalNum"
+    :initPage="initPage"
 
     ></my-table>
 
@@ -16,6 +17,7 @@
 
 <script>
 import { authority } from 'base/author';
+import { Mixin } from 'base/mixin';
 import { unitCall, appSrcListUrl, operateAddUrl, operateSearchUrl, operateDelUrl } from 'base/askUrl';
 import { mapGetters, mapMutations } from 'vuex';
 import MyMessage from 'components/common/message/Message';
@@ -23,6 +25,9 @@ import MyTable from './power/Table';
 import Confirm from './power/Modal';
 
 export default {
+
+  mixins: [Mixin],
+
   components: {
     Confirm,
     MyTable,
@@ -44,14 +49,25 @@ export default {
   methods: {
 
     //页面部门列表数据搜索
-    search(args) {
+    paramsSearch(args) {
 
       if (args.sacId) {
         this.searchParams = args;
       }
       let params = Object.assign({}, this.searchParams, args);
       
-      unitCall(this.__searchSuccess, this.__failed, operateSearchUrl, params);
+      unitCall(this.__paramsSearchSuccess, this.__failed, operateSearchUrl, params);
+    },
+
+
+    pageSearch(args) {
+
+      if (args.sacId) {
+        this.searchParams = args;
+      }
+      let params = Object.assign({}, this.searchParams, args);
+      
+      unitCall(this.__pageSearchSuccess, this.__failed, operateSearchUrl, params);
     },
 
     //关闭编辑面板
@@ -103,25 +119,30 @@ export default {
       this.showMessage = true;
       this.messageType = 0;
       this.confirmClose = !this.confirmClose;
-      this.search(searchParams);
+      this.paramsSearch(searchParams);
     },
 
     //初始化数据成功回调
-    __searchSuccess(data) {
+    __paramsSearchSuccess(data) {
       if(data.value.list) {
         let result = data.value.list;
-        this.totalNum = data.value.total;
         this.setPowers(result);
       }else{
         this.setPowers([]);
       }
+      this.totalNum = data.value.total ? data.value.total : 0;
+      this.initPage = !this.initPage;
     },
 
-    //失败回调
-    __failed(err) {
-      console.log(err);
-      this.showMessage = true;
-      this.messageType = 1;
+    //初始化数据成功回调
+    __pageSearchSuccess(data) {
+      if(data.value.list) {
+        let result = data.value.list;
+        this.setPowers(result);
+      }else{
+        this.setPowers([]);
+      }
+      this.totalNum = data.value.total ? data.value.total : 0;
     },
     
     //vuex引入设置部门方法
@@ -133,11 +154,12 @@ export default {
   },
 
   created() {
-    authority();
+    //authority();
   },
 
   mounted() {
     this.__initAppList();
+    this.setPowers([]);
   },
 
   //vuex引入部门数据

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <system-table  @addSystem="addSystem" @paramsSearch="search" :totalNum="totalNum" :confirmClose="confirmClose"></system-table>
+    <system-table  @addSystem="addSystem" @paramsSearch="paramsSearch" @pageSearch="pageSearch" :totalNum="totalNum" :confirmClose="confirmClose" :initPage="initPage"></system-table>
     <my-message v-if="showMessage" :messageType="messageType"></my-message>
   </div>
 </template>
@@ -11,8 +11,12 @@ import MyMessage from 'components/common/message/Message';
 import { mapGetters, mapMutations } from 'vuex';
 import { unitCall, systemListUrl, systemSaveUrl } from 'base/askUrl';
 import { authority } from 'base/author';
+import { Mixin } from 'base/mixin';
 
 export default {
+
+  mixins: [Mixin],
+
   components: {
     SystemTable,
     MyMessage
@@ -36,12 +40,21 @@ export default {
     },
 
     //页面系统列表数据搜索
-    search(args) {
+    pageSearch(args) {
       if (args.sacName || args.startDate) {
         this.searchParams = args;
       }
       let params = Object.assign({}, this.searchParams, args);
-      unitCall(this.__searchSuccess, this.__failed, systemListUrl, params);
+      unitCall(this.__pageSearchSuccess, this.__failed, systemListUrl, params);
+    },
+
+    //页面系统列表数据搜索
+    paramsSearch(args) {
+      if (args.sacName || args.startDate) {
+        this.searchParams = args;
+      }
+      let params = Object.assign({}, this.searchParams, args);
+      unitCall(this.__paramsSearchSuccess, this.__failed, systemListUrl, params);
     },
 
     //添加成功回调
@@ -53,26 +66,31 @@ export default {
     },
 
     //初始化数据成功回调
-    __searchSuccess(data) {
+    __pageSearchSuccess(data) {
       if(data.value.list) {
         let result = data.value.list;
-        this.totalNum = data.value.total;
         this.setSystems(result);
       }else{
         this.setSystems([]);
       }
+      this.totalNum = data.value.total ? data.value.total : 0;
     },
 
-    //失败回调
-    __failed(err) {
-      console.log(err);
-      this.showMessage = true;
-      this.messageType = 1;
+    //初始化数据成功回调
+    __paramsSearchSuccess(data) {
+      if(data.value.list) {
+        let result = data.value.list;
+        this.setSystems(result);
+      }else{
+        this.setSystems([]);
+      }
+      this.totalNum = data.value.total ? data.value.total : 0;
+      this.initPage = !this.initPage;
     },
 
     //初始化系统数据
     __initDate() {
-      unitCall(this.__searchSuccess, this.__failed, systemListUrl, { pageNum : 1});
+      unitCall(this.__pageSearchSuccess, this.__failed, systemListUrl, { pageNum : 1});
     },
 
     //vuex中引入系统数据设置方法
@@ -82,7 +100,7 @@ export default {
   },
 
   created() {
-    authority();
+   // authority();
   },
 
   mounted() {

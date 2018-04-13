@@ -50,56 +50,13 @@ const unitCall = function(_callBackSuccess, _callBackErr, _url, _params={}) {
         if(res.status == true) {
           	_callBackSuccess(res);
         }else{
-        	/*
-        	console.log('参数错误！');
-        	console.log(res);
-        	switch(res.code) {
-		        case 'Timeout':
-		          obj.messageType = 1;
-		          break;
-		        case 402 :
-		          console.log(233);
-		          obj.messageShow = true;
-		          obj.messageType = 2;
-		          break;
-		        case 401 :
-		          obj.messageType = 3;
-		          break;
-		        case 404 :
-		          obj.messageType = 4;
-		          break;
-		        case 404 :
-		          obj.messageType = 5;
-		          break;
-		      }
-		    */
           	_callBackErr(res);
           	//window.location.href = 'http://192.168.1.80:8092/sso_login/login?serviceUrl=http://192.168.1.138:8080&ssoAppKey=46b70e45ee2d40cbb30431f89b032247';
         }
         
     }).catch((err)=>{
-    	/*
-    	console.log(err);
-    	switch(err) {
-	        case 'Timeout':
-	          this.messageType = 1;
-	          break;
-	        case err.code === 402 :
-	          this.messageType = 2;
-	          break;
-	        case err.code === 401 :
-	          this.messageType = 3;
-	          break;
-	        case err.code === 404 :
-	          this.messageType = 4;
-	          break;
-	        case err.code === 404 :
-	          this.messageType = 5;
-	          break;
-	      }
-	    */
     	_callBackErr(err);
-    	//window.location.href = 'http://192.168.1.80:8092/sso-login/login?serviceUrl=http://192.168.1.138:8080&ssoAppKey=46b70e45ee2d40cbb30431f89b032247';
+    	window.location.href = 'http://192.168.1.80:8092/sso-login/login?serviceUrl=http://192.168.1.138:8080&ssoAppKey=46b70e45ee2d40cbb30431f89b032247';
     })
 };
 

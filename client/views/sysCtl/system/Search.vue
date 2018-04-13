@@ -2,7 +2,7 @@
   <div class="search">
     <ul class="content">
       <li class="item text">
-        <input class="input is-primary" v-model="params.sacName" @keyup.enter="search" placeholder="系统名称"/>
+        <input class="input is-primary" v-model="params.sacLikeName" @keyup.enter="search" placeholder="系统名称"/>
       </li>
 
       <li class="item dateBox">

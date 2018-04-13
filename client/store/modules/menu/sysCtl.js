@@ -2,6 +2,7 @@ import lazyLoading from './lazyLoading'
 
 
 export default {
+
   name: '系统管理',
   meta: {
     icon: 'fa-database',
@@ -9,6 +10,7 @@ export default {
   },
 
   children: [
+    /*
     {
       name: '用户管理',
       path: '/sysCtl/user',
@@ -81,5 +83,6 @@ export default {
       },
       component: lazyLoading('sysCtl/Customers')
     }
+    */
   ]
 }

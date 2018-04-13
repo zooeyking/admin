@@ -2,16 +2,17 @@
   <div>
     <role-table 
 
-    @paramsSearch="search" 
+    @paramsSearch="paramsSearch"
+    @pageSearch="pageSearch"  
     @delRole="delRole" 
     @ok="renew"
     @userSearch="userSearch"
-    @getUsers="getUsers"
     @getPowers="getPowers" 
     :confirmClose="confirmClose" 
     :userSearchResult="userSearchResult" 
     :rolePowerList="rolePowerList"
-    :totalNum="totalNum"  
+    :totalNum="totalNum"
+    :initPage="initPage"  
 
     ></role-table>
     <my-message v-if="showMessage" @dispear="dispear" :messageType="messageType"></my-message>
@@ -23,9 +24,13 @@ import RoleTable from './role/Table';
 import MyMessage from 'components/common/message/Message';
 import { mapGetters, mapMutations } from 'vuex';
 import { authority } from 'base/author';
+import { Mixin } from 'base/mixin';
 import { unitCall, unbindedRoleUsersUrl, roleListUrl, roleUpdateUrl, roleSaveUrl, roleCopyUrl, roleDelUrl, appSrcListUrl, powerListUrl, roleUserUrl,  roleBindUrl, roleUnbindUrl } from 'base/askUrl';
 
 export default {
+
+  mixins: [Mixin],
+
   components: {
     RoleTable,
     MyMessage
@@ -47,12 +52,21 @@ export default {
   methods: {
 
     //角色列表搜索
-    search(args) {
+    paramsSearch(args) {
       if (args.roleName || args.sacId) {
         this.searchParams = args;
       }
       let params = Object.assign({}, this.searchParams, args);
-      unitCall(this.__searchSuccess, this.__failed, roleListUrl, params);
+      unitCall(this.__paramsSearchSuccess, this.__failed, roleListUrl, params);
+    },
+
+    //角色列表搜索
+    pageSearch(args) {
+      if (args.roleName || args.sacId) {
+        this.searchParams = args;
+      }
+      let params = Object.assign({}, this.searchParams, args);
+      unitCall(this.__pageSearchSuccess, this.__failed, roleListUrl, params);
     },
 
     //用户绑定搜索
@@ -97,32 +111,32 @@ export default {
       this.__getPowerList(role);
     },
 
-    //获得角色绑定的用户
-    getUsers(role) {
-      
-    },
-
     //关闭操作面板
     dispear() {
       this.showMessage = false;
     },
 
     //角色搜索成功回调
-    __searchSuccess(data) {
+    __pageSearchSuccess(data) {
       if(data.value.list) {
         let result = data.value.list;
-        this.totalNum = data.value.total;
         this.setRoleList(result);
       }else{
         this.setRoleList([]);
       }
+      this.totalNum = data.value.total ? data.value.total : 0;
     },
 
-    //失败回调
-    __failed(err) {
-      console.log(err);
-      this.showMessage = true;
-      this.messageType = 1;
+    //角色搜索成功回调
+    __paramsSearchSuccess(data) {
+      if(data.value.list) {
+        let result = data.value.list;
+        this.setRoleList(result);
+      }else{
+        this.setRoleList([]);
+      }
+      this.totalNum = data.value.total ? data.value.total : 0;
+      this.initPage = !this.initPage;
     },
 
     //用户搜索成功回调
@@ -162,14 +176,20 @@ export default {
 
     //初始化页面数据成功回调
     __initSuccess(data) {
-      let result = data.value.list;
-      this.totalNum = data.value.total;
-      this.setRoleList(result);
+      if(data.value.list) {
+        let result = data.value.list;
+        this.setRoleList(result);
+      }else{
+        this.setRoleList([]);
+      }
+      
+      this.totalNum = data.value.total ? data.value.total : 0;
       this.__initAppList();
     },
 
     //初始化角色页面数据
     __initDate() {
+
       unitCall(this.__initSuccess, this.__failed, roleListUrl, { pageNum : 1});
     },
 
@@ -194,10 +214,11 @@ export default {
   },
 
   created() {
-    authority()
+    
   },
 
   mounted() {
+    //debugger
     this.__initDate();
   },
 
