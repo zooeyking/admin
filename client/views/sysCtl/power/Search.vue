@@ -16,7 +16,7 @@
       </li>
 
       <li class="item text">
-        <input class="input is-primary" v-model="params.operateLikeName" @keyup.enter="search" placeholder="权限名称"/>
+        <input class="input is-primary" v-model="params.operateLikeName" @keyup.enter="search" maxlength="15" placeholder="权限名称"/>
       </li>
       
     </ul>

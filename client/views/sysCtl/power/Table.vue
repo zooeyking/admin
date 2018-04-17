@@ -15,7 +15,7 @@
                 <th>权限名称</th>
                 <th>继承上级</th>
                 <th>类别</th>
-                <th>创建时间</th>
+                <th>权限标识</th>
                 <th>操作</th>
               </tr>
             </thead>
@@ -25,7 +25,7 @@
                 <td>{{power.operateName}}</td>
                 <td>{{power.parentOperateName || '' }}</td>
                 <td>{{power.operateType}}</td>
-                <td>{{power.createDate}}</td>
+                <td>{{power.operateText}}</td>
 
                 <td>
                   <div class="optionWrapper">

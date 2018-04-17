@@ -1,8 +1,8 @@
 import * as types from '../../mutation-types'
-import lazyLoading from './lazyLoading'
-import charts from './charts'
-import uifeatures from './uifeatures'
-import components from './components'
+//import lazyLoading from './lazyLoading'
+//import charts from './charts'
+//import uifeatures from './uifeatures'
+//import components from './components'
 import sysCtl from './sysCtl'
 
 // show: meta.label -> name

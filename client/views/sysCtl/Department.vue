@@ -14,7 +14,7 @@
 
     ></my-table>
 
-    <my-message v-if="showMessage" @dispear="dispear" :messageType="messageType"></my-message>
+    <my-message v-if="showMessage" @dispear="dispear" :messageType="messageType" :errInfo="errInfo"></my-message>
   </div>
 </template>
 

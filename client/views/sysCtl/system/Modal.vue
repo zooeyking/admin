@@ -4,17 +4,17 @@
     <table class="table" v-if="modalConfig.add">
       <tbody>
         <tr>
-          <td class="leftCol"><strong>系统名称</strong></td><td class="rightCol"><input v-model="newSystem['sacName']" type="text" class="input is-primary"></td>
+          <td class="leftCol"><strong class="is-must">系统名称</strong></td><td class="rightCol"><input v-model="newSystem['sacName']" type="text" class="input is-primary" maxlength="15"></td>
         </tr>
         <tr>
-          <td class="leftCol"><strong>有效时间</strong></td><td class="rightCol"><input v-model="newSystem['sacLnvalidTime']" type="text" class="input is-primary"></td>
+          <td class="leftCol"><strong class="is-must">有效时间</strong></td><td class="rightCol"><input v-model="newSystem['sacLnvalidTime']" type="number" class="input is-primary" maxlength="15"></td>
         </tr>
         <tr>
-          <td class="leftCol"><strong>服务器地址</strong></td><td class="rightCol"><input v-model="newSystem['serviceUrl']" type="text" class="input is-primary"></td>
+          <td class="leftCol"><strong class="is-must">服务器地址</strong></td><td class="rightCol"><input v-model="newSystem['serviceUrl']" type="text" class="input is-primary" maxlength="50"></td>
         </tr>
       </tbody>
     </table>
-
+    <p v-if="infoShow" class="check-info"><strong class="is-must">{{message}}</strong></p>
   </card-modal>
 </template>
 
@@ -35,7 +35,9 @@ export default {
 
   data () {
     return {
-      newSystem: {}
+      newSystem: {},
+      infoShow: false,
+      message: ''
     }
   },
 
@@ -45,20 +47,21 @@ export default {
     cancel () {
       this.$emit('close');
       this.newSystem = {};
+      this.infoShow = false;
     },
 
     open () {
     
     },
 
-    //关闭操作面板
-    close () {
-      this.$emit('close');
-      this.newSystem = {};
-    },
-
     //确定操作
     ok () {
+      let finalSys = this.newSystem;
+      if(!finalSys.sacName || !finalSys.sacLnvalidTime || !finalSys.serviceUrl) {
+        this.message = '所需字段不能为空!';
+        this.infoShow = true;
+        return;
+      }
       this.$emit('ok', this.newSystem);
     }
   },
@@ -103,5 +106,8 @@ export default {
 .binded {
   font-size: 1rem;
   padding-bottom: 20px;
+}
+.check-info {
+  margin-left: 0.75em;
 }
 </style>

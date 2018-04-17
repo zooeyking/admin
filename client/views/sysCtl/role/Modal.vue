@@ -3,7 +3,7 @@
     <table class="table" v-if="modalConfig.copy">
       <tbody>
         <tr>
-          <td class="leftCol is-must"><strong class="is-must">新角色名</strong></td><td class="rightCol"><input v-model="newRole['roleName']" type="text" class="input is-primary"></td>
+          <td class="leftCol is-must"><strong class="is-must">新角色名</strong></td><td class="rightCol"><input v-model="newRole['roleName']" type="text" maxlength="15" class="input is-primary"></td>
         </tr>
         <tr>
           <td class="leftCol is-must"><strong class="is-must">系统来源</strong></td>
@@ -20,7 +20,7 @@
           </td>
         </tr>
         <tr>
-          <td class="leftCol"><strong>角色描述</strong></td><td class="rightCol"><input v-model="newRole['roleRemark']" type="text" class="input is-primary"></td>
+          <td class="leftCol"><strong>角色描述</strong></td><td class="rightCol"><input v-model="newRole['roleRemark']" type="text" maxlength="50" class="input is-primary"></td>
         </tr>
         <tr>
           <td class="leftCol" colspan="2"><p class="is-must">新角色自动拥有原角色所有权限</p></td>
@@ -35,7 +35,7 @@
     <table class="table" v-if="modalConfig.add">
       <tbody>
         <tr>
-          <td class="leftCol"><strong class="is-must">角色名称</strong></td><td class="rightCol"><input v-model="newRole['roleName']" type="text" class="input is-primary"></td>
+          <td class="leftCol"><strong class="is-must">角色名称</strong></td><td class="rightCol"><input v-model="newRole['roleName']" type="text" maxlength="15" class="input is-primary"></td>
         </tr>
         <tr>
           <td class="leftCol"><strong class="is-must">系统来源</strong></td>
@@ -50,7 +50,7 @@
           </td>
         </tr>
         <tr>
-          <td class="leftCol"><strong >角色描述</strong></td><td class="rightCol"><input v-model="newRole['roleRemark']" type="text" class="input is-primary"></td>
+          <td class="leftCol"><strong >角色描述</strong></td><td class="rightCol"><input v-model="newRole['roleRemark']" type="text" maxlength="50" class="input is-primary"></td>
         </tr>
       </tbody>
     </table>
@@ -65,6 +65,8 @@
         </tr>
       </tbody>
     </table>
+
+    <p v-if="infoShow" class="check-info"><strong class="is-must">{{message}}</strong></p>
   </card-modal>
 </template>
 
@@ -93,6 +95,8 @@ export default {
 
   data () {
     return {
+      infoShow: false,
+      message: '',
       ztreeDataSource: [],
       searchResult: {},
       searchUser: {
@@ -100,7 +104,8 @@ export default {
       },
       powerStr: '',
       newRole: {
-        sacId: this.appList != undefined ? this.appList[0]['sacId'] : ''
+        //sacId: this.appList != undefined ? this.appList[0]['sacId'] : ''
+        //sacId: this.appList[0]['sacId']
       }
     }
   },
@@ -109,28 +114,10 @@ export default {
     //取消操作
     cancel () {
       this.$emit('close');
-      if(this.modalConfig.copy) {
-        this.newRole = Object.assign({}, this.currentRole);
-      }else {
-        this.newRole = {
-          sacId: this.appList != undefined ? this.appList[0]['sacId'] : ''
-        };
-      }
+      this.infoShow = false;
     },
 
     open () {},
-
-    //关闭操作面板
-    close () {
-      this.$emit('close');
-      if(this.modalConfig.copy) {
-        this.newRole = Object.assign({}, this.currentRole);
-      }else {
-        this.newRole = {
-          sacId: this.appList != undefined ? this.appList[0]['sacId'] : ''
-        };
-      }
-    },
 
     //确认操作
     ok () {
@@ -138,6 +125,11 @@ export default {
       if(this.modalConfig.copy) {
 
         finnalRole = Object.assign({}, this.currentRole, this.newRole);
+        if(!finnalRole.roleName || !finnalRole.sacId) {
+          this.message = '角色名和系统来源不能为空!';
+          this.infoShow = true;
+          return;
+        }
 
       }else if(this.modalConfig.del) {
 
@@ -154,11 +146,21 @@ export default {
         let userIds = users.join();
         let optionType = this.$refs.tabs.optionType;
         finnalRole = Object.assign({}, this.currentRole, { userIds: userIds, optionType: optionType});
+        
+        if(finnalRole.userIds == '') {
+          this.$emit('close');
+          this.infoShow = false;
+          return;
+        }
 
       }else {
 
         finnalRole = this.newRole;
-
+        if(!finnalRole.roleName || !finnalRole.sacId) {
+          this.message = '角色名和系统来源不能为空!';
+          this.infoShow = true;
+          return;
+        }
       }
 
       this.setRole(finnalRole);
@@ -176,7 +178,6 @@ export default {
     //用户绑定界面搜索
     userSearch(user) {
       let optionType = this.$refs.tabs.optionType;
-      console.log(optionType);
       let typeUser = Object.assign({}, user, { optionType: optionType});
       this.$emit('userSearch', typeUser);
     },
@@ -226,17 +227,17 @@ export default {
   watch: {
     //角色添加系统来源列表数据监听
     appList(val) {
-      this.newRole = {
-        sacId: val != undefined ? val[0]['sacId'] : ''
-      };
+      this.newRole['sacId']= val[0]['sacId']
     },
 
     //当前操作角色监听
     currentRole(newVal) {
-      //console.log(newVal)
-      if(this.modalConfig.copy) {
-        this.newRole = Object.assign({}, newVal);
+      this.newRole = Object.assign({}, newVal);
+      
+      if(this.modalConfig.add) {
+        this.newRole['sacId']= this.appList[0]['sacId'];
       }
+      
     },
 
     //操作面板配置数据监听
@@ -249,7 +250,6 @@ export default {
         }
 
         if(newVal.searchResult) {
-          console.log(newVal.searchResult)
           this.searchResult = newVal.searchResult;
         }
       },
@@ -263,7 +263,7 @@ export default {
 .leftCol {
   width: 20%
 }
-.is-must {
+.is-must{
   color: red !important
 }
 .rightCol {
@@ -282,6 +282,10 @@ export default {
 .binded {
   font-size: 1rem;
   padding-bottom: 20px;
+}
+
+.check-info {
+  margin-left: 0.75em;
 }
 
 </style>

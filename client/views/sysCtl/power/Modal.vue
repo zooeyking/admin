@@ -1,13 +1,13 @@
 <template>
   <card-modal :visible="visible" @cancel="cancel" @ok="ok" :modalConfig="modalConfig" transition="zoom">
     
-    <table class="table" v-if="modalConfig.addRoot">
+    <table class="table" v-if="modalConfig.addRoot || modalConfig.add">
       <tbody>
         <tr>
-          <td class="leftCol"><strong class="is-must">权限名称</strong></td><td class="rightCol"><input v-model="newPower['operateName']" type="text" class="input is-primary"></td>
+          <td class="leftCol"><strong class="is-must">权限名称</strong></td><td class="rightCol"><input v-model="newPower['operateName']" type="text" maxlength="15" class="input is-primary"></td>
         </tr>
         <tr>
-          <td class="leftCol"><strong class="is-must">权限标识</strong></td><td class="rightCol"><input v-model="newPower['operateText']" type="text" class="input is-primary"></td>
+          <td class="leftCol"><strong class="is-must">权限标识</strong></td><td class="rightCol"><input v-model="newPower['operateText']" type="text" maxlength="15" class="input is-primary"></td>
         </tr>
 
         <tr>
@@ -25,40 +25,13 @@
           </td>
         </tr>
 
-        <tr>
+        <tr v-if="!modalConfig.add">
           <td class="leftCol"><strong class="is-must">系统来源</strong></td>
           <td class="rightCol">
             <div class="control">
               <div class="select is-fullwidth">
                 <select v-model="newPower['sacId']">
                   <option v-for="item in appList" :value="item.sacId" >{{item.sacName}}</option>
-                </select>
-              </div>
-            </div>
-          </td>
-        </tr>
-
-      </tbody>
-    </table>
-
-    <table class="table" v-if="modalConfig.add">
-      <tbody>
-        <tr>
-          <td class="leftCol"><strong class="is-must">权限名称</strong></td><td class="rightCol"><input v-model="newPower['operateName']" type="text" class="input is-primary"></td>
-        </tr>
-        <tr>
-          <td class="leftCol"><strong class="is-must">权限标识</strong></td><td class="rightCol"><input v-model="newPower['operateText']" type="text" class="input is-primary"></td>
-        </tr>
-
-        <tr>
-          <td class="leftCol"><strong class="is-must">所属类别</strong></td>
-          <td class="rightCol">
-            <div class="control">
-              <div class="select is-fullwidth">
-                <select v-model="newPower['operateType']">
-                  <option value="module">模块</option>
-                  <option value="function">功能</option>
-                  <option value="button">按钮</option>
                 </select>
               </div>
             </div>
@@ -87,6 +60,8 @@
         </tr>
       </tbody>
     </table>
+
+    <p v-if="infoShow" class="check-info"><strong class="is-must">{{message}}</strong></p>
   </card-modal>
 </template>
 
@@ -107,6 +82,8 @@ export default {
 
   data () {
     return {
+      infoShow: false,
+      message: '',
       newPower: {
         operateIndex : 0,
         sacId: this.appList != undefined ? this.appList[0]['sacId'] : ''
@@ -119,6 +96,7 @@ export default {
     //取消操作
     cancel () {
       this.$emit('close');
+      this.infoShow = false;
       this.newPower = {
         operateIndex : 0,
         sacId: this.appList != undefined ? this.appList[0]['sacId'] : ''
@@ -130,22 +108,12 @@ export default {
     
     },
 
-    //关闭操作面板
-    close () {
-      this.$emit('close');
-      this.newPower = {
-        operateIndex : 0,
-        sacId: this.appList != undefined ? this.appList[0]['sacId'] : ''
-      };
-    },
-
     //确定操作
     ok () {
       let finalPower = {};
       if(this.modalConfig.addRoot) {
 
         this.newPower.operateIndex = 0;
-
         finalPower = Object.assign({}, this.newPower);
 
       }else if(this.modalConfig.del) {
@@ -157,15 +125,15 @@ export default {
         finalPower = this.newPower;
 
       }
+
+      if(!finalPower.operateName || !finnalRole.operateText || !finnalRole.operateType) {
+        this.message = '所需字段不能为空!';
+        this.infoShow = true;
+        return;
+      }
+
       this.setCurrentPower(finalPower);
       this.$emit('ok');
-    },
-
-    //用户绑定界面搜索
-    userSearch(user) {
-      let optionType = this.$refs.tabs.optionType;
-      let typeUser = Object.assign({}, user, { optionType: optionType});
-      this.$emit('userSearch', typeUser);
     },
 
     //vuex引入设置当前部门方法
@@ -246,5 +214,8 @@ export default {
 .binded {
   font-size: 1rem;
   padding-bottom: 20px;
+}
+.check-info {
+  margin-left: 0.75em;
 }
 </style>

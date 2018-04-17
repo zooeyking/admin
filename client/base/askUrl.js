@@ -56,15 +56,15 @@ const unitCall = function(_callBackSuccess, _callBackErr, _url, _params={}) {
         
     }).catch((err)=>{
     	_callBackErr(err);
-    	window.location.href = 'http://192.168.1.80:8092/sso-login/login?serviceUrl=http://192.168.1.138:8080&ssoAppKey=46b70e45ee2d40cbb30431f89b032247';
+    	window.location.href = 'http://192.168.1.80:8093/login/sso-login/login?serviceUrl=http://192.168.1.138:8080&ssoAppKey=46b70e45ee2d40cbb30431f89b032247';
     })
 };
 
 //用户登录
-const logInUrl = 'http://192.168.1.80:8092/sso-login/login?serviceUrl=http://192.168.1.138:8080&ssoAppKey=46b70e45ee2d40cbb30431f89b032247';
+const logInUrl = 'http://192.168.1.80:8093/login/sso-login/login?serviceUrl=http://192.168.1.138:8080&ssoAppKey=46b70e45ee2d40cbb30431f89b032247';
 
 //用户退出
-const logOutUrl = 'http://192.168.1.80:8092/sso-login/doLogoutJson';
+const logOutUrl = 'http://192.168.1.80:8093/login/sso-login/doLogoutJson';
 
 //当前登录人权限
 const userPowerUrl = ip + '/getUserOperateBySacKeyServiceJson';

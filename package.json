@@ -1,6 +1,6 @@
 {
   "name": "SSO-admin",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "SSO Admin Panel Framework",
   "repository": "vue-bulma/vue-admin",
   "homepage": "https://admin.vuebulma.com",

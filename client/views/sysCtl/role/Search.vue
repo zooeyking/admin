@@ -2,7 +2,7 @@
   <div class="search">
     <ul class="content">
       <li class="item text">
-        <input class="input is-primary" v-model="params.roleLikeName" @keyup.enter="search" placeholder="角色名"/>
+        <input class="input is-primary" v-model="params.roleLikeName" @keyup.enter="search" maxlength="15" placeholder="角色名"/>
       </li>
       <li class="item systemBox">
         <div class="control is-horizontal">

@@ -3,7 +3,8 @@ import {mapGetters, mapMutations, mapActions} from 'vuex'
 export const Mixin = {
 	data() {
 		return {
-			initPage : false
+			initPage : false,
+			errInfo : ''
 		}
 	},
 
@@ -12,33 +13,37 @@ export const Mixin = {
 	    __failed(err) {
 	      this.showMessage = true;
 	      
-	      switch(err) {
+	      this.messageType = 1;
+	      //console.log(err);
+	      this.errInfo = err.message;
+	      /*
+	      switch(err.code) {
 	        
-	        case err.code === 401 :
+	        case  401 :
 	          this.messageType = 1;
 	          break;
-	        case err.code === 402 :
+	        case  402 :
 	          this.messageType = 2;
 	          break;
-	        case err.code === 499 :
+	        case  499 :
 	          this.messageType = 3;
 	          break;
-	        case err.code === 404 :
+	        case  404 :
 	          this.messageType = 4;
 	          break;
-	        case err.code === 556 :
+	        case  556 :
 	          this.messageType = 5;
 	          break;
-	        case err.code === 500 :
+	        case  500 :
 	          this.messageType = 7;
 	          break;
-	        case err.code === 555 :
+	        case  555 :
 	          this.messageType = 8;
 	          break;
 	        default:
 	          this.messageType = 9;
 	        }
-	      
+	      */
 	    }
 	}
 }

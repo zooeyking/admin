@@ -1,7 +1,7 @@
 <template>
   <div>
     <logs-table @paramsSearch="paramsSearch" @pageSearch="pageSearch" :totalNum="totalNum" :initPage="initPage"></logs-table>
-    <my-message v-if="showMessage" :messageType="messageType"></my-message>
+    <my-message v-if="showMessage" :messageType="messageType" :errInfo="errInfo"></my-message>
   </div>
 </template>
 
@@ -16,7 +16,6 @@ import { unitCall, appSrcListUrl, logListUrl } from 'base/askUrl';
 export default {
 
   mixins: [Mixin],
-
 
   components: {
     LogsTable,
@@ -114,15 +113,11 @@ export default {
     )
   },
 
-  created() {
-    //权限验证
-    //authority();
-  },
+  created() {},
   
   mounted() {
     //初始化页面数据
     this.__initDate();
-    console.log(this.initPage);
   }
 }
 </script>

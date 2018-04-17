@@ -39,7 +39,8 @@ const allMenu = [
       path: '/sysCtl/user',
       meta: {
         label: '用户管理',
-        link: 'sysCtl/User.vue'
+        link: 'sysCtl/User.vue',
+        icon: 'fa-users'
       },
       component: lazyLoading('sysCtl/User')
     },
@@ -48,7 +49,8 @@ const allMenu = [
       path: '/sysCtl/role',
       meta: {
         label: '角色功能',
-        link: 'sysCtl/Role.vue'
+        link: 'sysCtl/Role.vue',
+        icon: 'fa-eye'
       },
       component: lazyLoading('sysCtl/Role')
     },
@@ -57,7 +59,8 @@ const allMenu = [
       path: '/sysCtl/department',
       meta: {
         label: '部门功能',
-        link: 'sysCtl/Department.vue'
+        link: 'sysCtl/Department.vue',
+        icon: 'fa-sitemap'
       },
       component: lazyLoading('sysCtl/Department')
     },
@@ -66,7 +69,8 @@ const allMenu = [
       path: '/sysCtl/power',
       meta: {
         label: '权限管理',
-        link: 'sysCtl/Power.vue'
+        link: 'sysCtl/Power.vue',
+        icon: 'fa-key'
       },
       component: lazyLoading('sysCtl/Power')
     },
@@ -75,7 +79,8 @@ const allMenu = [
       path: '/sysCtl/system',
       meta: {
         label: '系统配置',
-        link: 'sysCtl/System.vue'
+        link: 'sysCtl/System.vue',
+        icon: 'fa-windows'
       },
       component: lazyLoading('sysCtl/System')
     },
@@ -84,7 +89,8 @@ const allMenu = [
       path: '/sysCtl/logs',
       meta: {
         label: '操作日志',
-        link: 'sysCtl/Logs.vue'
+        link: 'sysCtl/Logs.vue',
+        icon: 'fa-file-text'
       },
       component: lazyLoading('sysCtl/Logs')
     },
@@ -93,7 +99,8 @@ const allMenu = [
       path: '/sysCtl/requests',
       meta: {
         label: '流量统计',
-        link: 'sysCtl/Requests.vue'
+        link: 'sysCtl/Requests.vue',
+        icon: 'fa-bar-chart'
       },
       component: lazyLoading('sysCtl/Requests')
     },
@@ -102,7 +109,8 @@ const allMenu = [
       path: '/sysCtl/customers',
       meta: {
         label: '用户统计',
-        link: 'sysCtl/Customers.vue'
+        link: 'sysCtl/Customers.vue',
+        icon: 'fa-area-chart'
       },
       component: lazyLoading('sysCtl/Customers')
     }
@@ -182,7 +190,7 @@ function __setMenus(arr) {
 }
 
 function __failed(err) {
-  console.log(err)
+  //console.log(err)
 }
 
 //退出方法

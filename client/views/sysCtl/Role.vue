@@ -15,7 +15,7 @@
     :initPage="initPage"  
 
     ></role-table>
-    <my-message v-if="showMessage" @dispear="dispear" :messageType="messageType"></my-message>
+    <my-message v-if="showMessage" @dispear="dispear" :messageType="messageType" :errInfo="errInfo"></my-message>
   </div>
 </template>
 
@@ -39,6 +39,7 @@ export default {
   data () {
     return {
       isShow: false,
+      isFirst: true,
       showMessage: false,
       messageType: 0,
       confirmClose: true,
@@ -184,12 +185,13 @@ export default {
       }
       
       this.totalNum = data.value.total ? data.value.total : 0;
-      this.__initAppList();
+      if(this.isFirst) {
+        this.__initAppList();
+      }
     },
 
     //初始化角色页面数据
     __initDate() {
-
       unitCall(this.__initSuccess, this.__failed, roleListUrl, { pageNum : 1});
     },
 
@@ -197,6 +199,7 @@ export default {
     __initAppSuccess(data) {
       let result = data.value ? data.value : [];
       this.setAppList(result);
+      this.isFirst = false;
     },
 
     //初始化系统配置列表数据

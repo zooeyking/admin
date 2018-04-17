@@ -1,7 +1,7 @@
 <template>
   <div>
     <customers-table :totalNum="totalNum" :initPage="initPage"></customers-table>
-    <my-message v-if="showMessage" :messageType="messageType"></my-message>
+    <my-message v-if="showMessage" :messageType="messageType" :errInfo="errInfo"></my-message>
   </div>
 </template>
 
@@ -57,10 +57,7 @@ export default {
     )
   },
 
-  created() {
-    //权限验证
-    //authority();
-  },
+  created() {},
   
   mounted() {
     //初始化页面数据

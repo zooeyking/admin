@@ -2,11 +2,6 @@
   <section class="hero is-bold app-navbar animated" :class="{ slideInDown: show, slideOutDown: !show }">
     <div class="hero-head">
       <nav class="nav">
-        <div class="nav-left">
-          <a class="nav-item is-hidden-tablet" @click="toggleSidebar({opened: !sidebar.opened})">
-            <i class="fa fa-bars" aria-hidden="true" v-show="!sidebar.hidden"></i>
-          </a>
-        </div>
         <div class="nav-center">
           <a class="nav-item hero-brand" href="/">
             <img src="~assets/logo.svg" :alt="pkginfo.description">
@@ -21,7 +16,8 @@
           <!--<router-link v-if="!$auth.check()" to="/login" class="nav-item">登录</router-link>
               <a v-if="$auth.check()" @click="logout" class="nav-item">退出</a>
           -->
-          <a @click="goOut" class="nav-item">退出</a>
+
+          <a @click="goOut" class="nav-item"><label class="my-title">{{userName}}</label>/退出</a>
         </div>
       </nav>
     </div>
@@ -30,11 +26,12 @@
 </template>
 
 <script>
-import Tooltip from 'vue-bulma-tooltip'
-import Confirm from 'components/common/modal/Modal'
+import goodStorage from 'good-storage';
+import Tooltip from 'vue-bulma-tooltip';
+import Confirm from 'components/common/modal/Modal';
 
-import { mapGetters, mapActions } from 'vuex'
-import { logOut } from 'base/author'
+import { mapGetters, mapActions } from 'vuex';
+import { logOut } from 'base/author';
 
 export default {
   data() {
@@ -45,6 +42,7 @@ export default {
         footerShow: true
       },
       visible: false,
+      userName: ''
     }
   },
 
@@ -54,7 +52,8 @@ export default {
   },
 
   mounted() {
-    
+    let user = goodStorage.get('USERINFO');
+    this.userName = user.userRealName;
   },
 
   props: {
@@ -118,6 +117,11 @@ export default {
     overflow: hidden;
     overflow-x: auto;
     white-space: nowrap;
+
+    .my-title {
+      color: #00d1b2;
+      margin-right: 4px;
+    }
   }
 }
 

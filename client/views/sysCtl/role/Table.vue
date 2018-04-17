@@ -141,6 +141,7 @@ export default {
         title: '添加角色',
         footerShow: true
       }
+      this.setCurrentRole({});
       this.confirmShow = true;
     },
 

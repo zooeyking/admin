@@ -52,8 +52,8 @@
           </span>
         </a>
         -->
-        
         <router-link :to="item.path">
+          <span class="icon is-small router-logo"><i :class="['fa', item.meta.icon]"></i></span>
           {{ item.meta && item.meta.label || item.name }}
         </router-link>
         
@@ -226,6 +226,10 @@ export default {
   }
 
   .menu-list {
+    .router-logo {
+      margin-right: 5px;
+    }
+
     li a {
       &[aria-expanded="true"] {
         .is-angle {

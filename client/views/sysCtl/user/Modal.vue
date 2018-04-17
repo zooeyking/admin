@@ -8,10 +8,10 @@
           <td class="leftCol"><strong>用户名</strong></td><td class="rightCol">{{currentUser.userName}}</td>
         </tr>
         <tr>
-          <td class="leftCol"><strong>密码</strong></td><td class="rightCol"><input v-model="newUser['userPassWord']" type="text" class="input is-primary"></td>
+          <td class="leftCol"><strong class="is-must">密码</strong></td><td class="rightCol"><input v-model="newUser['userPassWord']" type="text" class="input is-primary" maxlength="15"></td>
         </tr>
         <tr>
-          <td class="leftCol"><strong>姓名</strong></td><td class="rightCol"><input v-model="newUser['userRealName']" type="text" class="input is-primary"></td>
+          <td class="leftCol"><strong class="is-must">姓名</strong></td><td class="rightCol"><input v-model="newUser['userRealName']" type="text" class="input is-primary" maxlength="15"></td>
         </tr>
         <tr>
           <td class="leftCol"><strong>性别</strong></td><td class="rightCol">
@@ -23,13 +23,13 @@
           </td>
         </tr>
         <tr>
-          <td class="leftCol"><strong>邮箱</strong></td><td class="rightCol"><input v-model="newUser['userMail']" type="email" class="input is-primary"></td>
+          <td class="leftCol"><strong>邮箱</strong></td><td class="rightCol"><input v-model="newUser['userMail']" type="email" class="input is-primary" maxlength="15"></td>
         </tr>
         <tr>
-          <td class="leftCol"><strong>联系方式</strong></td><td class="rightCol"><input v-model="newUser['userMobilePhone']" type="tel" class="input is-primary"></td>
+          <td class="leftCol"><strong>联系方式</strong></td><td class="rightCol"><input v-model="newUser['userMobilePhone']" type="tel" class="input is-primary" maxlength="15"></td>
         </tr>
         <tr>
-          <td class="leftCol"><strong>地址</strong></td><td class="rightCol"><input v-model="newUser['userAddress']" type="text" class="input is-primary"></td>
+          <td class="leftCol"><strong>地址</strong></td><td class="rightCol"><input v-model="newUser['userAddress']" type="text" class="input is-primary" maxlength="50"></td>
         </tr>
         <!--
         <tr>
@@ -37,20 +37,20 @@
         </tr>
         -->
         <tr>
-          <td class="leftCol"><strong>备注</strong></td><td class="rightCol"><input v-model="newUser['userRemark']" type="text" class="input is-primary"></td>
+          <td class="leftCol"><strong>备注</strong></td><td class="rightCol"><input v-model="newUser['userRemark']" type="text" class="input is-primary" maxlength="50"></td>
         </tr>
       </tbody>
     </table>
     <table class="table" v-if="modalConfig.add">
       <tbody>
         <tr>
-          <td class="leftCol"><strong class="is-must">用户名</strong></td><td class="rightCol"><input v-model="newUser['userName']" type="text" class="input is-primary"></td>
+          <td class="leftCol"><strong class="is-must">用户名</strong></td><td class="rightCol"><input v-model="newUser['userName']" type="text" class="input is-primary" maxlength="15"></td>
         </tr>
         <tr>
-          <td class="leftCol"><strong class="is-must">密码</strong></td><td class="rightCol"><input v-model="newUser['userPassWord']" type="text" class="input is-primary"></td>
+          <td class="leftCol"><strong class="is-must">密码</strong></td><td class="rightCol"><input v-model="newUser['userPassWord']" type="text" class="input is-primary" maxlength="15"></td>
         </tr>
         <tr>
-          <td class="leftCol"><strong class="is-must">姓名</strong></td><td class="rightCol"><input v-model="newUser['userRealName']" type="text" class="input is-primary"></td>
+          <td class="leftCol"><strong class="is-must">姓名</strong></td><td class="rightCol"><input v-model="newUser['userRealName']" type="text" class="input is-primary" maxlength="15"></td>
         </tr>
         <tr>
           <td class="leftCol"><strong>性别</strong></td><td class="rightCol">
@@ -62,13 +62,13 @@
           </td>
         </tr>
         <tr>
-          <td class="leftCol"><strong>邮箱</strong></td><td class="rightCol"><input v-model="newUser['userMail']" type="email" class="input is-primary"></td>
+          <td class="leftCol"><strong>邮箱</strong></td><td class="rightCol"><input v-model="newUser['userMail']" type="email" class="input is-primary" maxlength="15"></td>
         </tr>
         <tr>
           <td class="leftCol"><strong>联系方式</strong></td><td class="rightCol"><input v-model="newUser['userMobilePhone']" type="tel" class="input is-primary"></td>
         </tr>
         <tr>
-          <td class="leftCol"><strong>地址</strong></td><td class="rightCol"><input v-model="newUser['userAddress']" type="text" class="input is-primary"></td>
+          <td class="leftCol"><strong>地址</strong></td><td class="rightCol"><input v-model="newUser['userAddress']" type="text" class="input is-primary" maxlength="50"></td>
         </tr>
         <!--
         <tr>
@@ -90,6 +90,8 @@
         </tr>
       </tbody>
     </table>
+
+    <p v-if="infoShow" class="check-info"><strong class="is-must">{{message}}</strong></p>
   </card-modal>
 </template>
 
@@ -113,6 +115,8 @@ export default {
 
   data () {
     return {
+      infoShow: false,
+      message: '',
       newUser: {
         userEnable: 0,
         userGender: 1
@@ -128,6 +132,7 @@ export default {
     //取消操作
     cancel () {
       this.$emit('close');
+      this.infoShow = false;
       if(this.modalConfig.modify) {
         this.newUser = Object.assign({}, this.currentUser);
       }else {
@@ -139,19 +144,6 @@ export default {
     },
 
     open () {},
-
-    //关闭操作
-    close () {
-      this.$emit('close')
-      if(this.modalConfig.modify) {
-        this.newUser = Object.assign({}, this.currentUser);
-      }else {
-        this.newUser = {
-          userEnable: 0,
-          userGender: 1
-        }
-      }
-    },
 
     //确认操作
     ok () {
@@ -165,6 +157,13 @@ export default {
       }else {
         finnalUser = this.newUser;
       }
+
+      if(!finnalUser.userName || !finnalUser.userPassWord || !finnalUser.userRealName) {
+        this.message = '所需字段不能为空!';
+        this.infoShow = true;
+        return;
+      }
+
       this.setCurrentUser(finnalUser);
       this.$emit('ok');
     },
@@ -211,5 +210,8 @@ export default {
 }
 .rightCol {
   width: 70%
+}
+.check-info {
+  margin-left: 0.75em;
 }
 </style>

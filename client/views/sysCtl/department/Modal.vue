@@ -4,10 +4,10 @@
     <table class="table" v-if="modalConfig.add || modalConfig.addRoot">
       <tbody>
         <tr>
-          <td class="leftCol"><strong>部门名称</strong></td><td class="rightCol"><input v-model="newPartment['dName']" type="text" class="input is-primary"></td>
+          <td class="leftCol"><strong class="is-must">部门名称</strong></td><td class="rightCol"><input v-model="newPartment['dName']" type="text" maxlength="15" class="input is-primary"></td>
         </tr>
         <tr>
-          <td class="leftCol"><strong>备注</strong></td><td class="rightCol"><input v-model="newPartment['dRemark']" type="text" class="input is-primary"></td>
+          <td class="leftCol"><strong>备注</strong></td><td class="rightCol"><input v-model="newPartment['dRemark']" type="text" maxlength="50" class="input is-primary"></td>
         </tr>
       </tbody>
     </table>
@@ -27,6 +27,8 @@
         </tr>
       </tbody>
     </table>
+
+    <p v-if="infoShow" class="check-info"><strong class="is-must">{{message}}</strong></p>
   </card-modal>
 </template>
 
@@ -53,6 +55,8 @@ export default {
         parentId: '',
         dIndex: 0
       },
+      infoShow: false,
+      message: '',
       searchResult: [],
       searchUser: {},
       userList: []
@@ -64,6 +68,7 @@ export default {
     //取消操作
     cancel () {
       this.$emit('close');
+      this.infoShow = false;
       this.newPartment = {
         parentId: '',
         dIndex: 0
@@ -75,21 +80,17 @@ export default {
     
     },
 
-    //关闭操作面板
-    close () {
-      this.$emit('close');
-      this.newPartment = {
-        parentId: '',
-        dIndex: 0
-      };
-    },
-
     //确定操作
     ok () {
       let finnalPartment = {};
       if(this.modalConfig.add) {
 
         finnalPartment = Object.assign({}, this.newPartment);
+        if(!finnalPartment.dName) {
+          this.message = '部门名称不能为空!';
+          this.infoShow = true;
+          return;
+        }
 
       }else if(this.modalConfig.del) {
 
@@ -102,9 +103,20 @@ export default {
         let optionType = this.$refs.tabs.optionType;
         finnalPartment = Object.assign({}, this.currentDepartmet, { userIds: userIds, optionType: optionType});
 
+        if(finnalPartment.userIds == '') {
+          this.$emit('close');
+          this.infoShow = false;
+          return;
+        }
+
       }else {
 
         finnalPartment = this.newPartment;
+        if(!finnalPartment.dName) {
+          this.message = '部门名称不能为空!';
+          this.infoShow = true;
+          return;
+        }
       }
       this.setCurrentDepartment(finnalPartment);
       this.$emit('ok');
@@ -125,20 +137,6 @@ export default {
   },
 
   computed: {
-    fatherName() {
-      let name = '';
-      let fathers = this.departments;
-      let children = this.currentDepartmet;
-      if(children.parentId == "" || children.parentId === null) {
-        return name;
-      }else {
-        let father = fathers.find((item)=>{
-                      return item.dId === children.parentId;
-                    });
-        name = father.dName;
-      }
-      return name;
-    },
 
     //vuex引入部门数据
     ...mapGetters({

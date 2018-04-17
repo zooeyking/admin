@@ -1,7 +1,7 @@
 <template>
   <div>
     <requests-table @paramsSearch="paramsSearch" @pageSearch="pageSearch" :totalNum="totalNum" :initPage="initPage"></requests-table>
-    <my-message v-if="showMessage" :messageType="messageType"></my-message>
+    <my-message v-if="showMessage" :messageType="messageType" :errInfo="errInfo"></my-message>
   </div>
 </template>
 
@@ -114,10 +114,7 @@ export default {
     )
   },
 
-  created() {
-    //权限验证
-    //authority();
-  },
+  created() {},
   
   mounted() {
     //初始化页面数据

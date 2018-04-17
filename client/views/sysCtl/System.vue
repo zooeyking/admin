@@ -1,7 +1,7 @@
 <template>
   <div>
     <system-table  @addSystem="addSystem" @paramsSearch="paramsSearch" @pageSearch="pageSearch" :totalNum="totalNum" :confirmClose="confirmClose" :initPage="initPage"></system-table>
-    <my-message v-if="showMessage" :messageType="messageType"></my-message>
+    <my-message v-if="showMessage" :messageType="messageType" :errInfo="errInfo"></my-message>
   </div>
 </template>
 
@@ -99,9 +99,7 @@ export default {
     })
   },
 
-  created() {
-   // authority();
-  },
+  created() {},
 
   mounted() {
     this.__initDate();

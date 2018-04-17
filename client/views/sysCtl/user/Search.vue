@@ -2,12 +2,12 @@
   <div class="search">
     <ul class="content">
       <li class="item text">
-        <input class="input is-primary" v-model="params.userName" @keyup.enter="search" placeholder="用户名"/>
+        <input class="input is-primary" v-model="params.userName" @keyup.enter="search" maxlength="15" placeholder="用户名"/>
       </li>
       
       
       <li class="item text">
-        <input class="input is-primary" v-model="params.userRealName" @keyup.enter="search" placeholder="姓名"/>
+        <input class="input is-primary" v-model="params.userRealName" @keyup.enter="search" maxlength="15" placeholder="姓名"/>
       </li>
       
       <li class="item dateBox">

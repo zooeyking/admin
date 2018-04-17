@@ -167,9 +167,7 @@ export default {
   },
 
   //权限校验
-  created() {
-    //authority();
-  },
+  created() {},
 
   //挂载后初始化列表数据
   mounted() {

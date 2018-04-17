@@ -31,6 +31,10 @@ export default {
     messageType: {
       type: Number,
       default: 0
+    },
+    errInfo: {
+      type: String,
+      default: ''
     }
   },
 
@@ -41,7 +45,15 @@ export default {
         type: 'success',
         duration: 2000
       })
-    }else if(this.messageType === 1) {
+    }else {
+      openMessage({
+        message: this.errInfo,
+        type: 'danger',
+        duration: 2000
+      })
+    }
+    /*
+    else if(this.messageType === 1) {
       openMessage({
         message: '-----------请求失败,必要参数为空----------',
         type: 'danger',
@@ -49,7 +61,7 @@ export default {
       })
     }else if(this.messageType === 2) {
       openMessage({
-        message: '-----------操作失败----------',
+        message: '-----------重复添加,操作失败----------',
         type: 'danger',
         duration: 2000
       })
@@ -96,6 +108,7 @@ export default {
         duration: 2000
       })
     }
+    */
   },
 
   methods: {

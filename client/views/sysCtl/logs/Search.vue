@@ -3,16 +3,16 @@
     <ul class="content">
       
       <li class="item text">
-        <input class="input is-primary" v-model="params.userName" @keyup.enter="search" placeholder="用户名"/>
+        <input class="input is-primary" v-model="params.userName" @keyup.enter="search" maxlength="15" placeholder="用户名"/>
       </li>
       
       <li class="item systemBox">
         <div class="control is-horizontal">
           <div class="control">
             <div class="select is-fullwidth">
-              <select v-model="params.sacId">
+              <select v-model="params.sacKey">
                 <option value="" >全部</option>
-                <option v-for="item in appList" :value="item.sacId" >{{item.sacName}}</option>
+                <option v-for="item in appList" :value="item.sacKey" >{{item.sacName}}</option>
               </select>
             </div>
           </div>
@@ -40,7 +40,7 @@ export default {
   data() {
     return {
       params: {
-        sacId: "",
+        sacKey: "",
         pageNum: 1
       }
     }
