@@ -1,10 +1,24 @@
 import goodStorage from 'good-storage';
-import jsonp from 'tools/js/jsonp'
+import jsonp from 'tools/js/jsonp';
+import axios from 'tools/js/axios';
 import { safe } from './safe';
 //import { mapMutations } from 'vuex';
 
-//请求ip
-const ip = "http://192.168.1.80:8093/base/sso-base-modular";
+//请求地址
+const ip = "http://192.168.1.15:8088";
+//const ip = "http://10.15.21.68:8098";
+//const ip = "http://192.168.1.70:8098";
+
+const url = ip + "/gis-service/sys";
+
+//const key = "http://briancheng.51vip.biz:48466/base/sso-base-modular";
+//http://192.168.1.15:8088/gis-service/sys/campus/queryListByWhere
+
+//用户登录
+const logInUrl = ip + '/login/sso-login/login?serviceUrl=http://192.168.1.138:8090&ssoAppKey=46b70e45ee2d40cbb30431f89b032247';
+
+//用户退出
+const logOutUrl = ip + '/login/sso-login/doLogoutJson';
 
 //公共回调
 const options = {
@@ -13,7 +27,12 @@ const options = {
 
 //公共参数方法
 function _getParams() {
-	let user = goodStorage.get('USERINFO');
+	
+	//let user = goodStorage.get('USERINFO');
+	let user = {
+		ssoAppKey: '46b70e45ee2d40cbb30431f89b032247',
+		ssoUserId: '3864f817fcf1406eaaf00accfbaf602e'
+	}
 	let safeUser = null;
 	if(user != undefined) {
 		safeUser = safe(user);
@@ -21,188 +40,189 @@ function _getParams() {
 	}else{
 		return;
 	}
+	
 };
 
+
 //公共请求方法
-const unitCall = function(_callBackSuccess, _callBackErr, _url, _params={}) {
+const unitCall = function(_url, _params={}) {
 	//公共请求参数
 	let CommonParams = _getParams();
 
 	//将实际传入请求参数与公共参数合并
 	let finalParams = Object.assign({}, CommonParams, _params);
-	/*
-	return new Promise(resolve, reject){
 
+	
+	return new Promise((resolve, reject) => {
+		
 		jsonp(_url, finalParams, options).then((res)=>{
+			
 			if(res.status == true) {
           		resolve(res);
         	}else{
         		reject(res);
         	}
 		}).catch((err)=>{
+			
 			reject(err);
 		})
-	}
-	*/
-
-	jsonp(_url, finalParams, options).then((res)=>{
+	})
+	
+	//return axios(_url,finalParams)
+	/*
+	return new Promise((resolve, reject) => {
 		
-        if(res.status == true) {
-          	_callBackSuccess(res);
-        }else{
-          	_callBackErr(res);
-          	//window.location.href = 'http://192.168.1.80:8092/sso_login/login?serviceUrl=http://192.168.1.138:8080&ssoAppKey=46b70e45ee2d40cbb30431f89b032247';
-        }
-        
-    }).catch((err)=>{
-    	_callBackErr(err);
-    	window.location.href = 'http://192.168.1.80:8093/login/sso-login/login?serviceUrl=http://192.168.1.138:8080&ssoAppKey=46b70e45ee2d40cbb30431f89b032247';
-    })
+		jsonp(_url, finalParams, options).then((res)=>{
+			
+			if(res.status == true) {
+          		resolve(res);
+        	}else{
+        		reject(res);
+        	}
+		}).catch((err)=>{
+			
+			reject(err);
+		})
+	})
+	*/
+	
 };
 
-//用户登录
-const logInUrl = 'http://192.168.1.80:8093/login/sso-login/login?serviceUrl=http://192.168.1.138:8080&ssoAppKey=46b70e45ee2d40cbb30431f89b032247';
-
-//用户退出
-const logOutUrl = 'http://192.168.1.80:8093/login/sso-login/doLogoutJson';
-
 //当前登录人权限
-const userPowerUrl = ip + '/getUserOperateBySacKeyServiceJson';
+const userPowerUrl = url + '/getUserOperateBySacKeyServiceJson';
 
-//用户列表
-const userListUrl = ip + '/getUserPageJson';
+//校区列表
+const zoneListUrl = url + '/campus/queryListByWhere';
 
-//用户角色信息查询
-const userRoleUrl = ip + '/getRoleNameByUserIdJson';
+//删除校区
+const zoneDeleteUrl = url + '/campus/deleteById';    
 
-//用户部门信息查询
-const userDepartmentUrl = ip + '/getDeptByUserIdJson';
+//校区信息编辑
+const zoneEditUrl = url + '/campus/saveOrUpdate';
 
-//用户数据更新
-const userUpdateUrl = ip + '/updateUserInfoByIdJson';
+//建筑类别列表
+const buildingTypeListUrl = url + '/archite_category/queryListByWhere';
 
-//新用户
-const userSaveUrl = ip + '/saveUserJson';
+//编辑建筑类别
+const buildingTypeEditUrl = url + '/archite_category/saveOrUpdate';
 
-//角色列表
-const roleListUrl = ip + '/getRolePageJson';
+//删除建筑类别
+const buildingTypeDeleteUrl = url + '/archite_category/deleteById';
 
-//新角色
-const roleSaveUrl = ip + '/saveRole';
+//建筑实体列表
+const buildingListUrl = url + '/archite_entity/queryListByWhere';
 
-//复制角色
-const roleCopyUrl = ip + '/copyRoleJson';
+//编辑建筑实体
+const buildingEditUrl = url + '/archite_entity/saveOrUpdate';
 
-//删除角色
-const roleDelUrl = ip + '/delRoleJson';
+//删除建筑实体
+const buildingDeleteUrl = url + '/archite_entity/deleteById';
 
-//更新角色权限
-const roleUpdateUrl = ip + '/saveRoleAndUpOperJson';
+//获取服务分类清单
+const serviceTypeListUrl = url + '/service_category/queryListByWhere';
 
-//权限列表数据
-const powerListUrl = ip + '/getOperateListAllJson';
+//编辑服务分类
+const serviceTypeEditUrl = url + '/service_category/saveOrUpdate';
 
-//查询角色已绑定的用户
-const roleUserUrl = ip + '/selectUserByRoleIdJson';
+//删除服务分类
+const serviceTypeDeleteUrl = url + '/service_category/deleteById';
 
-//角色未绑定的用户搜索
-const unbindedRoleUsersUrl = ip + '/selectRoleExistsUserByRIdJson';
+//上传logo图片
+const uploadLogoUrl = url + '/upload/uploadImg';
 
-//用户绑定到角色上
-const roleBindUrl = ip + '/addRoleAndUserJson';
+//获取服务信息清单
+const serviceInfoListUrl = url + '/service_info/queryListByWhere';
 
-//单个移除角色下的用户
-const roleUnbindUrl = ip + '/delRoleUserJson';
+//编辑服务信息
+const serviceInfoEditUrl = url + '/service_info/saveOrUpdate';
 
-//部门列表
-const partmentListUrl = ip + '/getDeptListJson';
+//删除服务信息
+const serviceInfoDeleteUrl = url + '/service_info/deleteById';
 
-//新部门
-const partmentSaveUrl = ip + '/saveDeptJson';
+//获取服务分类清单
+const guideListUrl = url + '/service_category/queryListByWhere';
 
-//获取某个部门下所有绑定的用户
-const partmentUserUrl = ip + '/getDeptUserByDUIdJson';
+//编辑服务分类
+const guideEditUrl = url + '/service_category/saveOrUpdate';
 
-//获取某个部门下所有未绑定的用户
-const unbindedPartmentUsersUrl = ip + '/selectDeptExistsUserByDIdJson';
+//删除服务分类
+const guideDeleteUrl = url + '/service_category/deleteById';
 
-//用户绑定到部门上
-const partmentBindUrl = ip + '/saveDeptAndUserJson';
+//获取服务信息清单
+const partyListUrl = url + '/service_info/queryListByWhere';
 
-//单个移除部门下的用户
-const partmentUnbindUrl = ip + '/delDeptByIdJson';
+//编辑服务信息
+const partyEditUrl = url + '/service_info/saveOrUpdate';
 
-//移除部门
-const partmentDelUrl = ip + '/delDeptByTDIdJson';
+//删除服务信息
+const partyDeleteUrl = url + '/service_info/deleteById';
 
-//生成权限
-const operateAddUrl = ip + '/addOperateJson';
+//机构类别清单
+const organizationListUrl = url + '/organization/queryListByWhere';
 
-//搜索权限
-const operateSearchUrl = ip + '/searchOperatePageJson';
+//编辑机构类别
+const organizationEditUrl = url + '/organization/saveOrUpdate';
 
-//注销权限
-const operateDelUrl = ip + '/delOperateJson';
+//删除机构类别
+const organizationDeleteUrl = url + '/organization/deleteById';
 
-//系统配置列表
-const systemListUrl = ip + '/getAppConfigPageJson';
+//机构分类关联校区操作
+const relationCampusUrl = url + '/organization/relationCampus';
 
-//下拉列表系统配置名称
-const appSrcListUrl = ip + '/getAppConfigAllListJson';
+//机构分类取消关联校区操作
+const removeRelationCampusUrl = url + '/organization/removeRelation';
 
-//添加系统
-const systemSaveUrl = ip + '/saveAppConfig';
+//机构分类关联校区查询
+const relationAndNotUrl = url + '/organization/relationAndNot';
 
-//日志列表
-const logListUrl = ip + '/getLogPageJson';
+//获取机构清单
+const agencyListUrl = url + '/org_entity/queryListByWhere';
 
-//流量统计
-const requestsUrl = ip + '/getHttpCountNumPageJson';
+//编辑机构
+const agencyEditUrl = url + '/org_entity/saveOrUpdate';
 
-//用户统计
-const customersUrl = ip + '/getUserCountBysacIdJson';
+//删除机构
+const agencyDeleteUrl = url + '/org_entity/deleteById';
 
 
 export {
 	logInUrl,
 	logOutUrl,
 	CommonParams,
-	_refreshCommonParams,
 	options,
 	unitCall,
 	userPowerUrl,
-	userListUrl,
-	userRoleUrl,
-	userDepartmentUrl,
-	userUpdateUrl,
-	userSaveUrl,
-	roleListUrl,
-	roleSaveUrl,
-	roleCopyUrl,
-	roleDelUrl,
-	roleUpdateUrl,
-	roleUserUrl,
-	roleBindUrl,
-	roleUnbindUrl,
-	unbindedRoleUsersUrl,
-	powerListUrl,
-	logsListUrl,
-	appSrcListUrl,
-	systemListUrl,
-	systemSaveUrl,
-	partmentListUrl,
-	partmentSaveUrl,
-	partmentUserUrl,
-	unbindedPartmentUsersUrl,
-	partmentUnbindUrl,
-	partmentBindUrl,
-	partmentDelUrl,
-	operateAddUrl,
-	operateSearchUrl,
-	operateDelUrl,
-	logListUrl,
-	requestsUrl,
-	customersUrl
+	zoneListUrl,
+	zoneEditUrl,
+	zoneDeleteUrl,
+	buildingTypeListUrl,
+	buildingTypeEditUrl,
+	buildingTypeDeleteUrl,
+	buildingListUrl,
+	buildingEditUrl,
+	buildingDeleteUrl,
+	organizationListUrl,
+	organizationEditUrl,
+	organizationDeleteUrl,
+	relationCampusUrl,
+	removeRelationCampusUrl,
+	relationAndNotUrl,
+	agencyListUrl,
+	agencyEditUrl,
+	agencyDeleteUrl,
+	serviceTypeListUrl,
+	serviceTypeEditUrl,
+	serviceTypeDeleteUrl,
+	uploadLogoUrl,
+	serviceInfoListUrl,
+	serviceInfoEditUrl,
+	serviceInfoDeleteUrl,
+	guideListUrl,
+	guideEditUrl,
+	guideDeleteUrl,
+	partyListUrl,
+	partyEditUrl,
+	partyDeleteUrl
 }
 
 

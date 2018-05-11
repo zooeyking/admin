@@ -7,7 +7,7 @@
     <h1 class="is-title is-bold">联鹏</h1>
 
     <p>
-      <strong>统一身份认证系统</strong>
+      <strong>GIS后台管理系统</strong>
     </p>
 
     <p>©联鹏应用软件(上海)有限公司</p>
@@ -16,7 +16,6 @@
 
 <script>
 import { authority, UserInfo } from 'base/author';
-import { unitCall, userPowerUrl } from 'base/askUrl';
 
 export default {
 

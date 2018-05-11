@@ -54,6 +54,7 @@ module.exports = {
         test: /\.js$/,
         loader: 'babel-loader',
         include: projectRoot,
+        //include: [ projectRoot, resolve('src'), resolve('test'),resolve('node_modules/vue-baidu-map')],
         // /node_modules\/(?!vue-bulma-.*)/
         exclude: [new RegExp(`node_modules\\${path.sep}(?!vue-bulma-.*)`)]
       },

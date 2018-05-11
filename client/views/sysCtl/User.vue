@@ -21,7 +21,7 @@
 import UserTable from './user/Table';
 import MyMessage from 'components/common/message/Message';
 import { mapGetters, mapMutations } from 'vuex';
-import { unitCall, userListUrl, userUpdateUrl, userSaveUrl, userRoleUrl, userDepartmentUrl } from 'base/askUrl';
+//import { unitCall, userListUrl, userUpdateUrl, userSaveUrl, userRoleUrl, userDepartmentUrl } from 'base/askUrl';
 import { authority } from 'base/author';
 import { Mixin } from 'base/mixin';
 
@@ -171,7 +171,7 @@ export default {
 
   //挂载后初始化列表数据
   mounted() {
-    this.__initDate();
+    //this.__initDate();
   },
 
   //用户数据监听

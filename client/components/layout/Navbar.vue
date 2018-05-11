@@ -7,14 +7,14 @@
             <img src="~assets/logo.svg" :alt="pkginfo.description">
             <tooltip :label="'v' + pkginfo.version" placement="right" type="success" size="small" :no-animate="true" :always="true" :rounded="true">
               <div class="is-hidden-mobile">
-                <span class="vue">联鹏</span><strong class="admin">统一身份认证系统</strong>
+                <span class="vue">联鹏</span><strong class="admin">GIS后台管理系统</strong>
               </div>
             </tooltip>
           </a>
         </div>
         <div class="nav-right is-flex">
           <!--<router-link v-if="!$auth.check()" to="/login" class="nav-item">登录</router-link>
-              <a v-if="$auth.check()" @click="logout" class="nav-item">退出</a>
+            <a v-if="$auth.check()" @click="logout" class="nav-item">退出</a>
           -->
 
           <a @click="goOut" class="nav-item"><label class="my-title">{{userName}}</label>/退出</a>
@@ -52,8 +52,9 @@ export default {
   },
 
   mounted() {
-    let user = goodStorage.get('USERINFO');
-    this.userName = user.userRealName;
+    //let user = goodStorage.get('USERINFO');
+    //this.userName = user.userRealName;
+    this.userName = "admin"
   },
 
   props: {

@@ -9,7 +9,7 @@
 import SystemTable from './system/Table';
 import MyMessage from 'components/common/message/Message';
 import { mapGetters, mapMutations } from 'vuex';
-import { unitCall, systemListUrl, systemSaveUrl } from 'base/askUrl';
+//import { unitCall, systemListUrl, systemSaveUrl } from 'base/askUrl';
 import { authority } from 'base/author';
 import { Mixin } from 'base/mixin';
 
@@ -102,7 +102,7 @@ export default {
   created() {},
 
   mounted() {
-    this.__initDate();
+    //this.__initDate();
   }
 }
 </script>

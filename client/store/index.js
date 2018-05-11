@@ -6,13 +6,9 @@ import * as getters from './getters'
 
 import app from './modules/app'
 import menu from './modules/menu'
-import systemControl from './modules/systemControl'
-
-import createLogger from 'vuex/dist/logger'
+import yardsControl from './modules/yardsControl'
 
 Vue.use(Vuex)
-
-const debug = process.env.NODE_ENV !== 'production'
 
 const store = new Vuex.Store({
   strict: true,  // process.env.NODE_ENV !== 'production',
@@ -21,16 +17,14 @@ const store = new Vuex.Store({
   modules: {
     app,
     menu,
-    systemControl
+    yardsControl
   },
   state: {
     pkg
   },
   mutations: {
-  },
-  strict: debug,
-  plugins: debug ? [createLogger()] : []
+    
+  }
 })
 
 export default store
-

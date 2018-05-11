@@ -7,7 +7,7 @@
           <td class="leftCol"><strong class="is-must">权限名称</strong></td><td class="rightCol"><input v-model="newPower['operateName']" type="text" maxlength="15" class="input is-primary"></td>
         </tr>
         <tr>
-          <td class="leftCol"><strong class="is-must">权限标识</strong></td><td class="rightCol"><input v-model="newPower['operateText']" type="text" maxlength="15" class="input is-primary"></td>
+          <td class="leftCol"><strong class="is-must">权限标识</strong></td><td class="rightCol"><input v-model="newPower['operateText']" type="text" maxlength="30" class="input is-primary"></td>
         </tr>
 
         <tr>
@@ -53,7 +53,7 @@
           <td class="leftCol"><strong>权限标识</strong></td><td class="rightCol">{{currentPower.operateText}}</td>
         </tr>
         <tr>
-          <td class="leftCol"><strong>所属类别</strong></td><td class="rightCol">{{currentPower.operateType}}</td>
+          <td class="leftCol"><strong>所属类别</strong></td><td class="rightCol">{{ currentPower.operateType === 'function' ? '功能' : currentPower.operateType === 'module' ? '模块' : '按钮' }}</td>
         </tr>
         <tr>
           <td class="leftCol"><strong>系统来源</strong></td><td class="rightCol">{{currentPower.sacName}}</td>
@@ -126,7 +126,7 @@ export default {
 
       }
 
-      if(!finalPower.operateName || !finnalRole.operateText || !finnalRole.operateType) {
+      if(!finalPower.operateName || !finalPower.operateText || !finalPower.operateType) {
         this.message = '所需字段不能为空!';
         this.infoShow = true;
         return;

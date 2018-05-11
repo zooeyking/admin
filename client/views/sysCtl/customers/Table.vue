@@ -39,11 +39,11 @@
 import Pagination from 'components/common/pagination/Pagination';
 import Loading from 'components/common/loading/Loading';
 import { mapGetters } from 'vuex';
-import { ButtonMixin } from 'base/mixin';
+import { TableMixin } from 'base/mixin';
 
 export default {
 
-  mixins: [ButtonMixin],
+  mixins: [TableMixin],
   
   components: {
     Pagination,

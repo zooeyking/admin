@@ -57,11 +57,11 @@ import Search from './Search';
 import Confirm from './Modal';
 import { mapGetters, mapMutations } from 'vuex';
 import { CommonParams, options, powerListUrl, roleUserUrl,  roleBindUrl, roleUnbindUrl } from 'base/askUrl';
-import { ButtonMixin } from 'base/mixin'
+import { TableMixin } from 'base/mixin'
 
 export default {
 
-  mixins: [ButtonMixin],
+  mixins: [TableMixin],
 
   components: {
     Pagination,

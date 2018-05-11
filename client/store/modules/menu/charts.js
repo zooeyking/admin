@@ -1,10 +1,10 @@
 import lazyLoading from './lazyLoading'
 
 export default {
-  name: '页面管理',
+  name: '校园建筑',
   path: '/charts',
   meta: {
-    icon: 'fa-files-o',
+    icon: 'fa-institution',
     expanded: false,
     link: 'charts/index.vue'
   },
@@ -12,35 +12,27 @@ export default {
 
   children: [
     {
-      name: '模版管理',
-      path: 'chartist',
-      component: lazyLoading('charts/Chartist'),
+      name: '校区管理',
+      path: 'zone',
+      component: lazyLoading('charts/Zone'),
       meta: {
-        link: 'charts/Chartist.vue'
+        link: 'charts/Zone.vue'
       }
     },
     {
-      name: '页面权限',
-      path: 'chartjs',
-      component: lazyLoading('charts/Chartjs'),
-      meta: {
-        link: 'charts/Chartjs.vue'
-      }
-    },
-    {
-      name: 'Peity',
+      name: '建筑分类',
       path: 'peity',
-      component: lazyLoading('charts/Peity'),
+      component: lazyLoading('charts/BuildingType'),
       meta: {
-        link: 'charts/Peity.vue'
+        link: 'charts/BuildingType.vue'
       }
     },
     {
-      name: 'Plotly',
-      path: 'plotly',
-      component: lazyLoading('charts/Plotly'),
+      name: '建筑实体',
+      path: 'chartist',
+      component: lazyLoading('charts/Buildings'),
       meta: {
-        link: 'charts/Plotly.vue'
+        link: 'charts/Buildings.vue'
       }
     }
   ]

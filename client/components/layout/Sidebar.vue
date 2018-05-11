@@ -1,9 +1,5 @@
 <template>
   <aside class="menu app-sidebar animated" :class="{ slideInLeft: show, slideOutLeft: !show }">
-    <!--
-    <p class="menu-label">
-      菜单列表
-    </p>
     <ul class="menu-list">
       <li v-for="(item, index) in menu">
         <router-link :to="item.path" :exact="true" :aria-expanded="isExpanded(item) ? 'true' : 'false'" v-if="item.path" @click.native="toggle(index, item)">
@@ -30,44 +26,6 @@
             </li>
           </ul>
         </expanding>
-      </li>
-    </ul>
-    -->
-    <ul class="menu-list">
-      <li v-for="(item, index) in menu">
-        <!--
-        <router-link :to="item.path" :exact="true" :aria-expanded="isExpanded(item) ? 'true' : 'false'" v-if="item.path" @click.native="toggle(index, item)">
-          <span class="icon is-small"><i :class="['fa', item.meta.icon]"></i></span>
-          {{ item.meta.label || item.name }}
-          <span class="icon is-small is-angle" v-if="item.children && item.children.length">
-            <i class="fa fa-angle-down"></i>
-          </span>
-        </router-link>
-        
-        <a :aria-expanded="isExpanded(item)" v-else @click="toggle(index, item)">
-          <span class="icon is-small"><i :class="['fa', item.meta.icon]"></i></span>
-          {{ item.meta.label || item.name }}
-          <span class="icon is-small is-angle" v-if="item.children && item.children.length">
-            <i class="fa fa-angle-down"></i>
-          </span>
-        </a>
-        -->
-        <router-link :to="item.path">
-          <span class="icon is-small router-logo"><i :class="['fa', item.meta.icon]"></i></span>
-          {{ item.meta && item.meta.label || item.name }}
-        </router-link>
-        
-        <!--
-        <expanding v-if="item.children && item.children.length">
-          <ul v-show="isExpanded(item)">
-            <li v-for="subItem in item.children" v-if="subItem.path">
-              <router-link :to="generatePath(item, subItem)">
-                {{ subItem.meta && subItem.meta.label || subItem.name }}
-              </router-link>
-            </li>
-          </ul>
-        </expanding>
-        -->
       </li>
     </ul>
   </aside>
@@ -88,8 +46,7 @@ export default {
 
   data () {
     return {
-      isReady: false,
-      menu: []
+      isReady: false
     }
   },
 
@@ -101,14 +58,9 @@ export default {
     }
   },
 
-  computed:{
-    ...mapGetters(['menuitems'])
-    /*
-    ...mapGetters({
-      menu : 'menuitems'
-    })
-    */
-  },
+  computed: mapGetters({
+    menu: 'menuitems'
+  }),
 
   methods: {
     ...mapActions([
@@ -171,18 +123,7 @@ export default {
     $route (route) {
       this.isReady = true
       this.shouldExpandMatchItem(route)
-    },
-    
-    'menuitems': {
-      handler(newVal) {
-        this.menu = newVal;
-        //console.log(newVal);
-        //this.$router.addRoutes(newVal);
-        //console.log(this.$router);
-      },
-      deep: true
     }
-
   }
 
 }
@@ -226,10 +167,6 @@ export default {
   }
 
   .menu-list {
-    .router-logo {
-      margin-right: 5px;
-    }
-
     li a {
       &[aria-expanded="true"] {
         .is-angle {
@@ -240,11 +177,6 @@ export default {
 
     li a + ul {
       margin: 0 10px 0 15px;
-    }
-
-    li ul {
-      border-left: none;
-      padding-left: 0; 
     }
   }
 

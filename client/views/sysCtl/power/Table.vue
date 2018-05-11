@@ -1,4 +1,4 @@
-<template>
+F<template>
   <div>
     <div class="tile is-ancestor">
       <div class="tile is-parent">
@@ -24,7 +24,7 @@
                 <td>{{ pernum*currentPage+index+1 }}</td>
                 <td>{{power.operateName}}</td>
                 <td>{{power.parentOperateName || '' }}</td>
-                <td>{{power.operateType}}</td>
+                <td>{{ power.operateType === 'function' ? '功能' : power.operateType === 'module' ? '模块' : '按钮' }}</td>
                 <td>{{power.operateText}}</td>
 
                 <td>
@@ -57,14 +57,14 @@ import Loading from 'components/common/loading/Loading';
 import Confirm from './Modal';
 import Search from './Search';
 import { mapGetters, mapMutations } from 'vuex';
-import { ButtonMixin } from 'base/mixin';
+import { TableMixin } from 'base/mixin';
 
 //每页显示的数量
 const PERNUM = 20;
 
 export default {
 
-  mixins: [ButtonMixin],
+  mixins: [TableMixin],
 
   components: {
     Pagination,
@@ -110,7 +110,7 @@ export default {
     showAddRoot() {
       this.modalConfig = {
         addRoot: 1,
-        title: '添加跟权限',
+        title: '添加根权限',
         footerShow: true,
         searchResult: []
       };

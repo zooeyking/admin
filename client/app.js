@@ -1,15 +1,22 @@
-import Vue from 'vue'
-import axios from 'axios'
-import VueAxios from 'vue-axios'
-import VueAuth from '@websanova/vue-auth'
-import NProgress from 'vue-nprogress'
-import { sync } from 'vuex-router-sync'
-import App from './App.vue'
-import router from './router'
-import store from './store'
-import * as filters from './filters'
-import { TOGGLE_SIDEBAR } from 'vuex-store/mutation-types'
+import Vue from 'vue';
+import axios from 'axios';
+import VueAxios from 'vue-axios';
+import VueAuth from '@websanova/vue-auth';
+import NProgress from 'vue-nprogress';
+import { sync } from 'vuex-router-sync';
+import App from './App.vue';
+import router from './router';
+import store from './store';
+import * as filters from './filters';
+import { TOGGLE_SIDEBAR } from 'vuex-store/mutation-types';
 import { authority } from 'base/author';
+import qs from 'qs';
+//import './assets/ueditor/ueditor.config.js';
+//import './assets/ueditor/ueditor.all.min.js';
+//import './assets/ueditor/lang/zh-cn/zh-cn.js';
+//import './assets/ueditor/ueditor.parse.min.js';
+
+Vue.prototype.$querystring=qs
 
 Vue.router = router
 Vue.use(VueAxios, axios)
@@ -45,7 +52,7 @@ router.beforeEach((route, redirect, next) => {
     store.commit(TOGGLE_SIDEBAR, false)
   }
   //console.log(111);
-  authority();
+  //authority();
   next();
 })
 

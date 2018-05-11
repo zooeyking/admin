@@ -49,7 +49,7 @@ export const Mixin = {
 }
 
 
-export const ButtonMixin = {
+export const TableMixin = {
 	props: {
 		initPage: {
 			type: Boolean,

@@ -18,7 +18,7 @@
 <script>
 import { authority } from 'base/author';
 import { Mixin } from 'base/mixin';
-import { unitCall, appSrcListUrl, operateAddUrl, operateSearchUrl, operateDelUrl } from 'base/askUrl';
+//import { unitCall, appSrcListUrl, operateAddUrl, operateSearchUrl, operateDelUrl } from 'base/askUrl';
 import { mapGetters, mapMutations } from 'vuex';
 import MyMessage from 'components/common/message/Message';
 import MyTable from './power/Table';
@@ -158,7 +158,7 @@ export default {
   },
 
   mounted() {
-    this.__initAppList();
+    //this.__initAppList();
     this.setPowers([]);
   },
 

@@ -25,7 +25,7 @@ import MyMessage from 'components/common/message/Message';
 import { mapGetters, mapMutations } from 'vuex';
 import { authority } from 'base/author';
 import { Mixin } from 'base/mixin';
-import { unitCall, unbindedRoleUsersUrl, roleListUrl, roleUpdateUrl, roleSaveUrl, roleCopyUrl, roleDelUrl, appSrcListUrl, powerListUrl, roleUserUrl,  roleBindUrl, roleUnbindUrl } from 'base/askUrl';
+//import { unitCall, unbindedRoleUsersUrl, roleListUrl, roleUpdateUrl, roleSaveUrl, roleCopyUrl, roleDelUrl, appSrcListUrl, powerListUrl, roleUserUrl,  roleBindUrl, roleUnbindUrl } from 'base/askUrl';
 
 export default {
 
@@ -222,7 +222,7 @@ export default {
 
   mounted() {
     //debugger
-    this.__initDate();
+    //this.__initDate();
   },
 
   watch: {

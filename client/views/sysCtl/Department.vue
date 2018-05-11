@@ -21,7 +21,7 @@
 <script>
 import { authority } from 'base/author';
 import { Mixin } from 'base/mixin';
-import { unitCall, unbindedPartmentUsersUrl, partmentListUrl, partmentSaveUrl, partmentUserUrl, partmentBindUrl, partmentUnbindUrl, partmentDelUrl } from 'base/askUrl';
+//import { unitCall, unbindedPartmentUsersUrl, partmentListUrl, partmentSaveUrl, partmentUserUrl, partmentBindUrl, partmentUnbindUrl, partmentDelUrl } from 'base/askUrl';
 import { mapGetters, mapMutations } from 'vuex';
 import MyMessage from 'components/common/message/Message';
 import MyTable from './department/Table';
@@ -200,7 +200,7 @@ export default {
   },
 
   mounted() {
-    this.__init()
+    //this.__init()
   },
 
   //vuex引入部门数据

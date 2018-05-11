@@ -49,11 +49,11 @@ import Loading from 'components/common/loading/Loading';
 import Search from './Search';
 import Confirm from './Modal';
 import { mapGetters, mapMutations } from 'vuex';
-import { ButtonMixin } from 'base/mixin';
+import { TableMixin } from 'base/mixin';
 
 export default {
 
-  mixins: [ButtonMixin],
+  mixins: [TableMixin],
 
   components: {
     Pagination,

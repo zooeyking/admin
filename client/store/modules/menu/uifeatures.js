@@ -2,43 +2,59 @@ import lazyLoading from './lazyLoading'
 
 export default {
   meta: {
-    label: '终端管理',
+    label: '业务管理',
     icon: 'fa-laptop',
     expanded: false
   },
 
   children: [
     {
-      name: '终端权限',
-      path: '/buttons',
+      name: '服务分类',
+      path: '/server-type',
       meta: {
-        link: 'ui/Buttons.vue'
+        link: 'affairs/ServerType.vue'
       },
-      component: lazyLoading('ui/Buttons')
+      component: lazyLoading('affairs/ServerType')
     },
     {
-      name: '分组管理',
-      path: '/form',
+      name: '信息管理',
+      path: '/information',
       meta: {
-        link: 'ui/Form.vue'
+        link: 'affairs/Information.vue'
       },
-      component: lazyLoading('ui/Form')
+      component: lazyLoading('affairs/Information')
     },
     {
-      name: '终端维护',
-      path: '/typography',
+      name: '引导管理',
+      path: '/guide',
       meta: {
-        link: 'ui/Typography.vue'
+        link: 'affairs/Guide.vue'
       },
-      component: lazyLoading('ui/Typography')
+      component: lazyLoading('affairs/Guide')
     },
     {
-      name: 'Icons',
-      path: '/icons',
+      name: '活动管理',
+      path: '/party',
       meta: {
-        link: 'ui/Icons.vue'
+        link: 'affairs/Party.vue'
       },
-      component: lazyLoading('ui/Icons')
+      component: lazyLoading('affairs/Party')
+    },
+    {
+      name: '机构分类',
+      path: '/organization',
+      meta: {
+        link: 'affairs/Organization.vue'
+      },
+      component: lazyLoading('affairs/Organization')
+    },
+    {
+      name: '机构管理',
+      path: '/agency',
+      meta: {
+        link: 'affairs/Agency.vue'
+      },
+      component: lazyLoading('affairs/Agency')
     }
   ]
 }

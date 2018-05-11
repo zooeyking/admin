@@ -35,7 +35,27 @@ const __flatData = function (arr) {
     return newArr;
 }
 
+//根据经纬度坐标点获取中心点
+const __getCenter = function (pathData) {
+    let lngArr = [];
+    let latArr = [];
+    for(let i=0; i<pathData.length; i++) {
+      lngArr.push(pathData[i]['lng']);
+      latArr.push(pathData[i]['lat']);
+    }
+    let lngMax = Math.max.apply(null, lngArr);
+    let lngMin = Math.min.apply(null, lngArr);
+    let latMax = Math.max.apply(null, latArr);
+    let latMin = Math.min.apply(null, latArr);
+    let lngMid = Number(((lngMax + lngMin)/2).toFixed(6));
+    let latMid = Number(((latMax + latMin)/2).toFixed(6));
+
+    return { lng:lngMid, lat:latMid };
+}
+
+
 export {
 	__treesData,
-    __flatData
+    __flatData,
+    __getCenter
 }

@@ -5,19 +5,6 @@ import lazyLoading from 'tools/js/lazyLoading';
 import jsonp from 'tools/js/jsonp';
 import { logInUrl, logOutUrl, unitCall, userPowerUrl, _refreshCommonParams } from 'base/askUrl';
 
-//验证权限方法
-const authority = function() {
-	let token = goodStorage.get('APPTOKEN');
-
-	if(token){
-		UserInfo();
-		unitCall(__powerSuccess, __failed, userPowerUrl);
-	}else{
-	    window.location.href = logInUrl;
-	}
-
-}
-
 
 //退出成功回调
 function __logOutSuccess() {
@@ -116,13 +103,31 @@ const allMenu = [
     }
   ]
 
+//验证权限方法
+const authority = function() {
+  //let token = goodStorage.get('APPTOKEN');
+  let token = 1;
+
+  if(token){
+    UserInfo();
+    //unitCall(__powerSuccess, __failed, userPowerUrl);
+    let powers = {value: allMenu}
+    console.log(powers);
+    __powerSuccess(powers)
+  }else{
+    window.location.href = logInUrl;
+  }
+}
+
+
 //获取当前登录用户的权限
 function __powerSuccess(res) {
   let power = res.value ? res.value : [];
-
+  /*
   if(!isSetMenu) {
   	__setMenus(power);
   }
+  */
   
 }
 
@@ -178,12 +183,7 @@ function __setMenus(arr) {
   for(let i=0; i<power.length; i++) {
   	final[power[i]['operateText']] = 1;
   }
- /* final['role'] = 1;
-  final['role_add'] = 1;
-  final['role_copy'] = 1;
-  final['role_bind_power'] = 1;
-  final['role_bind_user'] = 1;
-  final['role_delete'] = 1;*/
+ 
   store.commit('SET_SYS_PERMISSION',final);
 
   isSetMenu = true;

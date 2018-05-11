@@ -11,7 +11,7 @@ import MyMessage from 'components/common/message/Message';
 import { mapGetters, mapMutations } from 'vuex';
 import { authority } from 'base/author';
 import { Mixin } from 'base/mixin';
-import { unitCall, customersUrl } from 'base/askUrl';
+//import { unitCall, customersUrl } from 'base/askUrl';
 
 export default {
 
@@ -61,7 +61,7 @@ export default {
   
   mounted() {
     //初始化页面数据
-    this.__initDate();
+    //this.__initDate();
   }
 }
 </script>

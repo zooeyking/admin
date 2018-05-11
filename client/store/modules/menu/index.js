@@ -1,9 +1,7 @@
 import * as types from '../../mutation-types'
-//import lazyLoading from './lazyLoading'
-//import charts from './charts'
-//import uifeatures from './uifeatures'
-//import components from './components'
-import sysCtl from './sysCtl'
+import lazyLoading from './lazyLoading'
+import charts from './charts'
+import uifeatures from './uifeatures'
 
 // show: meta.label -> name
 // name: component name
@@ -11,32 +9,9 @@ import sysCtl from './sysCtl'
 
 const state = {
   items: [
-  /*
-    {
-      name: 'Dashboard',
-      path: '/dashboard',
-      meta: {
-        icon: 'fa-tachometer',
-        link: 'dashboard/index.vue'
-      },
-      component: lazyLoading('dashboard', true)
-    },
-    {
-      name: 'Axios',
-      path: '/axiosDemo',
-      meta: {
-        auth: true,
-        icon: 'fa-rocket',
-        link: 'axios/index.vue'
-      },
-      component: lazyLoading('axios', true)
-    },
-  */
-    //charts,
-    //uifeatures,
-    //components,
-    sysCtl
-
+    
+    charts,
+    uifeatures,
   ]
 }
 
@@ -49,12 +24,6 @@ const mutations = {
     } else if (menuItem.item && 'expanded' in menuItem.item.meta) {
       menuItem.item.meta.expanded = menuItem.expanded
     }
-  },
-
-  [types.SET_SYS_MENU] (state, list) {
-    //console.log(list);
-    //state.items.children = list;
-    state.items = list;
   }
 }
 
