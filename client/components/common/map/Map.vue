@@ -1,22 +1,27 @@
 <template>
   <div>
     <baidu-map 
-    class="bm-view" 
-    ak="H8S40o4ZdE6hN4W4ESYvCgRY" 
+
+    ak="H8S40o4ZdE6hN4W4ESYvCgRY"
+    :class="initSize"  
     :center="centerPoint" 
     :zoom="zoom" 
     :scroll-wheel-zoom="flexible"
     :cursorStyle="cursorFlag === true ? 'point' : 'crosshair' "
 
     @mousemove="syncPolygon"
-    @click="paintPolygon"
-    @rightclick="newPolygon"
+    @click="paintMap"
 
     >
 
-      <bm-control>
+      <bm-control v-if="drawType === 'polygon'">
         <button class="button is-warning" @click="toggle('polygon')">{{ polygon.editing ? '停止绘制' : '开始绘制' }}</button>
         <button class="button is-warning clearPath" @click="clearPath('polygon')">清空</button>
+      </bm-control>
+
+      <bm-control v-if="drawType === 'position'">
+        <button class="button is-warning" @click="toggle('position')">{{ position.editing ? '停止绘制' : '开始绘制' }}</button>
+        <button class="button is-warning clearPath" @click="clearPoint('position')">清空</button>
       </bm-control>
 
       <!--
@@ -25,8 +30,12 @@
       </bm-control>
       <bm-polyline :path="path" v-for="(path, index) of polyline.paths" :key="index" :stroke-weight="1"></bm-polyline>
       -->
+
+      <bm-marker v-if="drawType === 'position'" :position="position.point" :dragging="true" animation="BMAP_ANIMATION_BOUNCE">
+        
+      </bm-marker>
       
-      <bm-polygon :path="polygon.paths" stroke-color="blue" fill-color="red" :fill-opacity="0.2" :stroke-opacity="0.5" :stroke-weight="1" :editing="true" @lineupdate="updatePolygonPath"/>
+      <bm-polygon v-if="drawType === 'polygon'" :path="polygon.paths" stroke-color="blue" fill-color="red" :fill-opacity="0.2" :stroke-opacity="0.5" :stroke-weight="1" :editing="true" @lineupdate="updatePolygonPath"/>
     </baidu-map>
   </div>
 </template>
@@ -36,13 +45,15 @@ import BaiduMap from 'vue-baidu-map/components/Map/Map.vue';
 import BmControl from 'vue-baidu-map/components/controls/Control.vue';
 import BmPolyline from 'vue-baidu-map/components/overlays/Polyline.vue';
 import BmPolygon from 'vue-baidu-map/components/overlays/Polygon.vue';
+import BmMarker from 'vue-baidu-map/components/overlays/Marker.vue';
 
 export default {
   components: {
     BaiduMap,
     BmControl,
     BmPolyline,
-    BmPolygon
+    BmPolygon,
+    BmMarker
   },
 
   props: {
@@ -57,6 +68,16 @@ export default {
       default () {
         return {lng: 121.601268, lat: 31.18331}
       }
+    },
+    drawType: {
+      type: String,
+      default () {
+        return 'polygon'
+      }
+    },
+    initSize: {
+      type: String,
+      default: 'bm-view'
     }
   },
 
@@ -72,6 +93,10 @@ export default {
       polygon: {
         editing: false,
         paths: this.pathData
+      },
+      position: {
+        editing: false,
+        point: this.centerPoint
       },
       /*
       polygonPath: [
@@ -95,7 +120,11 @@ export default {
     },
 
     clearPath (name) {
-      this[name].paths = []
+      if(this[name] === 'position') {
+        this[name].point = {}
+      }else{
+        this[name].paths = []
+      }
     },
     /*
     syncPolyline (e) {
@@ -173,18 +202,24 @@ export default {
       }
       */
     },
-    paintPolygon (e) {
-      if (!this.polygon.editing) {
-        return
+    paintMap (e) {
+      if (this.polygon.editing) {
+        const {paths} = this.polygon;
+        paths.push(e.point);
+        return;
       }
-      const {paths} = this.polygon
-      paths.push(e.point)
+
+      if (this.position.editing) {
+        this.position.point = e.point;
+        return;
+      }
+      
       //!paths.length && paths.push([])
       //paths[paths.length - 1].push(e.point)
     },
     updatePolygonPath (e) {
       this.polygon.paths = e.target.getPath();
-    },
+    }
   },
 
   watch: {
@@ -204,7 +239,7 @@ export default {
   },
 
   mounted () {
-    
+    console.log(this.initSize);
   }
 }
 </script>
@@ -214,6 +249,10 @@ export default {
 .bm-view {
   width: 100%;
   height: 500px;
+}
+.bm-view-lower {
+  width: 100%;
+  height: 300px;
 }
 .clearPath {
   margin-left: 10px;

@@ -8,7 +8,8 @@ module.exports = {
     env: require('./prod.env'),
     index: path.resolve(__dirname, '../dist/index.html'),
     assetsRoot: path.resolve(__dirname, '../dist'),
-    assetsSubDirectory: 'assets',
+    //assetsSubDirectory: 'assets',
+    assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     productionSourceMap: true,
     // Gzip off by default as many popular static hosts such as
@@ -22,7 +23,8 @@ module.exports = {
     env: require('./dev.env'),
     port: process.env.DEV_PORT || 8090,
     autoOpenBrowser: true,
-    assetsSubDirectory: 'assets',
+    //assetsSubDirectory: 'assets',
+    assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
         '/MODApis': {

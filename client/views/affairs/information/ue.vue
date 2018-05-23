@@ -1,6 +1,8 @@
 <template>
   <div class="components-container">
-    测试
+    <div class="editor-container">
+      <UE :defaultMsg="defaultMsg" :config="config" ref="ue"></UE>
+    </div>
   </div>
 </template>
 <style>
@@ -24,14 +26,28 @@
     data() {
       return {
 
-        defaultMsg: '这里是UE测试',
+        defaultMsg: '这里输入内容',
 
-        
+        config: {
+          initialFrameWidth: null,
+          initialFrameHeight: 350
+        }
       }
     },
     methods: {
 
-      
+      getUEContent() {
+        let content = this.$refs.ue.getUEContent();
+
+        /*
+        this.$notify({
+          title: '获取成功，可在控制台查看！',
+          message: content,
+          type: 'success'
+        });
+        */
+        console.log(content)
+      }
     }
   };
 </script>

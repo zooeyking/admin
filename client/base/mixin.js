@@ -14,8 +14,8 @@ export const Mixin = {
 	      this.showMessage = true;
 	      
 	      this.messageType = 1;
-	      //console.log(err);
-	      this.errInfo = err.message;
+	      console.log(err)
+	      this.errInfo = err.value || err.message;
 	      /*
 	      switch(err.code) {
 	        

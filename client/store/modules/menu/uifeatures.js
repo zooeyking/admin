@@ -9,12 +9,12 @@ export default {
 
   children: [
     {
-      name: '服务分类',
-      path: '/server-type',
+      name: '信息分类',
+      path: '/infoType',
       meta: {
-        link: 'affairs/ServerType.vue'
+        link: 'affairs/InfoType.vue'
       },
-      component: lazyLoading('affairs/ServerType')
+      component: lazyLoading('affairs/InfoType')
     },
     {
       name: '信息管理',

@@ -70,9 +70,11 @@ export default {
         delete type.addFlag;
       }else if(type.modifyFlag) {
         url = organizationEditUrl;
+        delete type.campusList;
         delete type.modifyFlag;
       }else if(type.delFlag) {
         url = organizationDeleteUrl;
+        delete type.campusList;
         delete type.delFlag;
       }
       unitCall(url, type).then(this.__operaSuccess).catch(this.__failed).then(this.__initDate);
@@ -117,36 +119,36 @@ export default {
 
     //根据页码查询成功回调
     __pageSearchSuccess(data) {
-      if(data.value.list) {
-        let result = data.value.list;
+      if(data.value[0].list) {
+        let result = data.value[0].list;
         this.setOrganizationList(result);
       }else{
         this.setOrganizationList([]);
       }
-      this.totalNum = data.value.total ? data.value.total : 0;
+      this.totalNum = data.value[0].total ? data.value[0].total : 0;
     },
 
     //根据参数查询成功回调
     __paramsSearchSuccess(data) {
-      if(data.value.list) {
-        let result = data.value.list;
+      if(data.value[0].list) {
+        let result = data.value[0].list;
         this.setOrganizationList(result);
       }else{
         this.setOrganizationList([]);
       }
-      this.totalNum = data.value.total ? data.value.total : 0;
+      this.totalNum = data.value[0].total ? data.value[0].total : 0;
       this.initPage = !this.initPage;
     },
 
     //初始化校区查询成功回调
     __initZoneSuccess(data) {
-      if(data.value.list) {
-        let result = data.value.list;
+      if(data.value[0].list) {
+        let result = data.value[0].list;
         this.setZoneList(result);
       }else{
         this.setZoneList([]);
       }
-      this.totalNum = data.value.total ? data.value.total : 0;
+      this.totalNum = data.value[0].total ? data.value[0].total : 0;
     },
 
     //机构类别修改操作成功回调

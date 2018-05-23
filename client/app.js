@@ -11,10 +11,6 @@ import * as filters from './filters';
 import { TOGGLE_SIDEBAR } from 'vuex-store/mutation-types';
 import { authority } from 'base/author';
 import qs from 'qs';
-//import './assets/ueditor/ueditor.config.js';
-//import './assets/ueditor/ueditor.all.min.js';
-//import './assets/ueditor/lang/zh-cn/zh-cn.js';
-//import './assets/ueditor/ueditor.parse.min.js';
 
 Vue.prototype.$querystring=qs
 

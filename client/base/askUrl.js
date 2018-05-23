@@ -7,7 +7,7 @@ import { safe } from './safe';
 //请求地址
 const ip = "http://192.168.1.15:8088";
 //const ip = "http://10.15.21.68:8098";
-//const ip = "http://192.168.1.70:8098";
+//const ip = "http://192.168.1.70:8099";
 
 const url = ip + "/gis-service/sys";
 
@@ -131,31 +131,55 @@ const serviceTypeDeleteUrl = url + '/service_category/deleteById';
 const uploadLogoUrl = url + '/upload/uploadImg';
 
 //获取服务信息清单
-const serviceInfoListUrl = url + '/service_info/queryListByWhere';
+const informationListUrl = url + '/service_info/queryListByWhere';
 
 //编辑服务信息
-const serviceInfoEditUrl = url + '/service_info/saveOrUpdate';
+const informationEditUrl = url + '/service_info/saveOrUpdate';
 
 //删除服务信息
-const serviceInfoDeleteUrl = url + '/service_info/deleteById';
+const informationDeleteUrl = url + '/service_info/deleteById';
 
-//获取服务分类清单
-const guideListUrl = url + '/service_category/queryListByWhere';
+//获取引导清单
+const guideListUrl = url + '/guide_detail/queryListByWhere';
 
-//编辑服务分类
-const guideEditUrl = url + '/service_category/saveOrUpdate';
+//编辑引导
+const guideEditUrl = url + '/guide_detail/saveOrUpdate';
 
-//删除服务分类
-const guideDeleteUrl = url + '/service_category/deleteById';
+//删除引导
+const guideDeleteUrl = url + '/guide_detail/deleteById';
 
-//获取服务信息清单
-const partyListUrl = url + '/service_info/queryListByWhere';
+//引导关联信息
+const linkInfoUrl = url + '/guide_detail/relationServiceInfo';
 
-//编辑服务信息
-const partyEditUrl = url + '/service_info/saveOrUpdate';
+//引导解绑信息
+const unLinkInfoUrl = url + '/guide_detail/removeRelation';
 
-//删除服务信息
-const partyDeleteUrl = url + '/service_info/deleteById';
+//引导关联信息列表
+const infoRelationsUrl = url + '/guide_detail/relations';
+
+//引导关联信息列表
+const infoNotRelationsUrl = url + '/guide_detail/notRelations';
+
+//获取活动清单
+const partyListUrl = url + '/guide/queryListByWhere';
+
+//编辑活动信息
+const partyEditUrl = url + '/guide/saveOrUpdate';
+
+//删除活动
+const partyDeleteUrl = url + '/guide/deleteById';
+
+//活动关联引导
+const linkGuideUrl = url + '/guide/relationGudetail';
+
+//活动解绑引导
+const unLinkGuideUrl = url + '/guide/removeRelation';
+
+//活动关联引导列表
+const guideRelationsUrl = url + '/guide/relations';
+
+//活动未关联引导列表
+const guideNotRelationsUrl = url + '/guide/notRelations';
 
 //机构类别清单
 const organizationListUrl = url + '/organization/queryListByWhere';
@@ -183,7 +207,6 @@ const agencyEditUrl = url + '/org_entity/saveOrUpdate';
 
 //删除机构
 const agencyDeleteUrl = url + '/org_entity/deleteById';
-
 
 export {
 	logInUrl,
@@ -214,15 +237,23 @@ export {
 	serviceTypeEditUrl,
 	serviceTypeDeleteUrl,
 	uploadLogoUrl,
-	serviceInfoListUrl,
-	serviceInfoEditUrl,
-	serviceInfoDeleteUrl,
+	informationListUrl,
+	informationEditUrl,
+	informationDeleteUrl,
 	guideListUrl,
 	guideEditUrl,
 	guideDeleteUrl,
 	partyListUrl,
 	partyEditUrl,
-	partyDeleteUrl
+	partyDeleteUrl,
+	linkInfoUrl,
+	unLinkInfoUrl,
+	infoRelationsUrl,
+	infoNotRelationsUrl,
+	linkGuideUrl,
+	unLinkGuideUrl,
+	guideRelationsUrl,
+	guideNotRelationsUrl
 }
 
 

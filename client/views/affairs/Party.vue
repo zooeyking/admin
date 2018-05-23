@@ -4,16 +4,16 @@
 
     @paramsSearch="paramsSearch"
     @pageSearch="pageSearch"
-    @getZone="getZone"
-    @bind="bind"
-    @unBind="unBind" 
+    @getLinkGuide="getLinkGuide"
+    @getUnLinkGuide="getUnLinkGuide"
+    @upimg="upimg" 
     @ok="ok"
     :confirmClose="confirmClose" 
     :totalNum="totalNum"
     :initPage="initPage"
 
     ></party-table>
-    <my-message v-if="showMessage" @dispear="dispear" :messageType="messageType"></my-message>
+    <my-message v-if="showMessage" @dispear="dispear" :messageType="messageType" :errInfo="errInfo"></my-message>
   </div>
 </template>
 
@@ -21,8 +21,10 @@
 import PartyTable from './party/Table';
 import MyMessage from 'components/common/message/Message';
 import { mapGetters, mapMutations } from 'vuex';
-import { unitCall, organizationListUrl, organizationEditUrl, organizationDeleteUrl } from 'base/askUrl';
+import { unitCall, uploadLogoUrl, partyListUrl, partyEditUrl, partyDeleteUrl, linkGuideUrl, unLinkGuideUrl, guideRelationsUrl, guideNotRelationsUrl, guideListUrl } from 'base/askUrl';
 import { Mixin } from 'base/mixin';
+import axios from 'axios';
+import Bus from 'base/bus';
 
 export default {
 
@@ -46,33 +48,55 @@ export default {
 
   methods: {
 
+    //图片上传
+    upimg(file) {
+      console.log(file);
+      let formData=new FormData();
+
+      formData.append('file',file);
+      
+      // 服务器只需按照正常的上传程序代码即可
+      axios.post(uploadLogoUrl,formData).then(res=>{
+        let header = 'http://192.168.1.15:8088/gis-service/files';
+        let url = header + res.data.value[0].url;
+        let newParty = {...this.currentParty, ...{ imagePath: url }};
+        this.setCurrentParty(newParty);
+      }).catch(err=>{
+        console.log(err);
+      })
+      
+    },
+
     //机构类别按参数查询方法
     paramsSearch(args) {
       if (args.name || args.startDate) {
         this.searchParams = args;
       }
       let params = Object.assign({}, this.searchParams, args);
-      unitCall( organizationListUrl, params).then(this.__paramsSearchSuccess).catch(this.__failed);
+      unitCall( partyListUrl, params).then(this.__paramsSearchSuccess).catch(this.__failed);
     },
 
     //机构类别按页码查询方法
     pageSearch(args) {
       let params = Object.assign({}, this.searchParams, args);
-      unitCall(organizationListUrl, params).then(this.__pageSearchSuccess).catch(this.__failed);
+      unitCall(partyListUrl, params).then(this.__pageSearchSuccess).catch(this.__failed);
     },
 
     //机构类别信息更新
     ok() {
       let url = '';
-      let type = {...this.currentOrganization};
+      let type = {...this.currentParty};
+      console.log(type);
       if(type.addFlag) {
-        url = organizationEditUrl;
+        url = partyEditUrl;
         delete type.addFlag;
       }else if(type.modifyFlag) {
-        url = organizationEditUrl;
+        url = partyEditUrl;
+        delete type.guideDetailList;
         delete type.modifyFlag;
       }else if(type.delFlag) {
-        url = organizationDeleteUrl;
+        url = partyDeleteUrl;
+        delete type.guideDetailList;
         delete type.delFlag;
       }
       unitCall(url, type).then(this.__operaSuccess).catch(this.__failed).then(this.__initDate);
@@ -83,53 +107,67 @@ export default {
       this.showMessage = false;
     },
 
-    getZone() {
-      console.log(100);
-      /*
-      this.__getLinkZone()
-      .then(this.__linkZoneSuccess)
-      .then(this.__getUnLinkZone)
-      .then(this.__unLinkZoneSuccess)
-      .catch(this.__failed)
-      */
-      //unitCall( linkZoneUrl, { pageNum : 1}).then(this.__pageSearchSuccess).catch(this.__failed);
+    //获取已关联的引导
+    getLinkGuide() {
+      let currentId = this.currentParty.id;
+      return unitCall( guideRelationsUrl, { pageNum : 1, id: currentId}).then(this.__getLinkGuideSuccess).catch(this.__failed);
     },
 
-    bind() {
-      console.log(1111)
-      //unitCall( linkZoneUrl, { pageNum : 1}).then(this.__linkZoneSuccess).catch(this.__failed);
+    //获取未关联的引导
+    getUnLinkGuide() {
+      let currentId = this.currentParty.id;
+      return unitCall( guideNotRelationsUrl, { pageNum : 1, id: currentId}).then(this.__getUnLinkGuideSuccess).catch(this.__failed);
     },
 
-    unBind() {
-      console.log(222)
-      //unitCall( linkZoneUrl, { pageNum : 1}).then(this.__unLinkZoneSuccess).catch(this.__failed);
+    //引入引导操作
+    __doLink(arr) {
+      let url = linkGuideUrl;
+      let type = {...this.currentParty};
+      delete type.guideDetailList;
+      let selectedStr = arr.join();
+      
+      let final = Object.assign({}, type, { gdids: selectedStr});
+      
+      unitCall(url, final).then(this.__operaBindSuccess).catch(this.__failed).then(this.getUnLinkGuide).then(this.getLinkGuide).then(this.__initDate);
+    },
+
+    //移除引导操作
+    __doUnLink(arr) {
+      let url = unLinkGuideUrl;
+      let type = {...this.currentParty};
+      delete type.guideDetailList;
+      let selectedStr = arr.join();
+      
+      let final = Object.assign({}, type, { gdids: selectedStr});
+      
+      unitCall(url, final).then(this.__operaBindSuccess).catch(this.__failed).then(this.getLinkGuide).then(this.getUnLinkGuide).then(this.__initDate);
     },
 
     //初始化列表数据
     __initDate() {
-      unitCall( organizationListUrl, { pageNum : 1}).then(this.__pageSearchSuccess).catch(this.__failed);
+      unitCall( partyListUrl, { pageNum : 1}).then(this.__pageSearchSuccess).catch(this.__failed);
     },
 
     //根据页码查询成功回调
     __pageSearchSuccess(data) {
-      if(data.value.list) {
-        let result = data.value.list;
-        this.setOrganizationList(result);
+      if(data.value[0].list) {
+        let result = data.value[0].list;
+        this.setPartyList(result);
       }else{
-        this.setOrganizationList([]);
+        this.setPartyList([]);
       }
-      this.totalNum = data.value.total ? data.value.total : 0;
+      this.totalNum = data.value[0].total ? data.value[0].total : 0;
     },
 
     //根据参数查询成功回调
     __paramsSearchSuccess(data) {
-      if(data.value.list) {
-        let result = data.value.list;
-        this.setOrganizationList(result);
+      if(data.value[0].list) {
+        let result = data.value[0].list;
+        this.setPartyList(result);
       }else{
-        this.setOrganizationList([]);
+        this.setPartyList([]);
       }
-      this.totalNum = data.value.total ? data.value.total : 0;
+      this.totalNum = data.value[0].total ? data.value[0].total : 0;
       this.initPage = !this.initPage;
     },
 
@@ -140,54 +178,86 @@ export default {
       this.confirmClose = !this.confirmClose;
     },
 
-    //获取已关联的校区
-    __getLinkZone() {
-      return unitCall( linkZoneUrl, { pageNum : 1});
+    //机构类别修改操作成功回调
+    __operaBindSuccess() {
+      this.showMessage = true;
+      this.messageType = 0;
     },
 
-    //获取未关联的校区
-    __getUnLinkZone() {
-      return unitCall( unLinkZoneUrl, { pageNum : 1});
+    //获取已关联引导成功回调
+    __getLinkGuideSuccess(data) {
+
+      if(data.value[0].list) {
+        let result = data.value[0].list;
+        this.setLinkGuideList(result);
+      }else{
+        this.setLinkGuideList([]);
+      }
+
+      
+    },
+
+    //获取未关联引导成功回调
+    __getUnLinkGuideSuccess(data) {
+
+      if(data.value[0].list) {
+        let result = data.value[0].list;
+        this.setUnLinkGuideList(result);
+      }else{
+        this.setUnLinkGuideList([]);
+      }
+
     },
 
     //机构类别关联操作成功回调
-    __linkZoneSuccess() {
-      if(data.value.list) {
-        let result = data.value.list;
-        this.setLinkZoneList(result);
+    __linkGuideSuccess(data) {
+      if(data.value[0].list) {
+        let result = data.value[0].list;
+        this.setLinkGuideList(result);
       }else{
-        this.setLinkZoneList([]);
+        this.setLinkGuideList([]);
       }
     },
 
     //机构类别解除关联操作成功回调
-    __unLinkZoneSuccess() {
-      if(data.value.list) {
-        let result = data.value.list;
-        this.setUnLinkZoneList(result);
+    __unLinkGuideSuccess(data) {
+      if(data.value[0].list) {
+        let result = data.value[0].list;
+        this.setUnLinkGuideList(result);
       }else{
-        this.setUnLinkZoneList([]);
+        this.setUnLinkGuideList([]);
       }
     },
     
     //vuex引入设置类别数据方法
     ...mapMutations({ 
-      setOrganizationList : 'SET_ORGANIZATIONLIST',
-      setLinkZoneList : 'SET_LINKZONELIST',
-      setUnLinkZoneList : 'SET_UNLINKZONELIST',
+      setPartyList : 'SET_PARTYLIST',
+      setCurrentParty : 'SET_CURRENTPARTY',
+      setGuideList : 'SET_GUIDELIST',
+      setLinkGuideList : 'SET_LINKGUIDELIST',
+      setUnLinkGuideList : 'SET_UNLINKGUIDELIST',
     })
   },
 
   //挂载后初始化列表数据
   mounted() {
     this.__initDate();
+    Bus.$on('doLink', this.__doLink);
+    Bus.$on('doUnLink', this.__doUnLink);
   },
 
-  //vuex中引入机构类别数据
+  //清除Bus监听
+  beforeDestroy() {
+    Bus.$off('doLink');
+    Bus.$off('doUnLink');
+  },
+
+  //vuex中引入活动数据
   computed: {
     ...mapGetters({
-      organizationList : 'organizationData',
-      currentOrganization : 'organization'
+      partyList : 'partyData',
+      guideList : 'guideData',
+      currentParty : 'party'
     })
   }
 }

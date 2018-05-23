@@ -64,7 +64,6 @@ export default {
     cancel () {
       this.$emit('close');
       this.infoShow = false;
-      this.newType = {}
     },
 
     open () {},
@@ -111,6 +110,10 @@ export default {
     currentType(newVal, oldVal){
       if(this.modalConfig.modify) {
         this.newType = Object.assign({}, newVal);
+      }
+
+      if(this.modalConfig.add) {
+        this.newType = {};
       }
     }
     

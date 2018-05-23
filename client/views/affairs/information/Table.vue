@@ -12,20 +12,19 @@
             <thead>
               <tr>
                 <th>序号</th>
-                <th>类型</th>
                 <th>标题</th>
-                <th>拥有者</th>
+                <th>所属校区</th>
+                <th>信息类别</th>
                 <th>创建时间</th>
                 <th>操作</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(item, index) in myList">
+              <tr v-for="(item, index) in informationList">
                 <td>{{ pernum*currentPage+index+1 }}</td>
-                <td>{{item.type
-}}</td>
-                <td>{{item.name}}</td>
-                <td>{{item.owner}}</td>
+                <td>{{item.title}}</td>
+                <td>{{item.campus.name}}</td>
+                <td>{{item.serviceCategory.name}}</td>
                 <td>{{item.createDate}}</td>
                 
                 <td>
@@ -35,7 +34,7 @@
                     <button v-if="userPermission.user_modify" class="button is-warning is-small"  @click="showModify(zone)">修改</button>
                     <button v-if="userPermission.user_delete" class="button is-danger is-small" @click="showDel(zone)">删除</button>
                     -->
-                    <button class="button is-warning is-small"  @click="showTest(item)">测试</button>
+                    <button class="button is-primary is-small"  @click="showDetail(item)">详情</button>
                     <button class="button is-warning is-small"  @click="showModify(item)">修改</button>
                     <button class="button is-danger is-small" @click="showDel(item)">删除</button>
                   </div>
@@ -43,7 +42,7 @@
               </tr>
             </tbody>
           </table>
-
+          
           <pagination ref="pages" :allItems="totalNum" @changeIndex="getIndex" :pernum="pernum"></pagination>
 
           <confirm :visible="confirmShow" @close="closeDetail" :modalConfig="modalConfig" :modalType="modalType" @ok="ok"></confirm>
@@ -94,13 +93,6 @@ export default {
       currentIndex: 0,
       modalConfig: {},
       modalType: 'zone-card',
-      myList: [
-        {name: '1111', type: '新闻', owner: '建筑', createDate: '2018/05/10'},
-        {name: '2222', type: '全景图', owner: '坐标点', createDate: '2018/05/10' },
-        {name: '3333', type: '视频', owner: '建筑', createDate: '2018/05/10' },
-        {name: '4444', type: '图片', owner: '建筑', createDate: '2018/05/10' },
-        {name: '5555', type: '标记', owner: '坐标点', createDate: '2018/05/10' },
-      ]
     }
   },
 
@@ -110,25 +102,25 @@ export default {
 
   methods: {
 
-    showTest(item) {
+    showDetail(item) {
       this.modalConfig = {
-        test: 1,
-        title: '测试',
-        footerShow: true,
+        detail: 1,
+        title: '信息详情',
+        footerShow: false,
       };
-      this.setCurrentBuilding(item);
-      this.modalType = 'zone-card';
+      this.setCurrentInformation(item);
+      this.modalType = 'modal-card';
       this.confirmShow = true;
     },
 
-    //建筑资料修改
+    //信息资料修改
     showModify(item) {
       this.modalConfig = {
         modify: 1,
         title: '资料修改',
         footerShow: true,
       };
-      this.setCurrentBuilding(item);
+      this.setCurrentInformation(item);
       this.modalType = 'zone-card';
       this.confirmShow = true;
     },
@@ -140,7 +132,7 @@ export default {
         title: '新建信息',
         footerShow: true
       };
-      this.setCurrentBuilding({});
+      this.setCurrentInformation({type: "1"});
       this.modalType = 'zone-card';
       this.confirmShow = true;
     },
@@ -152,7 +144,7 @@ export default {
         title: '确认删除该信息吗？',
         footerShow: true
       };
-      this.setCurrentBuilding(item);
+      this.setCurrentInformation(item);
       this.modalType = 'modal-card';
       this.confirmShow = true;
     },
@@ -164,12 +156,13 @@ export default {
 
     //操作面板确认操作
     ok() {
+      console.log(222);
       this.$emit('ok');
     },
 
     //vuex引入设置用户方法
     ...mapMutations({
-      setCurrentBuilding : 'SET_CURRENTBUILDING'
+      setCurrentInformation : 'SET_CURRENTINFORMATION'
     })
   },
 
@@ -185,8 +178,8 @@ export default {
 
     //vuex引入用户数据
     ...mapGetters({
-      buildingList : 'buildingData',
-      currentBuilding : 'building'
+      informationList : 'informationData',
+      currentInformation : 'information'
     })
   }
 }

@@ -19,7 +19,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(item, index) in organizationList">
+              <tr v-for="(item, index) in partyList">
                 <td>{{ pernum*currentPage+index+1 }}</td>
                 <td>{{item.name}}</td>
                 <td>{{item.info}}</td>
@@ -31,7 +31,8 @@
                     <button v-if="userPermission.user_modify" class="button is-warning is-small"  @click="showModify(item)">修改</button>
                     <button v-if="userPermission.user_delete" class="button is-danger is-small" @click="showDel(item)">删除</button>
                     -->
-                    <button class="button is-primary is-small"  @click="showBind(item)">配置引导项</button>
+                    <button class="button is-primary is-small"  @click="showDetail(item)">查看详情</button>
+                    <button class="button is-primary is-small"  @click="showProcess(item)">引导配置</button>
                     <button class="button is-warning is-small"  @click="showModify(item)">修改</button>
                     <button class="button is-danger is-small" @click="showDel(item)">删除</button>
                   </div>
@@ -42,7 +43,7 @@
 
           <pagination ref="pages" :allItems="totalNum" @changeIndex="getIndex" :pernum="pernum"></pagination>
 
-          <confirm :visible="confirmShow" @close="closeDetail" :modalConfig="modalConfig" :modalType="modalType" @bind="bind" @unBind="unBind" @ok="ok"></confirm>
+          <confirm :visible="confirmShow" @close="closeDetail" :modalConfig="modalConfig" :modalType="modalType" @upimg="upimg" @ok="ok"></confirm>
           
         </article>
       </div>
@@ -88,6 +89,12 @@ export default {
       currentIndex: 0,
       modalConfig: {},
       modalType: '',
+      partyList1: [
+        {name: 111},
+        {name: 111},
+        {name: 111},
+        {name: 111},
+      ]
     }
   },
 
@@ -97,14 +104,30 @@ export default {
 
   methods: {
 
-    //配置引导
-    showBind(item) {
+    //查看详情
+    showDetail(item) {
       this.modalConfig = {
-        bind: 1,
-        title: '配置引导项',
+        detail: 1,
+        title: '详细资料',
+        tabType: 'display',
       };
-      this.setCurrentOrganization(item);
-      this.$emit('getZone');
+      this.setCurrentParty(item);
+      this.$emit('getLinkGuide');
+      this.modalType = 'modal-card';
+      this.confirmShow = true;
+    },
+
+    //配置引导
+    showProcess(item) {
+      this.modalConfig = {
+        process: 1,
+        title: '配置引导项',
+        tabType: 'modify',
+        footerShow: false,
+      };
+      this.setCurrentParty(item);
+      this.$emit('getLinkGuide');
+      this.$emit('getUnLinkGuide');
       this.modalType = 'modal-card';
       this.confirmShow = true;
     },
@@ -115,9 +138,8 @@ export default {
         modify: 1,
         title: '资料修改',
         footerShow: true,
-        tabType: 'modify',
       };
-      this.setCurrentOrganization(item);
+      this.setCurrentParty(item);
       this.modalType = 'modal-card';
       this.confirmShow = true;
     },
@@ -126,22 +148,22 @@ export default {
     showAdd() {
       this.modalConfig = {
         add: 1,
-        title: '添加机构组',
-        footerShow: true
+        title: '添加活动',
+        footerShow: true,
       };
-      this.setCurrentOrganization({});
+      this.setCurrentParty({});
       this.modalType = 'modal-card';
       this.confirmShow = true;
     },
 
-    //删除机构组
+    //删除活动
     showDel(item) {
       this.modalConfig = {
         del: 1,
-        title: '确认删除该机构组吗？',
+        title: '确认删除该活动吗？',
         footerShow: true,
       };
-      this.setCurrentOrganization(item);
+      this.setCurrentParty(item);
       this.modalType = 'modal-card';
       this.confirmShow = true;
     },
@@ -156,17 +178,24 @@ export default {
       this.$emit('ok');
     },
 
+    //绑定引导
     bind() {
       this.$emit('bind');
     },
 
+    //解除引导
     unBind() {
       this.$emit('unBind');
     },
 
+    //上传图片
+    upimg(file) {
+      this.$emit('upimg', file);
+    },
+
     //vuex引入设置机构组方法
     ...mapMutations({
-      setCurrentOrganization : 'SET_CURRENTORGANIZATION',
+      setCurrentParty : 'SET_CURRENTPARTY',
     })
   },
 
@@ -182,8 +211,8 @@ export default {
 
     //vuex引入机构组数据
     ...mapGetters({
-      organizationList : 'organizationData',
-      currentOrganization : 'organization'
+      partyList : 'partyData',
+      currentParty : 'party'
     })
   }
 }

@@ -116,6 +116,7 @@ export default {
         title: '添加分类',
         footerShow: true
       };
+      this.setCurrentType({});
       this.modalType = 'modal-card';
       this.confirmShow = true;
     },

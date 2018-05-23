@@ -1,101 +1,33 @@
 <template>
   <card-modal :modalType="modalType" :visible="visible" @cancel="cancel" @ok="ok" :modalConfig="modalConfig" transition="zoom">
-    
-    <div class="container" v-if="modalConfig.add || modalConfig.modify">
-     
+    <guide-tabs v-if="modalConfig.config || modalConfig.detail" :tabType="modalConfig.tabType" ref="bindInfo"></guide-tabs>
+
+    <div v-if="modalConfig.add || modalConfig.modify" class="map-container">
       <table class="table">
         <tbody>
           <tr>
-            <td class="leftCol"><strong class="is-must">活动名称</strong></td><td class="rightCol"><input v-model="newParty['name']" type="text" class="input is-primary" maxlength="15"></td>
+            <td class="leftCol"><strong class="is-must">名称:</strong></td><td class="rightCol"><input v-model="newGuide['name']" type="text" class="input is-primary" maxlength="30"></td>
+          </tr>
+          
+          <tr>
+            <td class="leftCol"><strong class="is-must">内容:</strong></td><td class="rightCol"></td>
           </tr>
           <tr>
-            <td class="leftCol"><strong class="is-must">logo图标</strong></td>
-            <td class="rightCol">
-              <input @change.stop.prevent="getFile($event)"  type="file" accept="image/*">
-              <img class="avatar" :src="imgUrl"/>
-              
-              <!--<button @click="submit($event)"></button><img v-if="newType.url" :src="http://img.zcool.cn/community/0114375543f8ec0000019ae948310f.jpg"/>-->
+            <td colspan="2">
+              <ueditor class="ueditor-content" ref="ueditor" :defaultMsg="defaultMsg" :config="config"></ueditor>
             </td>
-          </tr>
-          <tr>
-            <td class="leftCol"><strong>描述</strong></td><td class="rightCol"><textarea v-model="newParty['descp']" class="textarea" maxlength="120" placeholder="至多输入120个字符"></textarea></td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <div class="container" v-if="modalConfig.process">
-
-      <div class="info-content">
-        <table class="table">
-          <tbody>
-            <tr>
-              <td class="leftCol"><strong class="is-must">校区名称</strong></td><td class="rightCol"><input v-model="newParty['name']" type="text" class="input is-primary" maxlength="30"></td>
-            </tr>
-
-            <!--
-            <tr>
-              <td class="leftCol"><strong>左上坐标</strong></td>
-              <td class="rightCol">
-                  <input v-model="newUser['userMail']" type="number" class="input is-primary short-input" maxlength="15" placeholder="经度">
-                  <input v-model="newUser['userMail']" type="number" class="input is-primary short-input" maxlength="15" placeholder="纬度">
-              </td>
-            </tr>
-            <tr>
-              <td class="leftCol"><strong>右下坐标</strong></td>
-              <td class="rightCol">
-                  <input v-model="newUser['userMail']" type="number" class="input is-primary short-input" maxlength="15" placeholder="经度">
-                  <input v-model="newUser['userMail']" type="number" class="input is-primary short-input" maxlength="15" placeholder="纬度">
-              </td>
-            </tr>
-            <tr>
-              <td class="leftCol"><strong>校区尺寸</strong></td>
-              <td class="rightCol">
-                  <input v-model="newUser['userMail']" type="number" class="input is-primary short-input" maxlength="15" placeholder="长度">
-                  <input v-model="newUser['userMail']" type="number" class="input is-primary short-input" maxlength="15" placeholder="宽度">
-              </td>
-            </tr>
-            -->
-
-            <tr>
-              <td class="leftCol"><strong>备注</strong></td><td class="rightCol"><textarea v-model="newParty['descp']" class="textarea" maxlength="120" placeholder="至多输入120个字符"></textarea></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="split-line"></div>
-
-      <div class="option-content">
-        <table class="table">
-          <tbody>
-            <tr>
-              <td class="leftCol"><strong class="is-must">活动名称</strong></td><td class="rightCol"><input v-model="newParty['name']" type="text" class="input is-primary" maxlength="15"></td>
-            </tr>
-            <tr>
-              <td class="leftCol"><strong class="is-must">logo图标</strong></td>
-              <td class="rightCol">
-                <input @change.stop.prevent="getFile($event)"  type="file" accept="image/*">
-                <img class="avatar" :src="imgUrl"/>
-                
-                <!--<button @click="submit($event)"></button><img v-if="newType.url" :src="http://img.zcool.cn/community/0114375543f8ec0000019ae948310f.jpg"/>-->
-              </td>
-            </tr>
-            <tr>
-              <td class="leftCol"><strong>描述</strong></td><td class="rightCol"><textarea v-model="newParty['descp']" class="textarea" maxlength="120" placeholder="至多输入120个字符"></textarea></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
     <table class="table" v-if="modalConfig.del">
       <tbody>
         <tr>
-          <td class="leftCol"><strong>类别名称</strong></td><td class="rightCol">{{currentType.name}}</td>
+          <td class="leftCol"><strong>名称:</strong></td><td class="rightCol">{{currentGuide.name}}</td>
         </tr>
         <tr>
-          <td class="leftCol"><strong>类别描述</strong></td><td class="rightCol">{{currentType.descp}}</td>
+          <td class="leftCol"><strong>引导:</strong></td><td class="rightCol">{{currentGuide.descp}}</td>
         </tr>
       </tbody>
     </table>
@@ -107,10 +39,14 @@
 <script>
 import { CardModal } from 'vue-bulma-modal';
 import { mapGetters, mapMutations } from 'vuex';
+import Ueditor from 'components/common/ueditor/Ueditor';
+import GuideTabs from './Tabs';
 
 export default {
   components: {
-    CardModal
+    CardModal,
+    GuideTabs,
+    Ueditor,
   },
 
   props: {
@@ -121,9 +57,15 @@ export default {
 
   data () {
     return {
+      defaultMsg: '',
+      config: {
+        initialFrameWidth: null,
+        initialFrameHeight: 200
+      },
       infoShow: false,
       message: '',
-      newParty: {},
+      newGuide: {},
+      tabType: '',
       imgUrl: ''
     }
   },
@@ -134,52 +76,54 @@ export default {
 
   methods: {
 
-    //获取文件
-    getFile(event) {
-      event.preventDefault();
-      var windowURL = window.URL || window.webkitURL;
-      this.imgUrl = windowURL.createObjectURL(event.target.files[0]);
-      console.log(this.imgUrl);
-
-      let file = event.target.files[0];
-      this.$emit('upimg', event, file);
-      console.log(file);
-      
+    tabSelected(index) {
+      if(index === 1) {
+        Bus.$emit('getInfoType');
+      }
     },
 
     //取消操作
     cancel () {
       this.$emit('close');
       this.infoShow = false;
-      this.newParty = {}
     },
 
     open () {},
 
     //确认操作
     ok () {
-      let finnalType = {};
+
+      let final = {};
+
       if(this.modalConfig.modify) {
-        finnalType = Object.assign({}, this.currentType, this.newParty, {modifyFlag: 1});
+
+        let ueText = this.$refs.ueditor.getUEContent();
+        this.newGuide['context'] = ueText;
+        final = Object.assign({}, this.currentGuide, this.newGuide, {modifyFlag: 1});
+
       }else if(this.modalConfig.del) {
-        finnalType = Object.assign({}, this.currentType, {delFlag: 1});
+
+        final = Object.assign({}, this.currentGuide, {delFlag: 1});
+
       }else {
-        finnalType = Object.assign({}, this.newParty, {addFlag: 1});
+        let ueText = this.$refs.ueditor.getUEContent();
+        this.newGuide['context'] = ueText;
+        final = Object.assign({}, this.newGuide, {addFlag: 1});
       }
 
-      if(!finnalType.name) {
+      if(!final.name || !final.context) {
         this.message = '所需字段不能为空!';
         this.infoShow = true;
         return;
       }
 
-      this.setCurrentType(finnalType);
+      this.setCurrentGuide(final);
       this.$emit('ok');
     },
 
     //vuex引入设置用户方法
     ...mapMutations({
-      setCurrentType : 'SET_CURRENTTYPE'
+      setCurrentGuide : 'SET_CURRENTGUIDE'
     })
   },
 
@@ -187,17 +131,27 @@ export default {
     
     //vuex引入建筑类别数据
     ...mapGetters({
-      typeList : 'buildingTypeData',
-      currentType : 'buildingType'
+      serviceTypeList : 'serviceTypeData',
+      currentServiceType : 'serviceType',
+      informationList : 'informationData',
+      guideList : 'guideData',
+      currentGuide : 'guide'
     })
   },
 
   watch: {
 
     //当前操作建筑类别监听
-    currentType(newVal, oldVal){
+    currentGuide(newVal, oldVal){
+
       if(this.modalConfig.modify) {
-        this.newParty = Object.assign({}, newVal);
+        this.newGuide = Object.assign({}, newVal);
+        this.defaultMsg = this.newGuide.context;
+      }
+
+      if(this.modalConfig.add) {
+        this.newGuide = {};
+        this.defaultMsg = '';
       }
     }
     

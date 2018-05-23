@@ -51,6 +51,30 @@ const state = {
     //业务管理/当前操作信息
     currentInformation: {},
 
+    //业务管理/引导管理列表数据
+    guideList: [],
+
+    //业务管理/当前操作引导
+    currentGuide: {},
+
+    //引导项关联信息
+    linkInfoList: [],
+
+    //引导项未关联信息
+    unLinkInfoList: [],
+
+    //业务管理/活动管理列表数据
+    partyList: [],
+
+    //业务管理/当前操作活动
+    currentParty: {},
+
+    //活动项关联引导
+    linkGuideList: [],
+
+    //活动项未关联引导
+    unLinkGuideList: [],
+
     //业务管理/机构分类数据列表
     organizationList: [],
 
@@ -160,6 +184,26 @@ const getters = {
     return state.systems.currentInformation;
   },
 
+  //业务管理/引导管理列表数据
+  guideData(state) {
+    return state.systems.guideList;
+  },
+
+  //业务管理/单个引导
+  guide(state) {
+    return state.systems.currentGuide;
+  },
+
+  //业务管理/引导管理列表数据
+  partyData(state) {
+    return state.systems.partyList;
+  },
+
+  //业务管理/单个引导
+  party(state) {
+    return state.systems.currentParty;
+  },
+
   //业务管理/机构分类列表数据
   organizationData(state) {
     return state.systems.organizationList;
@@ -188,6 +232,26 @@ const getters = {
   //单个机构类未关联校区
   unLinkZoneData(state) {
     return state.systems.unLinkZoneList;
+  },
+
+  //单个引导项关联信息
+  linkInfoData(state) {
+    return state.systems.linkInfoList;
+  },
+
+  //单个引导项未关联信息
+  unLinkInfoData(state) {
+    return state.systems.unLinkInfoList;
+  },
+
+  //单个活动关联引导项
+  linkGuideData(state) {
+    return state.systems.linkGuideList;
+  },
+
+  //单个活动未关联引导项
+  unLinkGuideData(state) {
+    return state.systems.unLinkGuideList;
   },
 
   //业务管理/机构管理列表数据
@@ -283,6 +347,26 @@ const mutations = {
     state.systems.currentInformation = info;
   },
 
+  //设置引导管理数据列表
+  [types.SET_GUIDELIST] (state, list) {
+    state.systems.guideList = list;
+  },
+
+  //设置当前所操作引导
+  [types.SET_CURRENTGUIDE] (state, guide) {
+    state.systems.currentGuide = guide;
+  },
+
+  //设置活动管理数据列表
+  [types.SET_PARTYLIST] (state, list) {
+    state.systems.partyList = list;
+  },
+
+  //设置当前所操作活动
+  [types.SET_CURRENTPARTY] (state, party) {
+    state.systems.currentParty = party;
+  },
+
   //设置机构类别数据列表
   [types.SET_ORGANIZATIONLIST] (state, list) {
     state.systems.organizationList = list;
@@ -311,6 +395,26 @@ const mutations = {
   //设置单个机构类别未关联的校区
   [types.SET_UNLINKZONELIST] (state, list) {
     state.systems.unLinkZoneList = list;
+  },
+
+  //设置单个引导所关联的信息
+  [types.SET_LINKINFOLIST] (state, list) {
+    state.systems.linkInfoList = list;
+  },
+
+  //设置单个引导未关联的信息
+  [types.SET_UNLINKINFOLIST] (state, list) {
+    state.systems.unLinkInfoList = list;
+  },
+
+  //设置单个活动所关联的引导
+  [types.SET_LINKGUIDELIST] (state, list) {
+    state.systems.linkGuideList = list;
+  },
+
+  //设置单个活动未关联的引导
+  [types.SET_UNLINKGUIDELIST] (state, list) {
+    state.systems.unLinkGuideList = list;
   },
 
   //设置机构管理数据列表

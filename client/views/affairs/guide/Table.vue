@@ -19,7 +19,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(item, index) in typeList">
+              <tr v-for="(item, index) in guideList">
                 <td>{{ pernum*currentPage+index+1 }}</td>
                 <td>{{item.name}}</td>
                 <td>{{item.info}}</td>
@@ -31,7 +31,8 @@
                     <button v-if="userPermission.user_modify" class="button is-warning is-small"  @click="showModify(item)">修改</button>
                     <button v-if="userPermission.user_delete" class="button is-danger is-small" @click="showDel(item)">删除</button>
                     -->
-                    <button class="button is-primary is-small"  @click="showProcess(item)">流程配置</button>
+                    <button class="button is-primary is-small"  @click="showDetail(item)">查看详情</button>
+                    <button class="button is-primary is-small"  @click="showConfig(item)">配置信息</button>
                     <button class="button is-warning is-small"  @click="showModify(item)">修改</button>
                     <button class="button is-danger is-small" @click="showDel(item)">删除</button>
                   </div>
@@ -88,6 +89,11 @@ export default {
       currentIndex: 0,
       modalConfig: {},
       modalType: 'zone-card',
+      guideListq: [
+        {name: '短泊', info: '半小时免费'},
+        {name: '闻讯', info: '免费咨询'},
+        {name: '出行', info: '公交线路'}
+      ]
     }
   },
 
@@ -97,19 +103,37 @@ export default {
 
   methods: {
 
-    //流程配置
-    showProcess(item) {
+    //查看详情
+    showDetail(item) {
       this.modalConfig = {
-        process: 1,
-        title: '流程配置',
-        footerShow: true,
+        detail: 1,
+        title: '详细信息',
+        footerShow: false,
+        tabType: 'display',
       };
-      this.setCurrentType(item);
-      this.modalType = 'zone-card';
+      this.setCurrentGuide(item);
+      this.$emit('getLinkInfo');
+      this.modalType = 'modal-card';
       this.confirmShow = true;
     },
 
-    //类别修改
+    //关联信息
+    showConfig(item) {
+      this.modalConfig = {
+        config: 1,
+        title: '配置信息',
+        footerShow: false,
+        tabType: 'modify',
+      };
+      this.setCurrentGuide(item);
+      this.$emit('getLinkInfo');
+      this.$emit('getUnLinkInfo');
+      this.$emit('getInfoType');
+      this.modalType = 'modal-card';
+      this.confirmShow = true;
+    },
+
+    //引导修改
     showModify(item) {
       this.modalConfig = {
         modify: 1,
@@ -117,7 +141,7 @@ export default {
         footerShow: true,
         tabType: 'modify',
       };
-      this.setCurrentType(item);
+      this.setCurrentGuide(item);
       this.modalType = 'modal-card';
       this.confirmShow = true;
     },
@@ -126,9 +150,11 @@ export default {
     showAdd() {
       this.modalConfig = {
         add: 1,
-        title: '添加分类',
-        footerShow: true
+        title: '添加引导',
+        footerShow: true,
+        tabType: 'modify',
       };
+      this.setCurrentGuide({});
       this.modalType = 'modal-card';
       this.confirmShow = true;
     },
@@ -137,10 +163,10 @@ export default {
     showDel(item) {
       this.modalConfig = {
         del: 1,
-        title: '确认删除该类别吗？',
+        title: '确认删除该引导吗？',
         footerShow: true,
       };
-      this.setCurrentType(item);
+      this.setCurrentGuide(item);
       this.modalType = 'modal-card';
       this.confirmShow = true;
     },
@@ -157,7 +183,7 @@ export default {
 
     //vuex引入设置用户方法
     ...mapMutations({
-      setCurrentType : 'SET_CURRENTTYPE'
+      setCurrentGuide : 'SET_CURRENTGUIDE'
     })
   },
 
@@ -174,7 +200,10 @@ export default {
     //vuex引入建筑类别数据
     ...mapGetters({
       typeList : 'buildingTypeData',
-      currentType : 'buildingType'
+      currentType : 'buildingType',
+      guideList : 'guideData',
+      informationList : 'informationData',
+      currentGuide : 'guide'
     })
   }
 }

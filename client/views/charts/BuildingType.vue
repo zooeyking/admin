@@ -88,24 +88,24 @@ export default {
 
     //根据页码查询成功回调
     __pageSearchSuccess(data) {
-      if(data.value.list) {
-        let result = data.value.list;
+      if(data.value[0].list) {
+        let result = data.value[0].list;
         this.setBuildingTypeList(result);
       }else{
         this.setBuildingTypeList([]);
       }
-      this.totalNum = data.value.total ? data.value.total : 0;
+      this.totalNum = data.value[0].total ? data.value[0].total : 0;
     },
 
     //根据参数查询成功回调
     __paramsSearchSuccess(data) {
-      if(data.value.list) {
-        let result = data.value.list;
+      if(data.value[0].list) {
+        let result = data.value[0].list;
         this.setBuildingTypeList(result);
       }else{
         this.setBuildingTypeList([]);
       }
-      this.totalNum = data.value.total ? data.value.total : 0;
+      this.totalNum = data.value[0].total ? data.value[0].total : 0;
       this.initPage = !this.initPage;
     },
 

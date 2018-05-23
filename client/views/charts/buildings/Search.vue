@@ -5,7 +5,7 @@
         <div class="control is-horizontal">
           <div class="control">
             <div class="select is-fullwidth">
-              <select class="is-must" v-model="params.zoneId">
+              <select class="is-must" v-model="params.cid">
                 <option value="" >全部校区</option>
                 <option v-for="item in zoneList" :value="item.id" >{{item.name}}</option>
               </select>
@@ -17,7 +17,7 @@
         <div class="control is-horizontal">
           <div class="control">
             <div class="select is-fullwidth">
-              <select class="is-must" v-model="params.typeId">
+              <select class="is-must" v-model="params.acid">
                 <option value="" >全部种类</option>
                 <option v-for="item in typeList" :value="item.id" >{{item.name}}</option>
               </select>
@@ -50,8 +50,8 @@ export default {
     return {
       params: {
         pageNum: 1,
-        zoneId:'',
-        typeId:''
+        cid:'',
+        acid:''
       },
     }
   },

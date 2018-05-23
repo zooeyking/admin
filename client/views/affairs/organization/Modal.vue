@@ -99,7 +99,6 @@ export default {
     cancel () {
       this.$emit('close');
       this.infoShow = false;
-      this.newOrganization = {}
     },
 
     open () {},
@@ -149,6 +148,10 @@ export default {
     currentOrganization(newVal, oldVal){
       if(this.modalConfig.modify) {
         this.newOrganization = Object.assign({}, newVal);
+      }
+
+      if(this.modalConfig.add) {
+        this.newOrganization = {};
       }
     }
   }

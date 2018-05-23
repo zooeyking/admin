@@ -26,7 +26,7 @@
         </div>
       </li>
       <li class="item text">
-        <input class="input is-primary" v-model="params.name" @keyup.enter="search" maxlength="30" placeholder="信息名称"/>
+        <input class="input is-primary" v-model="params.title" @keyup.enter="search" maxlength="30" placeholder="信息名称"/>
       </li>
       <li class="item dateBox">
         <datepicker @sendValue="setDateValue"></datepicker>

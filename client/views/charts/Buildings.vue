@@ -72,6 +72,8 @@ export default {
       }else if(building.modifyFlag) {
         url = buildingEditUrl;
         delete building.modifyFlag;
+        delete building.campus;
+        delete building.architeCategory;
       }else if(building.delFlag) {
         url = buildingDeleteUrl;
         delete building.delFlag;
@@ -98,13 +100,13 @@ export default {
 
     //根据页码查询成功回调
     __pageSearchSuccess(data) {
-      if(data.value.list) {
-        let result = data.value.list;
+      if(data.value[0].list) {
+        let result = data.value[0].list;
         this.setBuildingList(result);
       }else{
         this.setBuildingList([]);
       }
-      this.totalNum = data.value.total ? data.value.total : 0;
+      this.totalNum = data.value[0].total ? data.value[0].total : 0;
     },
 
     //获取建筑列表
@@ -124,8 +126,8 @@ export default {
 
     //获取校区成功回调
     __getCampusSuccess(data) {
-      if(data.value.list) {
-        let result = data.value.list;
+      if(data.value[0].list) {
+        let result = data.value[0].list;
         this.setZoneList(result);
       }else{
         this.setZoneList([]);
@@ -134,8 +136,8 @@ export default {
 
     //获取建筑类别成功回调
     __getBuildingTypesSuccess(data) {
-      if(data.value.list) {
-        let result = data.value.list;
+      if(data.value[0].list) {
+        let result = data.value[0].list;
         this.setBuildingTypeList(result);
       }else{
         this.setBuildingTypeList([]);
@@ -145,13 +147,13 @@ export default {
     //根据参数查询成功回调
     __paramsSearchSuccess(data) {
 
-      if(data.value.list) {
-        let result = data.value.list;
+      if(data.value[0].list) {
+        let result = data.value[0].list;
         this.setBuildingList(result);
       }else{
         this.setBuildingList([]);
       }
-      this.totalNum = data.value.total ? data.value.total : 0;
+      this.totalNum = data.value[0].total ? data.value[0].total : 0;
       this.initPage = !this.initPage;
     },
 

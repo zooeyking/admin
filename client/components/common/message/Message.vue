@@ -28,10 +28,12 @@ export default {
   },
 
   props: {
+
     messageType: {
       type: Number,
       default: 0
     },
+
     errInfo: {
       type: String,
       default: ''
@@ -46,11 +48,14 @@ export default {
         duration: 2000
       })
     }else {
-      openMessage({
+      console.log(this.errInfo);
+      let me = {
         message: this.errInfo,
         type: 'danger',
         duration: 2000
-      })
+      };
+      
+      openMessage(me);
     }
     /*
     else if(this.messageType === 1) {

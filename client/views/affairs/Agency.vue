@@ -104,8 +104,8 @@ export default {
     __getBuildings() {
       if(this.firstGetBuild) {
         unitCall( buildingListUrl, { pageNum : 1}).then((data)=>{
-          if(data.value.list) {
-            let result = data.value.list;
+          if(data.value[0].list) {
+            let result = data.value[0].list;
             this.setBuildingList(result);
           }else{
             this.setBuildingList([]);
@@ -117,8 +117,8 @@ export default {
 
     //校区成功回调
     __getCampusSuccess(data) {
-      if(data.value.list) {
-        let result = data.value.list;
+      if(data.value[0].list) {
+        let result = data.value[0].list;
         this.setZoneList(result);
       }else{
         this.setZoneList([]);
@@ -133,8 +133,8 @@ export default {
 
     //校区机构类成功回调
     __getGroupSuccess(data) {
-      if(data.value.list) {
-        let result = data.value.list;
+      if(data.value[0].list) {
+        let result = data.value[0].list;
         this.setAgencyGroupList(result);
       }else{
         this.setAgencyGroupList([]);
@@ -150,24 +150,24 @@ export default {
 
     //根据页码查询成功回调
     __pageSearchSuccess(data) {
-      if(data.value.list) {
-        let result = data.value.list;
+      if(data.value[0].list) {
+        let result = data.value[0].list;
         this.setAgencyList(result);
       }else{
         this.setAgencyList([]);
       }
-      this.totalNum = data.value.total ? data.value.total : 0;
+      this.totalNum = data.value[0].total ? data.value[0].total : 0;
     },
 
     //根据参数查询成功回调
     __paramsSearchSuccess(data) {
-      if(data.value.list) {
-        let result = data.value.list;
+      if(data.value[0].list) {
+        let result = data.value[0].list;
         this.setAgencyList(result);
       }else{
         this.setAgencyList([]);
       }
-      this.totalNum = data.value.total ? data.value.total : 0;
+      this.totalNum = data.value[0].total ? data.value[0].total : 0;
       this.initPage = !this.initPage;
     },
 

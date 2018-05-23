@@ -9,7 +9,7 @@
     :confirmClose="confirmClose" 
     :totalNum="totalNum"
     :initPage="initPage"
-
+    
     ></zone-table>
     <my-message v-if="showMessage" @dispear="dispear" :messageType="messageType"></my-message>
   </div>
@@ -101,24 +101,24 @@ export default {
 
     //初始化校区查询成功回调
     __pageSearchSuccess(data) {
-      if(data.value.list) {
-        let result = data.value.list;
+      if(data.value[0].list) {
+        let result = data.value[0].list;
         this.setZoneList(result);
       }else{
         this.setZoneList([]);
       }
-      this.totalNum = data.value.total ? data.value.total : 0;
+      this.totalNum = data.value[0].total ? data.value[0].total : 0;
     },
 
     //根据参数查询成功回调
     __paramsSearchSuccess(data) {
-      if(data.value.list) {
-        let result = data.value.list;
+      if(data.value[0].list) {
+        let result = data.value[0].list;
         this.setZoneList(result);
       }else{
         this.setZoneList([]);
       }
-      this.totalNum = data.value.total ? data.value.total : 0;
+      this.totalNum = data.value[0].total ? data.value[0].total : 0;
       this.initPage = !this.initPage;
     },
 

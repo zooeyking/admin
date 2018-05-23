@@ -10,16 +10,18 @@
     :initPage="initPage"
 
     ></information-table>
-    <my-message v-if="showMessage" @dispear="dispear" :messageType="messageType"></my-message>
+    <my-message v-if="showMessage" @dispear="dispear" :messageType="messageType" :errInfo="errInfo"></my-message>
   </div>
 </template>
+
 
 <script>
 import InformationTable from './information/Table';
 import MyMessage from 'components/common/message/Message';
 import { mapGetters, mapMutations } from 'vuex';
-import { unitCall, zoneListUrl,  buildingListUrl, serviceInfoListUrl, serviceInfoEditUrl, serviceInfoDeleteUrl } from 'base/askUrl';
+import { unitCall, zoneListUrl,  buildingListUrl, serviceTypeListUrl, informationListUrl, informationEditUrl, informationDeleteUrl } from 'base/askUrl';
 import { Mixin } from 'base/mixin';
+import Bus from 'base/bus';
 
 export default {
 
@@ -29,7 +31,6 @@ export default {
     InformationTable,
     MyMessage
   },
-
 
   data () {
     return {
@@ -51,7 +52,7 @@ export default {
       }
       let params = Object.assign({}, this.searchParams, args);
       
-      unitCall( serviceInfoListUrl, params).then(this.__paramsSearchSuccess).catch(this.__failed);
+      unitCall( informationListUrl, params).then(this.__paramsSearchSuccess).catch(this.__failed);
       
     },
 
@@ -60,25 +61,33 @@ export default {
       
       let params = Object.assign({}, this.searchParams, args);
       
-      unitCall( serviceInfoListUrl, params).then(this.__pageSearchSuccess).catch(this.__failed);
+      unitCall( informationListUrl, params).then(this.__pageSearchSuccess).catch(this.__failed);
     },
 
-    //建筑信息更新
+    //管理信息更新
     ok() {
       let url = '';
-      let building = {...this.currentBuilding};
-      if(building.addFlag) {
-        url = serviceInfoEditUrl;
-        delete building.addFlag;
-      }else if(building.modifyFlag) {
-        url = serviceInfoEditUrl;
-        delete building.modifyFlag;
-      }else if(building.delFlag) {
-        url = serviceInfoDeleteUrl;
-        delete building.delFlag;
+      let information = {...this.currentInformation};
+      console.log(information);
+      if(information.addFlag) {
+        url = informationEditUrl;
+        delete information.addFlag;
+      }else if(information.modifyFlag) {
+        url = informationEditUrl;
+        delete information.serviceCategory;
+        delete information.campus;
+        delete information.architeEntuty;
+        delete information.modifyFlag;
+      }else if(information.delFlag) {
+        url = informationDeleteUrl;
+        delete information.serviceCategory;
+        delete information.campus;
+        delete information.architeEntuty;
+        delete information.position;
+        delete information.delFlag;
       }
       
-      unitCall(url, building).then(this.__operaSuccess).catch(this.__failed).then(this.__getBuildings);
+      unitCall(url, information).then(this.__operaSuccess).then(this.__getInformation).then(this.__getInfoSuccess).catch(this.__failed);
     },
 
     //操作面板消失
@@ -88,27 +97,34 @@ export default {
 
     //初始化列表数据
     __initDate() {
-      this.__getCampus()
+      this.__getInformation()
+      .then(this.__getInfoSuccess)
+      .then(this.__getCampus)
       .then(this.__getCampusSuccess)
-      .then(this.__getBuildings)
-      .then(this.__getBuildingSuccess)
+      .then(this.__getInfoType)
+      .then(this.__getInfoTypeSuccess)
       .catch(this.__failed);
     },
 
     //根据页码查询成功回调
     __pageSearchSuccess(data) {
-      if(data.value.list) {
-        let result = data.value.list;
+      if(data.value[0].list) {
+        let result = data.value[0].list;
         this.setBuildingList(result);
       }else{
         this.setBuildingList([]);
       }
-      this.totalNum = data.value.total ? data.value.total : 0;
+      this.totalNum = data.value[0].total ? data.value[0].total : 0;
+    },
+
+    //获取信息列表
+    __getInformation() {
+      return unitCall(informationListUrl, { pageNum : 1 });
     },
 
     //获取建筑列表
-    __getBuildings() {
-      return unitCall(buildingListUrl, { pageNum : 1 });
+    __getBuildings(cid) {
+      unitCall(buildingListUrl, { pageNum : 1 , cid}).then(this.__getBuildingSuccess).catch(this.__failed);
     },
 
     //获取校区列表
@@ -116,41 +132,61 @@ export default {
       return unitCall(zoneListUrl, { pageNum : 1 });
     },
 
-    //获取建筑类别列表
-    __getBuildingTypes() {
-      return unitCall(buildingTypeListUrl, { pageNum : 1 });
+    //获取信息类别列表
+    __getInfoType() {
+      return unitCall(serviceTypeListUrl, { pageNum : 1 });
+    },
+
+    //获取信息数据成功回调
+    __getInfoSuccess(data) {
+      if(data.value[0].list) {
+        let result = data.value[0].list;
+        this.setInformationList(result);
+      }else{
+        this.setInformationList([]);
+      }
     },
 
     //获取校区成功回调
     __getCampusSuccess(data) {
-      if(data.value.list) {
-        let result = data.value.list;
+      if(data.value[0].list) {
+        let result = data.value[0].list;
         this.setZoneList(result);
       }else{
         this.setZoneList([]);
       }
     },
 
-    //获取建筑类别成功回调
+    //获取建筑成功回调
     __getBuildingSuccess(data) {
-      if(data.value.list) {
-        let result = data.value.list;
+      if(data.value[0].list) {
+        let result = data.value[0].list;
         this.setBuildingList(result);
       }else{
         this.setBuildingList([]);
       }
     },
 
+    //获取信息类别成功回调
+    __getInfoTypeSuccess(data) {
+      if(data.value[0].list) {
+        let result = data.value[0].list;
+        this.setServiceTypeList(result);
+      }else{
+        this.setServiceTypeList([]);
+      }
+    },
+
     //根据参数查询成功回调
     __paramsSearchSuccess(data) {
 
-      if(data.value.list) {
-        let result = data.value.list;
-        this.setBuildingList(result);
+      if(data.value[0].list) {
+        let result = data.value[0].list;
+        this.setInformationList(result);
       }else{
-        this.setBuildingList([]);
+        this.setInformationList([]);
       }
-      this.totalNum = data.value.total ? data.value.total : 0;
+      this.totalNum = data.value[0].total ? data.value[0].total : 0;
       this.initPage = !this.initPage;
     },
 
@@ -165,22 +201,30 @@ export default {
     ...mapMutations({ 
       setBuildingList : 'SET_BUILDINGLIST',
       setZoneList : 'SET_ZONELIST',
-      setCurrentBuilding : 'SET_CURRENTBUILDING'
+      setServiceTypeList : 'SET_SERVICETYPELIST',
+      setInformationList : 'SET_INFORMATIONLIST',
+      //setCurrentBuilding : 'SET_CURRENTBUILDING'
     })
   },
 
   //挂载后初始化列表数据
   mounted() {
     this.__initDate();
+    Bus.$on('getBuildings', this.__getBuildings);
+  },
+
+  //清除Bus监听
+  beforeDestroy() {
+    Bus.$off('getBuildings');
   },
 
   //vuex中引入建筑数据
   computed: {
     ...mapGetters({
       buildingList : 'buildingData',
-      typeList : 'buildingTypeData',
       zoneList : 'zoneData',
-      currentBuilding : 'building'
+      serviceTypeList : 'serviceTypeData',
+      currentInformation : 'information'
     })
   }
 }

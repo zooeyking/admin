@@ -3,14 +3,17 @@
     <guide-table 
 
     @paramsSearch="paramsSearch"
-    @pageSearch="pageSearch" 
+    @pageSearch="pageSearch"
+    @getLinkInfo="getLinkInfo"
+    @getUnLinkInfo="getUnLinkInfo"
+    @getInfoType="getInfoType" 
     @ok="ok"
     :confirmClose="confirmClose" 
     :totalNum="totalNum"
     :initPage="initPage"
 
     ></guide-table>
-    <my-message v-if="showMessage" @dispear="dispear" :messageType="messageType"></my-message>
+    <my-message v-if="showMessage" @dispear="dispear" :messageType="messageType" :errInfo="errInfo"></my-message>
   </div>
 </template>
 
@@ -18,8 +21,9 @@
 import GuideTable from './guide/Table';
 import MyMessage from 'components/common/message/Message';
 import { mapGetters, mapMutations } from 'vuex';
-import { unitCall, buildingTypeListUrl, buildingTypeEditUrl, buildingTypeDeleteUrl } from 'base/askUrl';
+import { unitCall, guideListUrl, guideEditUrl, guideDeleteUrl, serviceTypeListUrl, informationListUrl, linkInfoUrl, unLinkInfoUrl, infoRelationsUrl, infoNotRelationsUrl } from 'base/askUrl';
 import { Mixin } from 'base/mixin';
+import Bus from 'base/bus';
 
 export default {
 
@@ -43,33 +47,38 @@ export default {
 
   methods: {
 
-    //建筑类别按参数查询方法
+    //引导按参数查询方法
     paramsSearch(args) {
       if (args.name || args.startDate) {
         this.searchParams = args;
       }
       let params = Object.assign({}, this.searchParams, args);
-      unitCall( buildingTypeListUrl, params).then(this.__paramsSearchSuccess).catch(this.__failed);
+      unitCall( guideListUrl, params).then(this.__paramsSearchSuccess).catch(this.__failed);
     },
 
-    //建筑类别按页码查询方法
+    //引导按页码查询方法
     pageSearch(args) {
       let params = Object.assign({}, this.searchParams, args);
-      unitCall(buildingTypeListUrl, params).then(this.__pageSearchSuccess).catch(this.__failed);
+      unitCall(guideListUrl, params).then(this.__pageSearchSuccess).catch(this.__failed);
     },
 
-    //建筑类别信息更新
+    //引导信息更新
     ok() {
       let url = '';
-      let type = {...this.currentType};
+      let type = {...this.currentGuide};
+      
       if(type.addFlag) {
-        url = buildingTypeEditUrl;
+        url = guideEditUrl;
         delete type.addFlag;
       }else if(type.modifyFlag) {
-        url = buildingTypeEditUrl;
+        url = guideEditUrl;
+        delete type.guide;
+        delete type.serviceInfoList;
         delete type.modifyFlag;
       }else if(type.delFlag) {
-        url = buildingTypeDeleteUrl;
+        url = guideDeleteUrl;
+        delete type.guide;
+        delete type.serviceInfoList;
         delete type.delFlag;
       }
       
@@ -81,58 +90,161 @@ export default {
       this.showMessage = false;
     },
 
+    //查询已绑定信息方法
+    getLinkInfo() {
+      let currentId = this.currentGuide.id;
+      return unitCall( infoRelationsUrl, { pageNum : 1, id : currentId}).then(this.__getLinkInfoSuccess).catch(this.__failed);
+    },
+
+    //查询未绑定信息方法
+    getUnLinkInfo() {
+      let currentId = this.currentGuide.id;
+      return unitCall( infoNotRelationsUrl, { pageNum : 1, id : currentId}).then(this.__getUnLinkInfoSuccess).catch(this.__failed);
+    },
+
+    //获取信息类型
+    getInfoType() {
+      unitCall( serviceTypeListUrl, { pageNum : 1}).then(this.__getInfoTypeSuccess).catch(this.__failed);
+    },
+
     //初始化列表数据
     __initDate() {
-      unitCall( buildingTypeListUrl, { pageNum : 1}).then(this.__pageSearchSuccess).catch(this.__failed);
+      unitCall( guideListUrl, { pageNum : 1}).then(this.__pageSearchSuccess).catch(this.__failed);
     },
 
     //根据页码查询成功回调
     __pageSearchSuccess(data) {
-      if(data.value.list) {
-        let result = data.value.list;
-        this.setBuildingTypeList(result);
+      if(data.value[0].list) {
+        let result = data.value[0].list;
+        this.setGuideList(result);
       }else{
-        this.setBuildingTypeList([]);
+        this.setGuideList([]);
       }
-      this.totalNum = data.value.total ? data.value.total : 0;
+      this.totalNum = data.value[0].total ? data.value[0].total : 0;
     },
 
     //根据参数查询成功回调
     __paramsSearchSuccess(data) {
-      if(data.value.list) {
-        let result = data.value.list;
-        this.setBuildingTypeList(result);
+      if(data.value[0].list) {
+        let result = data.value[0].list;
+        this.setGuideList(result);
       }else{
-        this.setBuildingTypeList([]);
+        this.setGuideList([]);
       }
-      this.totalNum = data.value.total ? data.value.total : 0;
+      this.totalNum = data.value[0].total ? data.value[0].total : 0;
       this.initPage = !this.initPage;
     },
 
-    //建筑类别修改操作成功回调
+    //引入信息操作
+    __doLink(selectedInfos) {
+      let url = linkInfoUrl;
+      let type = {...this.currentGuide};
+      delete type.guide;
+      delete type.serviceInfoList;
+      let selectedStr = selectedInfos.join();
+      
+      let final = Object.assign({}, type, { siid: selectedStr});
+      
+      unitCall(url, final).then(this.__operaBindSuccess).catch(this.__failed).then(this.getUnLinkInfo).then(this.getLinkInfo).then(this.__initDate);
+    },
+
+    //移除信息操作
+    __doUnLink(selectedInfos) {
+      console.log(selectedInfos);
+      let url = unLinkInfoUrl;
+      let type = {...this.currentGuide};
+      delete type.guide;
+      delete type.serviceInfoList;
+      let selectedStr = selectedInfos.join();
+      
+      let final = Object.assign({}, type, { siid: selectedStr});
+      
+      unitCall(url, final).then(this.__operaBindSuccess).catch(this.__failed).then(this.getLinkInfo).then(this.getUnLinkInfo).then(this.__initDate);
+    },
+
+    //修改操作成功回调
     __operaSuccess() {
       this.showMessage = true;
       this.messageType = 0;
       this.confirmClose = !this.confirmClose;
     },
+
+    //引入、移除、排序信息成功回调
+    __operaBindSuccess() {
+      this.showMessage = true;
+      this.messageType = 0;
+    },
+
+    //获取信息类型成功回调
+    __getInfoTypeSuccess(data) {
+      if(data.value[0].list) {
+        let result = data.value[0].list;
+        this.setServiceTypeList(result);
+      }else{
+        this.setServiceTypeList([]);
+      }
+    },
+
+    //获取已关联信息成功回调
+    __getLinkInfoSuccess(data) {
+
+      if(data.value[0].list) {
+        let result = data.value[0].list;
+        this.setLinkInfoList(result);
+      }else{
+        this.setLinkInfoList([]);
+      }
+
+    },
+
+    //获取未关联信息成功回调
+    __getUnLinkInfoSuccess(data) {
+
+      if(data.value[0].list) {
+        let result = data.value[0].list;
+        this.setUnLinkInfoList(result);
+      }else{
+        this.setUnLinkInfoList([]);
+      }
+
+    },
     
     //vuex引入设置类别数据方法
     ...mapMutations({ 
-      setBuildingTypeList : 'SET_BUILDINGTYPELIST',
-      setCurrentType : 'SET_CURRENTTYPE',
+      setServiceTypeList : 'SET_SERVICETYPELIST',
+      setCurrentServiceType : 'SET_CURRENTSERVICETYPE',
+      setInformationList : 'SET_INFORMATIONLIST',
+      setGuideList : 'SET_GUIDELIST',
+      setCurrentGuide : 'SET_CURRENTGuide',
+      setLinkInfoList : 'SET_LINKINFOLIST',
+      setUnLinkInfoList : 'SET_UNLINKINFOLIST',
     })
   },
 
   //挂载后初始化列表数据
   mounted() {
     this.__initDate();
+    Bus.$on('doLink', this.__doLink);
+    Bus.$on('doUnLink', this.__doUnLink);
+    Bus.$on('saveOrder', this.__doLink);
+  },
+
+  //清除Bus监听
+  beforeDestroy() {
+    Bus.$off('doLink');
+    Bus.$off('doUnLink');
+    Bus.$off('saveOrder');
   },
 
   //vuex中引入建筑类别数据
   computed: {
     ...mapGetters({
       typeList : 'buildingTypeData',
-      currentType : 'buildingType'
+      currentType : 'buildingType',
+      informationList : 'informationData',
+      currentGuide : 'guide',
+      linkInfoList : 'linkInfoData',
+      unLinkInfoList : 'unLinkInfoData',
     })
   }
 }
