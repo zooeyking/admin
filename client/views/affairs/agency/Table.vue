@@ -5,7 +5,7 @@
         <article class="tile is-child">
           <div class="pageHeader">
             <search @paramsSearch="paramsSearch"></search>
-            <!--<button v-if="userPermission.user_add" class="button is-primary"  @click="showAdd">添加用户</button>-->
+            <!--<button v-if="userPermission.agency_add" class="button is-primary"  @click="showAdd">添加机构</button>-->
             <button class="button is-primary" @click="showAdd">添加机构</button>
           </div>
           <table class="table">
@@ -13,6 +13,8 @@
               <tr>
                 <th>序号</th>
                 <th>名称</th>
+                <th>所属建筑</th>
+                <th>创建时间</th>
                 <th>操作</th>
               </tr>
             </thead>
@@ -21,16 +23,16 @@
               <tr v-for="(item, index) in agencyList">
                 <td>{{ pernum*currentPage+index+1 }}</td>
                 <td>{{item.name}}</td>
-                
+                <td>{{item.architeEntity.name}}</td>
+                <td>{{item.createDate}}</td>
                 <td>
                   <div class="optionWrapper">
                     <!--
-                    <button v-if="userPermission.user_detail" class="button is-primary is-small"  @click="showDetail(zone)">详情</button>
-                    <button v-if="userPermission.user_modify" class="button is-warning is-small"  @click="showModify(zone)">修改</button>
-                    <button v-if="userPermission.user_delete" class="button is-danger is-small" @click="showDel(zone)">删除</button>
+                    <button v-if="userPermission.agency_modify" class="button is-warning is-small"  @click="showModify(item)">修改</button>
+                    <button v-if="userPermission.agency_delete" class="button is-danger is-small" @click="showDel(item)">删除</button>
                     -->
-                    <button class="button is-warning is-small"  @click="showModify(item)">修改</button>
-                    <button class="button is-danger is-small" @click="showDel(item)">删除</button>
+                    <button class="button is-warning is-small"  @click.stop="showModify(item)">修改</button>
+                    <button class="button is-danger is-small" @click.stop="showDel(item)">删除</button>
                   </div>
                 </td>
               </tr>
@@ -84,9 +86,8 @@ export default {
 
   data () {
     return {
-      isShow: false,
+      pernum: 10,
       confirmShow: false,
-      currentIndex: 0,
       modalConfig: {},
       modalType: '',
     }
@@ -94,11 +95,16 @@ export default {
 
   mounted(){
     //console.log(this.userPermission);
-    //console.log(this.buildingList);
   },
 
   methods: {
 
+    //条件搜索
+    paramsSearch(params) {
+      Bus.$emit('searchAgencys', params);
+    },
+
+    //分页查询
     getIndex(index) {
       Bus.$emit('getAgencys', index);
     },
@@ -146,7 +152,7 @@ export default {
       this.confirmShow = false;
     },
 
-    //vuex引入设置用户方法
+    //vuex引入设置机构方法
     ...mapMutations({
       setCurrentAgency : 'SET_CURRENTAGENCY'
     })

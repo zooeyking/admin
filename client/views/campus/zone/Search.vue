@@ -33,6 +33,7 @@ export default {
   },
 
   methods: {
+    
     //搜索事件
     search() {
       this.$emit('paramsSearch', this.params);

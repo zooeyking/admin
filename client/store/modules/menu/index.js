@@ -1,7 +1,7 @@
 import * as types from '../../mutation-types'
 import lazyLoading from './lazyLoading'
-import charts from './charts'
-import uifeatures from './uifeatures'
+import campus from './campus'
+import affairs from './affairs'
 
 // show: meta.label -> name
 // name: component name
@@ -9,9 +9,8 @@ import uifeatures from './uifeatures'
 
 const state = {
   items: [
-    
-    charts,
-    uifeatures,
+    campus,
+    affairs,
   ]
 }
 

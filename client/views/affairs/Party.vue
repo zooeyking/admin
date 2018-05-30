@@ -21,7 +21,7 @@
 import PartyTable from './party/Table';
 import MyMessage from 'components/common/message/Message';
 import { mapGetters, mapMutations } from 'vuex';
-import { unitCall, uploadLogoUrl, partyListUrl, partyEditUrl, partyDeleteUrl, linkGuideUrl, unLinkGuideUrl, guideRelationsUrl, guideNotRelationsUrl, guideListUrl } from 'base/askUrl';
+import { ip, unitCall, uploadLogoUrl, partyListUrl, partyEditUrl, partyDeleteUrl, linkGuideUrl, unLinkGuideUrl, guideRelationsUrl, guideNotRelationsUrl, guideListUrl } from 'base/askUrl';
 import { Mixin } from 'base/mixin';
 import axios from 'axios';
 import Bus from 'base/bus';
@@ -50,15 +50,15 @@ export default {
 
     //图片上传
     upimg(file) {
-      console.log(file);
+      
       let formData=new FormData();
 
       formData.append('file',file);
       
       // 服务器只需按照正常的上传程序代码即可
       axios.post(uploadLogoUrl,formData).then(res=>{
-        let header = 'http://192.168.1.15:8088/gis-service/files';
-        let url = header + res.data.value[0].url;
+        let header = '/gis-service/files';
+        let url = header + res.data.value.url;
         let newParty = {...this.currentParty, ...{ imagePath: url }};
         this.setCurrentParty(newParty);
       }).catch(err=>{
@@ -67,7 +67,7 @@ export default {
       
     },
 
-    //机构类别按参数查询方法
+    //参数查询方法
     paramsSearch(args) {
       if (args.name || args.startDate) {
         this.searchParams = args;
@@ -76,13 +76,13 @@ export default {
       unitCall( partyListUrl, params).then(this.__paramsSearchSuccess).catch(this.__failed);
     },
 
-    //机构类别按页码查询方法
+    //页码查询方法
     pageSearch(args) {
       let params = Object.assign({}, this.searchParams, args);
       unitCall(partyListUrl, params).then(this.__pageSearchSuccess).catch(this.__failed);
     },
 
-    //机构类别信息更新
+    //信息更新
     ok() {
       let url = '';
       let type = {...this.currentParty};
@@ -171,14 +171,14 @@ export default {
       this.initPage = !this.initPage;
     },
 
-    //机构类别修改操作成功回调
+    //修改操作成功回调
     __operaSuccess() {
       this.showMessage = true;
       this.messageType = 0;
       this.confirmClose = !this.confirmClose;
     },
 
-    //机构类别修改操作成功回调
+    //引入、移除操作成功回调
     __operaBindSuccess() {
       this.showMessage = true;
       this.messageType = 0;
@@ -193,7 +193,6 @@ export default {
       }else{
         this.setLinkGuideList([]);
       }
-
       
     },
 
@@ -229,11 +228,10 @@ export default {
       }
     },
     
-    //vuex引入设置类别数据方法
+    //vuex引入设置活动数据方法
     ...mapMutations({ 
       setPartyList : 'SET_PARTYLIST',
       setCurrentParty : 'SET_CURRENTPARTY',
-      setGuideList : 'SET_GUIDELIST',
       setLinkGuideList : 'SET_LINKGUIDELIST',
       setUnLinkGuideList : 'SET_UNLINKGUIDELIST',
     })
@@ -255,8 +253,6 @@ export default {
   //vuex中引入活动数据
   computed: {
     ...mapGetters({
-      partyList : 'partyData',
-      guideList : 'guideData',
       currentParty : 'party'
     })
   }

@@ -6,30 +6,32 @@
           <div class="pageHeader">
             <search @paramsSearch="paramsSearch"></search>
             <!--<button v-if="userPermission.user_add" class="button is-primary"  @click="showAdd">添加用户</button>-->
-            <button class="button is-primary"  @click="showAdd">添加分类</button>
+            <button class="button is-primary"  @click="showAdd">添加建筑</button>
           </div>
           <table class="table">
             <thead>
               <tr>
                 <th>序号</th>
-                <th>类别名称</th>
-                <th>描述</th>
+                <th>名称</th>
+                <th>分类</th>
+                <th>所属校区</th>
                 <th>创建时间</th>
                 <th>操作</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(item, index) in typeList">
+              <tr v-for="(item, index) in buildingList">
                 <td>{{ pernum*currentPage+index+1 }}</td>
                 <td>{{item.name}}</td>
-                <td>{{item.info}}</td>
+                <td>{{item.architeCategory.name}}</td>
+                <td>{{item.campus.name}}</td>
                 <td>{{item.createDate}}</td>
-                
                 <td>
                   <div class="optionWrapper">
                     <!--
-                    <button v-if="userPermission.user_modify" class="button is-warning is-small"  @click="showModify(item)">修改</button>
-                    <button v-if="userPermission.user_delete" class="button is-danger is-small" @click="showDel(item)">删除</button>
+                    <button v-if="userPermission.building_detail" class="button is-primary is-small"  @click="showDetail(zone)">详情</button>
+                    <button v-if="userPermission.building_modify" class="button is-warning is-small"  @click="showModify(zone)">修改</button>
+                    <button v-if="userPermission.building_delete" class="button is-danger is-small" @click="showDel(zone)">删除</button>
                     -->
                     <button class="button is-warning is-small"  @click="showModify(item)">修改</button>
                     <button class="button is-danger is-small" @click="showDel(item)">删除</button>
@@ -67,6 +69,7 @@ export default {
   },
 
   props: {
+
     //操作面板显示/隐藏控制
     confirmClose: {
       type: Boolean,
@@ -96,39 +99,38 @@ export default {
 
   methods: {
 
-    //类别修改
+    //建筑资料修改
     showModify(item) {
       this.modalConfig = {
         modify: 1,
         title: '资料修改',
         footerShow: true,
-        tabType: 'modify',
       };
-      this.setCurrentType(item);
-      this.modalType = 'modal-card';
+      this.setCurrentBuilding(item);
+      this.modalType = 'zone-card';
       this.confirmShow = true;
     },
 
-    //添加分类
+    //添加建筑
     showAdd() {
       this.modalConfig = {
         add: 1,
-        title: '添加分类',
+        title: '添加建筑',
         footerShow: true
       };
-      this.setCurrentType({});
-      this.modalType = 'modal-card';
+      this.setCurrentBuilding({});
+      this.modalType = 'zone-card';
       this.confirmShow = true;
     },
 
-    //删除分类
+    //删除建筑
     showDel(item) {
       this.modalConfig = {
         del: 1,
-        title: '确认删除该类别吗？',
-        footerShow: true,
+        title: '确认删除该建筑吗？',
+        footerShow: true
       };
-      this.setCurrentType(item);
+      this.setCurrentBuilding(item);
       this.modalType = 'modal-card';
       this.confirmShow = true;
     },
@@ -145,7 +147,7 @@ export default {
 
     //vuex引入设置用户方法
     ...mapMutations({
-      setCurrentType : 'SET_CURRENTTYPE'
+      setCurrentBuilding : 'SET_CURRENTBUILDING'
     })
   },
 
@@ -159,10 +161,10 @@ export default {
 
   computed: {
 
-    //vuex引入建筑类别数据
+    //vuex引入用户数据
     ...mapGetters({
-      typeList : 'buildingTypeData',
-      currentType : 'buildingType'
+      buildingList : 'buildingData',
+      currentBuilding : 'building'
     })
   }
 }

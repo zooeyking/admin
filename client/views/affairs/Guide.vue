@@ -21,7 +21,7 @@
 import GuideTable from './guide/Table';
 import MyMessage from 'components/common/message/Message';
 import { mapGetters, mapMutations } from 'vuex';
-import { unitCall, guideListUrl, guideEditUrl, guideDeleteUrl, serviceTypeListUrl, informationListUrl, linkInfoUrl, unLinkInfoUrl, infoRelationsUrl, infoNotRelationsUrl } from 'base/askUrl';
+import { unitCall, guideListUrl, guideEditUrl, guideDeleteUrl, serviceTypeListUrl, informationListUrl, linkInfoUrl, unLinkInfoUrl, infoRelationsUrl, infoNotRelationsUrl, sortServiceInfoUrl } from 'base/askUrl';
 import { Mixin } from 'base/mixin';
 import Bus from 'base/bus';
 
@@ -62,6 +62,20 @@ export default {
       unitCall(guideListUrl, params).then(this.__pageSearchSuccess).catch(this.__failed);
     },
 
+    //已关联信息按参数查询方法
+    linkInfoSearch(args) {
+      let currentId = this.currentGuide.id;
+      let params = Object.assign({id : currentId, pageSize : 10, pageNum : 1}, args);
+      return unitCall( infoRelationsUrl, params).then(this.__getLinkInfoSuccess).catch(this.__failed);
+    },
+
+    //未关联信息按参数查询方法
+    unLinkInfoSearch(args) {
+      let currentId = this.currentGuide.id;
+      let params = Object.assign({id : currentId, pageSize : 10, pageNum : 1}, args);
+      return unitCall( infoNotRelationsUrl, params).then(this.__getUnLinkInfoSuccess).catch(this.__failed);
+    },
+
     //引导信息更新
     ok() {
       let url = '';
@@ -91,15 +105,21 @@ export default {
     },
 
     //查询已绑定信息方法
-    getLinkInfo() {
+    getLinkInfo(pageNum=1) {
       let currentId = this.currentGuide.id;
-      return unitCall( infoRelationsUrl, { pageNum : 1, id : currentId}).then(this.__getLinkInfoSuccess).catch(this.__failed);
+      return unitCall( infoRelationsUrl, { pageNum : pageNum, id : currentId, pageSize : 10}).then(this.__getLinkInfoSuccess).catch(this.__failed);
+    },
+
+    //查询所有已绑定信息方法
+    getAllLinkInfo(pageNum=1) {
+      let currentId = this.currentGuide.id;
+      return unitCall( infoRelationsUrl, { pageNum : pageNum, id : currentId, sortPage: true, pageSize : 10}).then(this.__getLinkInfoSuccess).catch(this.__failed);
     },
 
     //查询未绑定信息方法
-    getUnLinkInfo() {
+    getUnLinkInfo(pageNum=1) {
       let currentId = this.currentGuide.id;
-      return unitCall( infoNotRelationsUrl, { pageNum : 1, id : currentId}).then(this.__getUnLinkInfoSuccess).catch(this.__failed);
+      return unitCall( infoNotRelationsUrl, { pageNum : pageNum, id : currentId, pageSize : 10}).then(this.__getUnLinkInfoSuccess).catch(this.__failed);
     },
 
     //获取信息类型
@@ -150,7 +170,6 @@ export default {
 
     //移除信息操作
     __doUnLink(selectedInfos) {
-      console.log(selectedInfos);
       let url = unLinkInfoUrl;
       let type = {...this.currentGuide};
       delete type.guide;
@@ -160,6 +179,19 @@ export default {
       let final = Object.assign({}, type, { siid: selectedStr});
       
       unitCall(url, final).then(this.__operaBindSuccess).catch(this.__failed).then(this.getLinkInfo).then(this.getUnLinkInfo).then(this.__initDate);
+    },
+
+    //排序已关联信息操作
+    __sortLink(selectedInfos) {
+      let url = sortServiceInfoUrl;
+      let type = {...this.currentGuide};
+      delete type.guide;
+      delete type.serviceInfoList;
+      let selectedStr = selectedInfos.join();
+      
+      let final = Object.assign({}, type, { siid: selectedStr});
+      
+      unitCall(url, final).then(this.__operaBindSuccess).then(this.getAllLinkInfo).catch(this.__failed);
     },
 
     //修改操作成功回调
@@ -187,6 +219,8 @@ export default {
 
     //获取已关联信息成功回调
     __getLinkInfoSuccess(data) {
+      let totalItems = data.value[0].total || 0;
+      Bus.$emit('getLinkInfoNums', totalItems);
 
       if(data.value[0].list) {
         let result = data.value[0].list;
@@ -199,6 +233,8 @@ export default {
 
     //获取未关联信息成功回调
     __getUnLinkInfoSuccess(data) {
+      let totalItems = data.value[0].total || 0;
+      Bus.$emit('getUnLinkInfoNums', totalItems);
 
       if(data.value[0].list) {
         let result = data.value[0].list;
@@ -209,13 +245,10 @@ export default {
 
     },
     
-    //vuex引入设置类别数据方法
+    //vuex引入设置引导数据方法
     ...mapMutations({ 
       setServiceTypeList : 'SET_SERVICETYPELIST',
-      setCurrentServiceType : 'SET_CURRENTSERVICETYPE',
-      setInformationList : 'SET_INFORMATIONLIST',
       setGuideList : 'SET_GUIDELIST',
-      setCurrentGuide : 'SET_CURRENTGuide',
       setLinkInfoList : 'SET_LINKINFOLIST',
       setUnLinkInfoList : 'SET_UNLINKINFOLIST',
     })
@@ -226,7 +259,12 @@ export default {
     this.__initDate();
     Bus.$on('doLink', this.__doLink);
     Bus.$on('doUnLink', this.__doUnLink);
-    Bus.$on('saveOrder', this.__doLink);
+    Bus.$on('saveOrder', this.__sortLink);
+    Bus.$on('getAllLinkInfos', this.getAllLinkInfo);
+    Bus.$on('unLinkInfoSearch', (searchArgs)=>{this.unLinkInfoSearch(searchArgs)});
+    Bus.$on('linkInfoSearch', (searchArgs)=>{this.linkInfoSearch(searchArgs)});
+    Bus.$on('getUnLinkPages', (index)=>{this.getUnLinkInfo(index)});
+    Bus.$on('getLinkPages', (index)=>{this.getLinkInfo(index)});
   },
 
   //清除Bus监听
@@ -234,17 +272,17 @@ export default {
     Bus.$off('doLink');
     Bus.$off('doUnLink');
     Bus.$off('saveOrder');
+    Bus.$off('getAllLinkInfos');
+    Bus.$off('getUnLinkPages');
+    Bus.$off('unLinkInfoSearch');
+    Bus.$off('linkInfoSearch');
+    Bus.$off('getLinkPages');
   },
 
-  //vuex中引入建筑类别数据
+  //vuex中引入引导数据
   computed: {
     ...mapGetters({
-      typeList : 'buildingTypeData',
-      currentType : 'buildingType',
-      informationList : 'informationData',
       currentGuide : 'guide',
-      linkInfoList : 'linkInfoData',
-      unLinkInfoList : 'unLinkInfoData',
     })
   }
 }

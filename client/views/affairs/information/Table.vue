@@ -5,7 +5,7 @@
         <article class="tile is-child box">
           <div class="pageHeader">
             <search @paramsSearch="paramsSearch"></search>
-            <!--<button v-if="userPermission.user_add" class="button is-primary"  @click="showAdd">添加用户</button>-->
+            <!--<button v-if="userPermission.information_add" class="button is-primary"  @click="showAdd">新建信息</button>-->
             <button class="button is-primary"  @click="showAdd">新建信息</button>
           </div>
           <table class="table">
@@ -30,9 +30,9 @@
                 <td>
                   <div class="optionWrapper">
                     <!--
-                    <button v-if="userPermission.user_detail" class="button is-primary is-small"  @click="showDetail(zone)">详情</button>
-                    <button v-if="userPermission.user_modify" class="button is-warning is-small"  @click="showModify(zone)">修改</button>
-                    <button v-if="userPermission.user_delete" class="button is-danger is-small" @click="showDel(zone)">删除</button>
+                    <button v-if="userPermission.information_detail" class="button is-primary is-small"  @click="showDetail(item)">详情</button>
+                    <button v-if="userPermission.information_modify" class="button is-warning is-small"  @click="showModify(item)">修改</button>
+                    <button v-if="userPermission.information_delete" class="button is-danger is-small" @click="showDel(item)">删除</button>
                     -->
                     <button class="button is-primary is-small"  @click="showDetail(item)">详情</button>
                     <button class="button is-warning is-small"  @click="showModify(item)">修改</button>
@@ -102,6 +102,7 @@ export default {
 
   methods: {
 
+    //信息详情
     showDetail(item) {
       this.modalConfig = {
         detail: 1,
@@ -156,11 +157,10 @@ export default {
 
     //操作面板确认操作
     ok() {
-      console.log(222);
       this.$emit('ok');
     },
 
-    //vuex引入设置用户方法
+    //vuex引入设置信息方法
     ...mapMutations({
       setCurrentInformation : 'SET_CURRENTINFORMATION'
     })
@@ -176,10 +176,9 @@ export default {
 
   computed: {
 
-    //vuex引入用户数据
+    //vuex引入信息数据
     ...mapGetters({
       informationList : 'informationData',
-      currentInformation : 'information'
     })
   }
 }

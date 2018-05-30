@@ -7,19 +7,19 @@
         <table class="table">
           <tbody>
             <tr>
-              <td class="leftCol"><strong class="is-must">标题</strong></td><td class="rightCol"><input v-model="newInformation['title']" type="text" class="input is-primary" maxlength="15"></td>
+              <td class="leftCol"><strong class="is-must">标题:</strong></td><td class="rightCol"><input v-model="newInformation['title']" type="text" class="input is-primary" maxlength="15"></td>
             </tr>
             
             <tr>
-              <td class="leftCol"><strong class="is-must">开始时间</strong></td><td class="rightCol"><timepicker @sendValue="setStartTime"></timepicker></td>
+              <td class="leftCol"><strong class="is-must">开始时间:</strong></td><td class="rightCol"><timepicker @sendValue="setStartTime"></timepicker></td>
             </tr>
 
             <tr>
-              <td class="leftCol"><strong class="is-must">结束时间</strong></td><td class="rightCol"><timepicker @sendValue="setEndTime"></timepicker></td>
+              <td class="leftCol"><strong class="is-must">结束时间:</strong></td><td class="rightCol"><timepicker @sendValue="setEndTime"></timepicker></td>
             </tr>
 
             <tr>
-              <td class="leftCol"><strong class="is-must">信息类型</strong></td>
+              <td class="leftCol"><strong class="is-must">信息类型:</strong></td>
               <td class="rightCol">
                   <div class="control is-horizontal">
                     <div class="control">
@@ -34,7 +34,7 @@
             </tr>
 
             <tr>
-              <td class="leftCol"><strong class="is-must">所属校区</strong></td>
+              <td class="leftCol"><strong class="is-must">所属校区:</strong></td>
               <td class="rightCol">
                   <div class="control is-horizontal">
                     <div class="control">
@@ -49,7 +49,7 @@
             </tr>
 
             <tr>
-              <td class="leftCol"><strong>标签</strong></td><td class="rightCol"><input v-model="newInformation['lable']" type="text" class="input is-primary" maxlength="30"></td>
+              <td class="leftCol"><strong class="is-must">标签:</strong></td><td class="rightCol"><input v-model="newInformation['lable']" type="text" class="input is-primary" maxlength="30"></td>
             </tr>
             
           </tbody>
@@ -60,7 +60,7 @@
         <table class="table">
           <tbody>
             <tr>
-              <td class="leftCol"><strong>定位</strong></td>
+              <td class="leftCol"><strong class="is-must">定位:</strong></td>
               <td class="rightCol">
                 <label class="radio"><input v-model="newInformation['type']" name="pType" type="radio" value="1">
                   坐标点
@@ -76,7 +76,7 @@
         <zone-map ref="campus" v-show="newInformation['type'] == 1" :initSize="mapSize" :drawType="drawType" :centerPoint="centerPoint"></zone-map>
 
         <div class="arc-select" v-show="newInformation['type'] == 2">
-          <div class="subtitle leftCol option-box"><strong class="is-must">建筑</strong></div>
+          <div class="subtitle leftCol option-box"><strong class="is-must">建筑:</strong></div>
 
           <div class="option-box rightCol">
             <div class="control is-horizontal">
@@ -92,6 +92,8 @@
         </div>
       </div>
 
+      <p v-if="infoShow" class="check-info"><strong class="is-must">{{message}}</strong></p>
+
       <ue :defaultMsg="defaultMsg" :config="config" class="ueditor-content" ref="ueditor"></ue>
       
     </div>
@@ -99,22 +101,22 @@
     <table class="table" v-if="modalConfig.detail">
       <tbody>
         <tr>
-          <td class="leftCol"><strong>信息名称</strong></td><td class="rightCol">{{newInformation.title}}</td>
+          <td class="leftCol"><strong>信息名称:</strong></td><td class="rightCol">{{newInformation.title}}</td>
         </tr>
         <tr>
-          <td class="leftCol"><strong>信息类别</strong></td><td class="rightCol">{{newInformation.serviceCategory ? newInformation.serviceCategory.name : ''}}</td>
+          <td class="leftCol"><strong>信息类别:</strong></td><td class="rightCol">{{newInformation.serviceCategory ? newInformation.serviceCategory.name : ''}}</td>
         </tr>
         <tr>
-          <td class="leftCol"><strong>所属校区</strong></td><td class="rightCol">{{newInformation.campus ? newInformation.campus.name : ''}}</td>
+          <td class="leftCol"><strong>所属校区:</strong></td><td class="rightCol">{{newInformation.campus ? newInformation.campus.name : ''}}</td>
         </tr>
         <tr>
-          <td class="leftCol"><strong>有效时间</strong></td><td class="rightCol">{{newInformation.startedDate}} —— {{newInformation.endedDate}}</td>
+          <td class="leftCol"><strong>有效时间:</strong></td><td class="rightCol">{{newInformation.startedDate}} —— {{newInformation.endedDate}}</td>
         </tr>
         <tr>
-          <td class="leftCol"><strong>标签</strong></td><td class="rightCol">{{newInformation.lable}}</td>
+          <td class="leftCol"><strong>标签:</strong></td><td class="rightCol">{{newInformation.lable}}</td>
         </tr>
         <tr>
-          <td class="leftCol"><strong>内容</strong></td><td class="rightCol">{{newInformation.content}}</td>
+          <td class="leftCol"><strong>内容:</strong></td><td class="rightCol">{{newInformation.content}}</td>
         </tr>
       </tbody>
     </table>
@@ -122,18 +124,17 @@
     <table class="table" v-if="modalConfig.del">
       <tbody>
         <tr>
-          <td class="leftCol"><strong>信息名称</strong></td><td class="rightCol">{{newInformation.title}}</td>
+          <td class="leftCol"><strong>信息名称:</strong></td><td class="rightCol">{{newInformation.title}}</td>
         </tr>
         <tr>
-          <td class="leftCol"><strong>信息类别</strong></td><td class="rightCol">{{newInformation.serviceCategory.name}}</td>
+          <td class="leftCol"><strong>信息类别:</strong></td><td class="rightCol">{{newInformation.serviceCategory.name}}</td>
         </tr>
         <tr>
-          <td class="leftCol"><strong>所属校区</strong></td><td class="rightCol">{{newInformation.campus.name}}</td>
+          <td class="leftCol"><strong>所属校区:</strong></td><td class="rightCol">{{newInformation.campus.name}}</td>
         </tr>
       </tbody>
     </table>
-    
-    <p v-if="infoShow" class="check-info"><strong class="is-must">{{message}}</strong></p>
+
   </card-modal>
 </template>
 
@@ -142,7 +143,6 @@ import { CardModal } from 'vue-bulma-modal';
 import ZoneMap from 'components/common/map/Map';
 import Timepicker from 'components/common/datepicker/Timepicker';
 import Ue from 'components/common/ueditor/Ueditor';
-import MyTabs from './Tabs';
 import Bus from 'base/bus';
 import { mapGetters, mapMutations } from 'vuex';
 import { __getCenter } from 'tools/js/util'; 
@@ -151,7 +151,6 @@ export default {
   components: {
     CardModal,
     ZoneMap,
-    MyTabs,
     Timepicker,
     Ue
   },
@@ -164,13 +163,11 @@ export default {
 
   data () {
     return {
-      defaultMsg: '这里输入内容',
+      defaultMsg: '这里输入内容,且内容不能为空！',
       config: {
         initialFrameWidth: null,
         initialFrameHeight: 300
       },
-      startTimeValue: '2018-01-01 00:00',
-      endTimeValue: '2018-01-01 00:00',
       centerPoint:{},
       infoShow: false,
       message: '',
@@ -234,15 +231,8 @@ export default {
 
       }
 
-      
-
-      // if(pType === 1) {
-      //   let position = this.$refs.campus.
-      // }
-      console.log(finnalInforamation);
-
-      if(!finnalInforamation.title || !finnalInforamation.cid || !finnalInforamation.scid) {
-        this.message = '所需字段不能为空!';
+      if(!finnalInforamation.title || !finnalInforamation.cid || !finnalInforamation.scid || !finnalInforamation.startedDate || !finnalInforamation.endedDate || !finnalInforamation.type || !finnalInforamation.content) {
+        this.message = '所有字段不能为空!';
         this.infoShow = true;
         return;
       }
@@ -250,8 +240,6 @@ export default {
       this.setCurrentInformation(finnalInforamation);
       this.$emit('ok');
     },
-
-   
 
     //设置开始时间
     setStartTime(value) {
@@ -280,13 +268,12 @@ export default {
     //vuex引入设置用户方法
     ...mapMutations({
       setCurrentInformation : 'SET_CURRENTINFORMATION',
-      setCurrentZone : 'SET_CURRENTZONE'
     })
   },
 
   computed: {
 
-    //vuex引入用户数据
+    //vuex引入信息数据
     ...mapGetters({
       buildingList : 'buildingData',
       zoneList : 'zoneData',
@@ -304,9 +291,11 @@ export default {
         this.newInformation = Object.assign({}, newVal);
         this.defaultMsg = this.newInformation.content;
         if( this.newInformation.type == 1) {
-          let campus = this.newInformation.campus;
-          let pathData = JSON.parse(campus.position);
-          this.centerPoint = __getCenter(pathData);
+
+          //let campus = this.newInformation.campus;
+          //let pathData = JSON.parse(campus.position);
+          let center = JSON.parse(this.newInformation.position);
+          this.centerPoint = center;
 
           this.$nextTick(function () {
             let dot = JSON.parse(this.newInformation.position);
@@ -358,6 +347,8 @@ export default {
 }
 .check-info {
   margin-left: 0.75em;
+  margin-bottom: 0.5em;
+  float: left;
 }
 .map-container:after {
   display: block;
@@ -372,7 +363,8 @@ export default {
   width: 60%;
   float: right;
   height: 300px;
-  border-radius: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
   overflow: hidden;
 }
 .ueditor-content {
@@ -394,13 +386,6 @@ export default {
 }
 .arc-select .option-box:last-child {
   width: 40%;
-}
-.upfile-box {
-  width: 160px;
-} 
-.avatar {
-  vertical-align: top;
-  max-width: 80px;
 }
 
 

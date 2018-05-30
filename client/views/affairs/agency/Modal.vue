@@ -5,24 +5,24 @@
       <table class="table">
         <tbody>
           <tr>
-            <td class="leftCol"><strong class="is-must">机构名称</strong></td><td class="rightCol"><input v-model="newAgency['name']" type="text" class="input is-primary" maxlength="15"></td>
+            <td class="leftCol"><strong class="is-must">机构名称:</strong></td><td class="rightCol"><input v-model="newAgency['name']" type="text" class="input is-primary" maxlength="15"></td>
           </tr>
           <tr>
-            <td class="leftCol"><strong class="is-must">所属建筑</strong></td>
+            <td class="leftCol"><strong class="is-must">所属建筑:</strong></td>
             <td class="rightCol">
-                <div class="control is-horizontal">
-                  <div class="control">
-                    <div class="select is-fullwidth">
-                      <select v-model="newAgency['aeid']">
-                        <option v-for="item in buildingList" :value="item.id" >{{item.name}}</option>
-                      </select>
-                    </div>
+              <div class="control is-horizontal">
+                <div class="control">
+                  <div class="select is-fullwidth">
+                    <select v-model="newAgency['aeid']">
+                      <option v-for="item in buildingList" :value="item.id" >{{item.name}}</option>
+                    </select>
                   </div>
                 </div>
+              </div>
             </td>
           </tr>
           <tr>
-            <td class="leftCol"><strong>机构描述</strong></td><td class="rightCol"><textarea v-model="newAgency['descp']" class="textarea" maxlength="120" placeholder="至多输入120个字符"></textarea></td>
+            <td class="leftCol"><strong>机构描述:</strong></td><td class="rightCol"><textarea v-model="newAgency['descp']" class="textarea" maxlength="120" placeholder="至多输入120个字符"></textarea></td>
           </tr>
         </tbody>
       </table>
@@ -31,10 +31,13 @@
     <table class="table" v-if="modalConfig.del">
       <tbody>
         <tr>
-          <td class="leftCol"><strong>机构名称</strong></td><td class="rightCol">{{newAgency.name}}</td>
+          <td class="leftCol"><strong>机构名称:</strong></td><td class="rightCol">{{newAgency.name}}</td>
         </tr>
         <tr>
-          <td class="leftCol"><strong>机构描述</strong></td><td class="rightCol">{{newAgency.descp}}</td>
+          <td class="leftCol"><strong>所属建筑:</strong></td><td class="rightCol">{{newAgency.architeEntity.name}}</td>
+        </tr>
+        <tr>
+          <td class="leftCol"><strong>机构描述:</strong></td><td class="rightCol">{{newAgency.descp}}</td>
         </tr>
       </tbody>
     </table>
@@ -73,10 +76,6 @@ export default {
     }
   },
 
-  mounted() {
-    
-  },
-
   methods: {
 
     //取消操作
@@ -85,34 +84,33 @@ export default {
       this.infoShow = false;
     },
 
-    open () {},
-
     //确认操作
     ok () {
       let finnal = {};
-      let {name, id} = this.currentAgency;
+      let {name, id, aeid} = this.currentAgency;
       let cid = this.currentZone.id;
       let oid = this.currentAgencyGroup.id;
       if(this.modalConfig.modify) {
         finnal = Object.assign({}, this.currentAgency, this.newAgency, {modifyFlag: 1});
       }else if(this.modalConfig.del) {
-        finnal = Object.assign({}, {name, id}, {delFlag: 1});
+        finnal = Object.assign({}, {name, id, aeid}, {delFlag: 1});
       }else {
         finnal = Object.assign({}, this.newAgency, {addFlag: 1, oid, cid});
       }
-
-      if(!finnal.name) {
+      
+      if(!finnal.name || !finnal.aeid) {
         this.message = '所需字段不能为空!';
         this.infoShow = true;
         return;
       }
 
       this.setCurrentAgency(finnal);
+
       Bus.$emit('ok');
-      //this.$emit('ok');
+      this.infoShow = false;
     },
 
-    //vuex引入设置用户方法
+    //vuex引入设置机构方法
     ...mapMutations({
       setCurrentAgency : 'SET_CURRENTAGENCY'
     })
@@ -120,9 +118,8 @@ export default {
 
   computed: {
 
-    //vuex引入用户数据
+    //vuex引入机构数据
     ...mapGetters({
-      zoneList : 'zoneData',
       currentZone : 'zone',
       buildingList : 'buildingData',
       currentAgency : 'agency',
@@ -134,13 +131,10 @@ export default {
 
     //当前操作机构
     currentAgency(newVal, oldVal){
-
       this.newAgency = Object.assign({}, newVal);
-
       if(this.modalConfig.add) {
         this.newAgency.aeid = this.buildingList[0] ? this.buildingList[0].id : '';
       }
-      
     }
     
   }

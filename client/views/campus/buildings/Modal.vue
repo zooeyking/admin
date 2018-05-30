@@ -83,7 +83,7 @@ export default {
 
   data () {
     return {
-      centerPoint:{},
+      centerPoint: {},
       infoShow: false,
       message: '',
       pathData: [],
@@ -105,16 +105,7 @@ export default {
     cancel () {
       this.$emit('close');
       this.infoShow = false;
-      /*
-      this.newBuilding = {
-        
-      }
-      this.newBuilding.zone = this.zoneList.length > 0 ? this.zoneList[0].id : '';
-      this.newBuilding.type = this.typeList.length > 0 ? this.typeList[0].id : '';
-      */
     },
-
-    open () {},
 
     //确认操作
     ok () {
@@ -128,23 +119,23 @@ export default {
         finnalBuilding = Object.assign({}, this.currentBuilding, {delFlag: 1});
       }else {
         let paths = this.$refs.campus.polygon.paths;
-        
         let str = JSON.stringify(paths);
-        
         this.newBuilding.position = str;
         finnalBuilding = Object.assign({}, this.newBuilding, {addFlag: 1});
       }
-
-      if(!finnalBuilding.name || !finnalBuilding.cid || !finnalBuilding.acid) {
-        this.message = '所需字段不能为空!';
+      
+      if(!finnalBuilding.name || !finnalBuilding.cid || !finnalBuilding.acid || finnalBuilding.position.length < 100) {
+        this.message = '所填必要信息不合法!';
         this.infoShow = true;
         return;
       }
 
       this.setCurrentBuilding(finnalBuilding);
       this.$emit('ok');
+      this.infoShow = false;
     },
 
+    //选取校区
     selectZone() {
       let cid = this.newBuilding.cid;
       let zone = this.zoneList.find((item)=>{
@@ -156,7 +147,7 @@ export default {
       this.centerPoint = __getCenter(pathData);
     },
 
-    //vuex引入设置用户方法
+    //vuex引入设置建筑方法
     ...mapMutations({
       setCurrentBuilding : 'SET_CURRENTBUILDING'
     })
@@ -164,17 +155,7 @@ export default {
 
   computed: {
 
-    // //建筑位置数据点
-    // pathData() {
-    //   let str = this.newZone.position;
-    // this.pathData = JSON.parse(str);
-    //   let tabs = this.$refs.tabs;
-    //     let map = tabs.$refs.map;
-    //     let tempZone = tabs.newZone;
-    //     let tempPosition = JSON.stringify(map.polygon.paths);
-    //     tempZone.position = tempPosition;
-    // },
-    //vuex引入用户数据
+    //vuex引入建筑数据
     ...mapGetters({
       buildingList : 'buildingData',
       zoneList : 'zoneData',
@@ -201,17 +182,15 @@ export default {
 
     //当前操作建筑
     currentBuilding(newVal, oldVal){
-      console.log(newVal)
       
       if(this.modalConfig.modify) {
-        let campusPos = newVal.campus ? newVal.campus.position : '[]';
-        let pathData = JSON.parse(campusPos);
-        this.centerPoint = __getCenter(pathData);
-
+        
         this.newBuilding = Object.assign({}, newVal);
         this.newBuilding.cid = newVal.campus.id;
         this.newBuilding.acid = newVal.architeCategory.id;
         let str = this.newBuilding.position;
+        let pathData = JSON.parse(str);
+        this.centerPoint = __getCenter(pathData);
         this.pathData = JSON.parse(str);
       }
 

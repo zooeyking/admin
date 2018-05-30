@@ -2,6 +2,9 @@
   <div class="search">
     <ul class="content">
       <li class="item text">
+        <input class="input is-primary" v-model="params.name" @keyup.enter="search" maxlength="30" placeholder="建筑名称"/>
+      </li>
+      <li class="item text">
         <div class="control is-horizontal">
           <div class="control">
             <div class="select is-fullwidth">
@@ -24,9 +27,6 @@
             </div>
           </div>
         </div>
-      </li>
-      <li class="item text">
-        <input class="input is-primary" v-model="params.name" @keyup.enter="search" maxlength="30" placeholder="建筑名称"/>
       </li>
       <li class="item dateBox">
         <datepicker @sendValue="setDateValue"></datepicker>

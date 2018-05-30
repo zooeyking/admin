@@ -8,7 +8,6 @@
           <tr>
             <td class="leftCol"><strong class="is-must">名称:</strong></td><td class="rightCol"><input v-model="newGuide['name']" type="text" class="input is-primary" maxlength="30"></td>
           </tr>
-          
           <tr>
             <td class="leftCol"><strong class="is-must">内容:</strong></td><td class="rightCol"></td>
           </tr>
@@ -27,7 +26,7 @@
           <td class="leftCol"><strong>名称:</strong></td><td class="rightCol">{{currentGuide.name}}</td>
         </tr>
         <tr>
-          <td class="leftCol"><strong>引导:</strong></td><td class="rightCol">{{currentGuide.descp}}</td>
+          <td class="leftCol"><strong>内容:</strong></td><td class="rightCol">{{currentGuide.context}}</td>
         </tr>
       </tbody>
     </table>
@@ -65,7 +64,6 @@ export default {
       infoShow: false,
       message: '',
       newGuide: {},
-      tabType: '',
       imgUrl: ''
     }
   },
@@ -76,6 +74,7 @@ export default {
 
   methods: {
 
+    //tab切换
     tabSelected(index) {
       if(index === 1) {
         Bus.$emit('getInfoType');
@@ -88,11 +87,8 @@ export default {
       this.infoShow = false;
     },
 
-    open () {},
-
     //确认操作
     ok () {
-
       let final = {};
 
       if(this.modalConfig.modify) {
@@ -119,9 +115,10 @@ export default {
 
       this.setCurrentGuide(final);
       this.$emit('ok');
+      this.infoShow = false;
     },
 
-    //vuex引入设置用户方法
+    //vuex引入设置引导方法
     ...mapMutations({
       setCurrentGuide : 'SET_CURRENTGUIDE'
     })
@@ -129,19 +126,15 @@ export default {
 
   computed: {
     
-    //vuex引入建筑类别数据
+    //vuex引入引导数据
     ...mapGetters({
-      serviceTypeList : 'serviceTypeData',
-      currentServiceType : 'serviceType',
-      informationList : 'informationData',
-      guideList : 'guideData',
       currentGuide : 'guide'
     })
   },
 
   watch: {
 
-    //当前操作建筑类别监听
+    //当前操作引导监听
     currentGuide(newVal, oldVal){
 
       if(this.modalConfig.modify) {

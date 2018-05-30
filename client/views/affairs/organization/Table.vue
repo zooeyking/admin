@@ -5,7 +5,7 @@
         <article class="tile is-child box">
           <div class="pageHeader">
             <search @paramsSearch="paramsSearch"></search>
-            <!--<button v-if="userPermission.user_add" class="button is-primary"  @click="showAdd">添加用户</button>-->
+            <!--<button v-if="userPermission.organization_add" class="button is-primary"  @click="showAdd">添加机构组</button>-->
             <button class="button is-primary"  @click="showAdd">添加机构组</button>
           </div>
           <table class="table">
@@ -28,8 +28,9 @@
                 <td>
                   <div class="optionWrapper">
                     <!--
-                    <button v-if="userPermission.user_modify" class="button is-warning is-small"  @click="showModify(item)">修改</button>
-                    <button v-if="userPermission.user_delete" class="button is-danger is-small" @click="showDel(item)">删除</button>
+                    <button v-if="userPermission.organization_bind" class="button is-primary is-small"  @click="showBind(item)">关联校区</button>
+                    <button v-if="userPermission.organization_modify" class="button is-warning is-small"  @click="showModify(item)">修改</button>
+                    <button v-if="userPermission.organization_delete" class="button is-danger is-small" @click="showDel(item)">删除</button>
                     -->
                     <button class="button is-primary is-small"  @click="showBind(item)">关联校区</button>
                     <button class="button is-warning is-small"  @click="showModify(item)">修改</button>
@@ -68,6 +69,7 @@ export default {
   },
 
   props: {
+
     //操作面板显示/隐藏控制
     confirmClose: {
       type: Boolean,
@@ -83,9 +85,7 @@ export default {
 
   data () {
     return {
-      isShow: false,
       confirmShow: false,
-      currentIndex: 0,
       modalConfig: {},
       modalType: '',
     }
@@ -156,10 +156,12 @@ export default {
       this.$emit('ok');
     },
 
+    //绑定校区
     bind() {
       this.$emit('bind');
     },
 
+    //解除绑定
     unBind() {
       this.$emit('unBind');
     },

@@ -5,7 +5,7 @@
         <article class="tile is-child box">
           <div class="pageHeader">
             <search @paramsSearch="paramsSearch"></search>
-            <!--<button v-if="userPermission.user_add" class="button is-primary"  @click="showAdd">添加用户</button>-->
+            <!--<button v-if="userPermission.campus_add" class="button is-primary"  @click="showAdd">添加校区</button>-->
             <button class="button is-primary"  @click="showAdd">添加校区</button>
           </div>
           <table class="table">
@@ -28,9 +28,9 @@
                 <td>
                   <div class="optionWrapper">
                     <!--
-                    <button v-if="userPermission.user_detail" class="button is-primary is-small"  @click="showDetail(zone)">详情</button>
-                    <button v-if="userPermission.user_modify" class="button is-warning is-small"  @click="showModify(zone)">修改</button>
-                    <button v-if="userPermission.user_delete" class="button is-danger is-small" @click="showDel(zone)">删除</button>
+                    <button v-if="userPermission.campus_detail" class="button is-primary is-small"  @click="showDetail(zone)">详情</button>
+                    <button v-if="userPermission.campus_modify" class="button is-warning is-small"  @click="showModify(zone)">修改</button>
+                    <button v-if="userPermission.campus_delete" class="button is-danger is-small" @click="showDel(zone)">删除</button>
                     -->
                     <button class="button is-primary is-small"  @click="showDetail(zone)">详情</button>
                     <button class="button is-warning is-small"  @click="showModify(zone)">修改</button>
@@ -44,13 +44,13 @@
           <pagination ref="pages" :allItems="totalNum" @changeIndex="getIndex" :pernum="pernum"></pagination>
 
           <confirm :visible="confirmShow" @close="closeDetail" :modalConfig="modalConfig" :modalType="modalType" @ok="ok"></confirm>
-          
+
         </article>
       </div>
     </div>
   </div>
 </template>
-
+ 
 <script>
 import Pagination from 'components/common/pagination/Pagination';
 import Search from './Search';
@@ -135,6 +135,7 @@ export default {
         title: '添加校区',
         footerShow: true
       };
+      this.setCurrentZone({});
       this.modalType = 'zone-card';
       this.confirmShow = true;
     },

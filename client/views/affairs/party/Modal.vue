@@ -10,7 +10,7 @@
           <tr>
             <td class="leftCol"><strong class="is-must">logo图标:</strong></td>
             <td class="rightCol">
-              <input @change="getFile($event)"  type="file" accept="image/*">
+              <input @change.prevent="getFile($event)"  type="file" accept="image/*">
               <img class="avatar" :src="imgUrl"/>
             </td>
           </tr>
@@ -44,6 +44,7 @@
 <script>
 import { CardModal } from 'vue-bulma-modal';
 import { mapGetters, mapMutations } from 'vuex';
+import { ip } from 'base/askUrl';
 import PartyTabs from './Tabs'
 
 export default {
@@ -81,16 +82,13 @@ export default {
       let file = event.target.files[0];
       let windowURL = window.URL || window.webkitURL;
       this.imgUrl = windowURL.createObjectURL(file);
-
       this.$emit('upimg', file);
-      
     },
 
     //取消操作
     cancel () {
       this.$emit('close');
       this.infoShow = false;
-      this.newParty = {};
     },
 
     //确认操作
@@ -104,7 +102,7 @@ export default {
         finnal = Object.assign({}, this.currentParty, this.newParty, {addFlag: 1});
       }
 
-      if(!finnal.name) {
+      if(!finnal.name || !finnal.imagePath) {
         this.message = '所需字段不能为空!';
         this.infoShow = true;
         return;
@@ -112,6 +110,7 @@ export default {
 
       this.setCurrentParty(finnal);
       this.$emit('ok');
+      this.infoShow = false;
     },
 
     //vuex引入设置活动方法
@@ -124,10 +123,7 @@ export default {
     
     //vuex引入活动数据
     ...mapGetters({
-      partyList : 'partyData',
       currentParty : 'party',
-      linkGuideList : 'linkGuideData',
-      unLinkGuideList : 'unLinkGuideData'
     })
   },
 
@@ -135,20 +131,18 @@ export default {
 
     //当前操作活动监听
     currentParty(newVal, oldVal){
+
       if(this.modalConfig.modify) {
-
         this.newParty = Object.assign({}, newVal);
-        this.imgUrl = this.newParty.imagePath;
-
       }
 
-      if(this.modalConfig.del) {
-        this.imgUrl = this.currentParty.imagePath;
+      if(newVal.imagePath) {
+        this.newParty = Object.assign(this.newParty, newVal);
+      }else{
+        this.newParty = {};
       }
 
-      if(this.modalConfig.add) {
-        this.imgUrl = newVal['imagePath'] ? newVal['imagePath'] : '';
-      }
+      this.imgUrl = newVal.imagePath ? (ip + newVal.imagePath): '';
     }
   }
 }

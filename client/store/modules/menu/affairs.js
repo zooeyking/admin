@@ -1,16 +1,20 @@
 import lazyLoading from './lazyLoading'
 
 export default {
+  name: '业务管理',
+  path: '/affairs',
   meta: {
     label: '业务管理',
     icon: 'fa-laptop',
-    expanded: false
+    expanded: false,
+    link: 'affairs/index.vue'
   },
+  component: lazyLoading('affairs', true),
 
   children: [
     {
       name: '信息分类',
-      path: '/infoType',
+      path: 'infoType',
       meta: {
         link: 'affairs/InfoType.vue'
       },
@@ -18,7 +22,7 @@ export default {
     },
     {
       name: '信息管理',
-      path: '/information',
+      path: 'information',
       meta: {
         link: 'affairs/Information.vue'
       },
@@ -26,7 +30,7 @@ export default {
     },
     {
       name: '引导管理',
-      path: '/guide',
+      path: 'guide',
       meta: {
         link: 'affairs/Guide.vue'
       },
@@ -34,7 +38,7 @@ export default {
     },
     {
       name: '活动管理',
-      path: '/party',
+      path: 'party',
       meta: {
         link: 'affairs/Party.vue'
       },
@@ -42,7 +46,7 @@ export default {
     },
     {
       name: '机构分类',
-      path: '/organization',
+      path: 'organization',
       meta: {
         link: 'affairs/Organization.vue'
       },
@@ -50,7 +54,7 @@ export default {
     },
     {
       name: '机构管理',
-      path: '/agency',
+      path: 'agency',
       meta: {
         link: 'affairs/Agency.vue'
       },
@@ -58,3 +62,4 @@ export default {
     }
   ]
 }
+

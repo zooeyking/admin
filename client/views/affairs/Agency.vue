@@ -43,11 +43,15 @@ export default {
 
     //机构按参数查询方法
     paramsSearch(args) {
-      if (args.name || args.startDate) {
+      if (args.name || args.aeid || args.startDate) {
         this.searchParams = args;
       }
-      let params = Object.assign({}, this.searchParams, args);
-      unitCall( agencyListUrl, params).then(this.__paramsSearchSuccess).catch(this.__failed);
+    
+      let cid = this.currentZone.id;
+      let oid = this.currentAgencyGroup.id;
+      let params = Object.assign({ pageNum : 1, pageSize : 10, oid, cid }, this.searchParams, args);
+      
+      return unitCall( agencyListUrl, params).then(this.__paramsSearchSuccess).catch(this.__failed);
     },
 
     //机构按页码查询方法
@@ -55,7 +59,6 @@ export default {
       let params = Object.assign({}, this.searchParams, args);
       unitCall( agencyListUrl, params).then(this.__pageSearchSuccess).catch(this.__failed);
     },
-
 
     //机构信息更新
     __handlerOk() {
@@ -79,8 +82,8 @@ export default {
     },
 
     //展开切换
-    open() {
-      this.__getAgency()
+    open(index) {
+      this.__getAgency(index);
     },
 
     //操作面板消失
@@ -102,20 +105,21 @@ export default {
 
     //获取建筑物
     __getBuildings() {
-      if(this.firstGetBuild) {
-        unitCall( buildingListUrl, { pageNum : 1}).then((data)=>{
-          if(data.value[0].list) {
-            let result = data.value[0].list;
-            this.setBuildingList(result);
-          }else{
-            this.setBuildingList([]);
-          }
-          this.firstGetBuild = false;
-        }).catch(this.__failed);
-      }
+      let cid = this.currentZone.id;
+      
+      unitCall( buildingListUrl, { pageNum : 1, cid}).then((data)=>{
+        if(data.value[0].list) {
+          let result = data.value[0].list;
+          this.setBuildingList(result);
+        }else{
+          this.setBuildingList([]);
+        }
+        this.firstGetBuild = false;
+      }).catch(this.__failed);
+      
     },
 
-    //校区成功回调
+    //获取校区成功回调
     __getCampusSuccess(data) {
       if(data.value[0].list) {
         let result = data.value[0].list;
@@ -144,8 +148,8 @@ export default {
     //获取机构
     __getAgency(page=1) {
       let cid = this.currentZone.id;
-      let group = this.currentAgencyGroup ? this.currentAgencyGroup : {};
-      return unitCall( agencyListUrl, { pageNum : page, oid : group.id, cid }).then(this.__pageSearchSuccess).catch(this.__failed);
+      let oid = this.currentAgencyGroup.id;
+      return unitCall( agencyListUrl, { pageNum : page, pageSize : 10, oid, cid }).then(this.__pageSearchSuccess).catch(this.__failed);
     },
 
     //根据页码查询成功回调
@@ -194,20 +198,21 @@ export default {
     Bus.$on('ok', this.__handlerOk);
     Bus.$on('getAgencys', (index)=>{this.__getAgency(index)});
     Bus.$on('getBuildings', this.__getBuildings);
+    Bus.$on('searchAgencys', (params)=>{this.paramsSearch(params)});
   },
 
+  //解除event监听
   beforeDestroy () {
     Bus.$off('ok');
     Bus.$off('getAgencys');
     Bus.$off('getBuildings');
+    Bus.$off('searchAgencys');
   },
 
-  //vuex中引入建筑类别数据
+  //vuex中引入数据
   computed: {
     ...mapGetters({
-      agencyList : 'agencyData',
       currentAgency : 'agency',
-      zoneList : 'zoneData',
       currentZone : 'zone',
       currentAgencyGroup : 'agencyGroup',
     })

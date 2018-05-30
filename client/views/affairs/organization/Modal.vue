@@ -101,8 +101,6 @@ export default {
       this.infoShow = false;
     },
 
-    open () {},
-
     //确认操作
     ok () {
       let finnalOrganization = {};
@@ -122,6 +120,7 @@ export default {
 
       this.setCurrentOrganization(finnalOrganization);
       this.$emit('ok');
+      this.infoShow = false;
     },
 
     //vuex引入设置机构类别方法
@@ -135,7 +134,6 @@ export default {
     
     //vuex引入机构组数据
     ...mapGetters({
-      organizationList : 'organizationData',
       currentOrganization : 'organization',
       linkZoneList : 'linkZoneData',
       unLinkZoneList : 'unLinkZoneData'
@@ -153,7 +151,17 @@ export default {
       if(this.modalConfig.add) {
         this.newOrganization = {};
       }
+    },
+
+    //当前操作行为监听
+    modalConfig(newVal, oldVal) {
+      if(newVal.add) {
+        this.newOrganization = {};
+      }else {
+        this.newOrganization = Object.assign({}, this.currentOrganization);
+      }
     }
+
   }
 }
 </script>

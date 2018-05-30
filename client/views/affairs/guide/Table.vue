@@ -5,7 +5,7 @@
         <article class="tile is-child box">
           <div class="pageHeader">
             <search @paramsSearch="paramsSearch"></search>
-            <!--<button v-if="userPermission.user_add" class="button is-primary"  @click="showAdd">添加用户</button>-->
+            <!--<button v-if="userPermission.user_add" class="button is-primary"  @click="showAdd">添加引导</button>-->
             <button class="button is-primary"  @click="showAdd">添加引导</button>
           </div>
           <table class="table">
@@ -28,8 +28,10 @@
                 <td>
                   <div class="optionWrapper">
                     <!--
-                    <button v-if="userPermission.user_modify" class="button is-warning is-small"  @click="showModify(item)">修改</button>
-                    <button v-if="userPermission.user_delete" class="button is-danger is-small" @click="showDel(item)">删除</button>
+                    <button v-if="userPermission.guide_detail" class="button is-primary is-small"  @click="showDetail(item)">查看详情</button>
+                    <button v-if="userPermission.guide_config" class="button is-primary is-small"  @click="showConfig(item)">配置信息</button>
+                    <button v-if="userPermission.guide_modify" class="button is-warning is-small"  @click="showModify(item)">修改</button>
+                    <button v-if="userPermission.guide_delete" class="button is-danger is-small" @click="showDel(item)">删除</button>
                     -->
                     <button class="button is-primary is-small"  @click="showDetail(item)">查看详情</button>
                     <button class="button is-primary is-small"  @click="showConfig(item)">配置信息</button>
@@ -69,6 +71,7 @@ export default {
   },
 
   props: {
+    
     //操作面板显示/隐藏控制
     confirmClose: {
       type: Boolean,
@@ -89,11 +92,6 @@ export default {
       currentIndex: 0,
       modalConfig: {},
       modalType: 'zone-card',
-      guideListq: [
-        {name: '短泊', info: '半小时免费'},
-        {name: '闻讯', info: '免费咨询'},
-        {name: '出行', info: '公交线路'}
-      ]
     }
   },
 
@@ -181,7 +179,7 @@ export default {
       this.$emit('ok');
     },
 
-    //vuex引入设置用户方法
+    //vuex引入设置引导方法
     ...mapMutations({
       setCurrentGuide : 'SET_CURRENTGUIDE'
     })
@@ -197,12 +195,9 @@ export default {
 
   computed: {
 
-    //vuex引入建筑类别数据
+    //vuex引入引导数据
     ...mapGetters({
-      typeList : 'buildingTypeData',
-      currentType : 'buildingType',
       guideList : 'guideData',
-      informationList : 'informationData',
       currentGuide : 'guide'
     })
   }

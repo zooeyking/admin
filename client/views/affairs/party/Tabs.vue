@@ -16,7 +16,6 @@
                 <tr>
                   <td class="leftCol"><strong>创建时间:</strong></td><td class="rightCol">{{currentParty.createDate}}</td>
                 </tr>
-                
               </tbody>
             </table>
           </tab-pane>  
@@ -25,7 +24,6 @@
               <table class="table">
                 <thead>
                   <tr>
-                    
                     <th>名称</th>
                     <th>描述</th>
                     <th>创建时间</th>
@@ -33,11 +31,9 @@
                 </thead>
                 <tbody>
                   <tr v-for="(item, index) in linkGuideList">
-                    
                     <td>{{item.name}}</td>
                     <td>{{item.info}}</td>
                     <td>{{item.createDate}}</td>
-                    
                   </tr>
                 </tbody>
               </table>
@@ -123,6 +119,7 @@
 <script>
 import { Tabs, TabPane } from 'vue-bulma-tabs';
 import { mapGetters } from 'vuex';
+import { ip } from 'base/askUrl';
 import { __getCenter } from 'tools/js/util';
 import Bus from 'base/bus';
 
@@ -141,33 +138,24 @@ export default {
 
   data () {
     return {
-      defaultMsg: '这里输入内容',
-      config: {
-        initialFrameWidth: null,
-        initialFrameHeight: 350
-      },
       selectedGuides: [],
-      newZone:{},
-      newParty: {},
       tabIndex: 0,
       imgUrl: ''
     }
   },
 
   mounted () {
-
+    
+    //logo图片
+    this.imgUrl = ip + this.currentParty.imagePath;
   },
 
   watch: {
     
+    //监听tab切换
     tabIndex() {
       this.selectedGuides = [];
-    },
-
-    currentParty(newVal) {
-      this.imgUrl = newVal.imagePath;
-    },
-    
+    }
   },
 
   methods: {
@@ -175,16 +163,6 @@ export default {
     //tab切换操作面板
     tabSelected(index) {
       this.tabIndex = index;
-    },
-
-    //获取文件
-    getFile(event) {
-      let file = event.target.files[0];
-      let windowURL = window.URL || window.webkitURL;
-      this.imgUrl = windowURL.createObjectURL(file);
-
-      this.$emit('upimg', file);
-      
     },
 
     //全选
@@ -219,7 +197,6 @@ export default {
 
     //当前操作活动数据
     ...mapGetters({
-      guideList : 'guideData',
       currentParty : 'party',
       linkGuideList : 'linkGuideData',
       unLinkGuideList : 'unLinkGuideData',

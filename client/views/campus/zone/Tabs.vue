@@ -96,30 +96,6 @@
                     <tr>
                       <td class="leftCol"><strong class="is-must">校区名称</strong></td><td class="rightCol"><input v-model="newZone['name']" type="text" class="input is-primary" maxlength="30"></td>
                     </tr>
-
-                    <!--
-                    <tr>
-                      <td class="leftCol"><strong>左上坐标</strong></td>
-                      <td class="rightCol">
-                          <input v-model="newZone['userMail']" type="number" class="input is-primary short-input" maxlength="15" placeholder="经度">
-                          <input v-model="newZone['userMail']" type="number" class="input is-primary short-input" maxlength="15" placeholder="纬度">
-                      </td>
-                    </tr>
-                    <tr>
-                      <td class="leftCol"><strong>右下坐标</strong></td>
-                      <td class="rightCol">
-                          <input v-model="newZone['userMail']" type="number" class="input is-primary short-input" maxlength="15" placeholder="经度">
-                          <input v-model="newZone['userMail']" type="number" class="input is-primary short-input" maxlength="15" placeholder="纬度">
-                      </td>
-                    </tr>
-                    <tr>
-                      <td class="leftCol"><strong>校区尺寸</strong></td>
-                      <td class="rightCol">
-                          <input v-model="newZone['userMail']" type="number" class="input is-primary short-input" maxlength="15" placeholder="长度">
-                          <input v-model="newZone['userMail']" type="number" class="input is-primary short-input" maxlength="15" placeholder="宽度">
-                      </td>
-                    </tr>
-                    -->
                     
                     <tr>
                       <td class="leftCol"><strong>备注</strong></td><td class="rightCol"><textarea v-model="newZone['descp']" class="textarea" maxlength="120" placeholder="至多输入120个字符"></textarea></td>
@@ -128,7 +104,7 @@
                 </table>
               </div>
               <div class="map-content">
-                <zone-map :pathData="pathData" :centerPoint="centerPoint" ></zone-map>
+                <zone-map  ref="map" :pathData="pathData" :centerPoint="centerPoint" ></zone-map>
               </div>
             </div>
           </tab-pane>

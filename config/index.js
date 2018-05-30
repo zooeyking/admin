@@ -7,10 +7,13 @@ module.exports = {
   build: {
     env: require('./prod.env'),
     index: path.resolve(__dirname, '../dist/index.html'),
+    //assetsRoot: path.resolve(__dirname, '../dist/gis'),
     assetsRoot: path.resolve(__dirname, '../dist'),
     //assetsSubDirectory: 'assets',
     assetsSubDirectory: 'static',
+    //assetsSubDirectory: 'gis/static',
     assetsPublicPath: '/',
+    //assetsPublicPath: '/',
     productionSourceMap: true,
     // Gzip off by default as many popular static hosts such as
     // Surge or Netlify already gzip all static assets for you.
@@ -26,6 +29,7 @@ module.exports = {
     //assetsSubDirectory: 'assets',
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
+    //assetsPublicPath: '/gis',
     proxyTable: {
         '/MODApis': {
             target: 'http://dev.markitondemand.com',

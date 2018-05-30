@@ -2,9 +2,14 @@
   <article class="tile is-child box no-padd">
     <div class="block is-flex">
       <collapse accordion>
-        <collapse-item v-for="(item, index) in agencyGroupList" :key="index" :title="item.name" @open="open">
-          <agency-table :confirmClose="confirmClose" :totalNum="totalNum"></agency-table>
-        </collapse-item>
+        <div  v-for="(item, index) in agencyGroupList" :key="index" @click="open(index)">
+
+          <collapse-item  :title="item.name">
+            <agency-table :confirmClose="confirmClose" :totalNum="totalNum"></agency-table>
+          </collapse-item>
+
+        </div>
+        
       </collapse>
     </div>
   </article>
@@ -15,6 +20,7 @@ import { Collapse, Item as CollapseItem } from 'vue-bulma-collapse';
 import { mapGetters, mapMutations } from 'vuex';
 import { TableMixin } from 'base/mixin';
 import AgencyTable from './Table';
+import Bus from 'base/bus';
 
 export default {
   mixins: [TableMixin],
@@ -49,21 +55,15 @@ export default {
     }
   },
 
-  mounted () {
-    
-  },
-
-  watch: {
-    
-  },
-
   methods: {
 
     //展开选中的机构组
     open(index) {
+
       let group = this.agencyGroupList[index];
       this.setCurrentAgencyGroup(group);
       this.$emit('open');
+      Bus.$emit('getBuildings');
     },
 
     //关闭操作面板
@@ -80,9 +80,7 @@ export default {
 
   computed: {
     ...mapGetters({
-      currentZone : 'zone',
       agencyGroupList : 'agencyGroupData',
-      currentAgencyGroup : 'agencyGroup',
     }) 
   }
 }
@@ -96,7 +94,7 @@ export default {
 }
 
 .no-padd {
-  padding: 0.2rem;
+  padding: 0.1rem;
   border-radius: 0;
 }
 

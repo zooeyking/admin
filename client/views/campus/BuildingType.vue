@@ -5,21 +5,20 @@
     @paramsSearch="paramsSearch"
     @pageSearch="pageSearch" 
     @ok="ok"
-    @getZoneInfo="getZoneInfo" 
     :confirmClose="confirmClose" 
     :totalNum="totalNum"
     :initPage="initPage"
-    
+
     ></zone-table>
     <my-message v-if="showMessage" @dispear="dispear" :messageType="messageType"></my-message>
   </div>
 </template>
 
 <script>
-import ZoneTable from './zone/Table';
+import ZoneTable from './buildingType/Table';
 import MyMessage from 'components/common/message/Message';
 import { mapGetters, mapMutations } from 'vuex';
-import { unitCall, zoneListUrl, zoneEditUrl, zoneDeleteUrl } from 'base/askUrl';
+import { unitCall, buildingTypeListUrl, buildingTypeEditUrl, buildingTypeDeleteUrl } from 'base/askUrl';
 import { Mixin } from 'base/mixin';
 
 export default {
@@ -44,49 +43,37 @@ export default {
 
   methods: {
 
-    //校区搜索方法
+    //建筑类别按参数查询方法
     paramsSearch(args) {
       if (args.name || args.startDate) {
         this.searchParams = args;
       }
-      let params = Object.assign({}, args);
-      unitCall(zoneListUrl, params).then(this.__paramsSearchSuccess).catch(this.__failed)
+      let params = Object.assign({}, this.searchParams, args);
+      unitCall(buildingTypeListUrl, params).then(this.__paramsSearchSuccess).catch(this.__failed);
     },
 
-    //校区分页数据获取方法
+    //建筑类别按页码查询方法
     pageSearch(args) {
       let params = Object.assign({}, this.searchParams, args);
-      unitCall(zoneListUrl, params).then(this.__pageSearchSuccess).catch(this.__failed);
+      unitCall(buildingTypeListUrl, params).then(this.__pageSearchSuccess).catch(this.__failed);
     },
 
-    //校区信息更新
+    //建筑类别信息更新
     ok() {
       let url = '';
-      let zone = {...this.currentZone};
-      if(zone.delFlag === 1) {
-
-        url = zoneDeleteUrl;
-        delete zone.delFlag;
-
-      }else if(zone.addFlag) {
-
-        url = zoneEditUrl;
-        delete zone.addFlag;
-
-      }else if(zone.modifyFlag) {
-
-        url = zoneEditUrl;
-        delete zone.modifyFlag;
-
+      let type = {...this.currentType};
+      if(type.addFlag) {
+        url = buildingTypeEditUrl;
+        delete type.addFlag;
+      }else if(type.modifyFlag) {
+        url = buildingTypeEditUrl;
+        delete type.modifyFlag;
+      }else if(type.delFlag) {
+        url = buildingTypeDeleteUrl;
+        delete type.delFlag;
       }
       
-      unitCall(url, zone).then(this.__operaSuccess).catch(this.__failed).then(this.__initDate);
-    },
-
-    //校区信息获取
-    getZoneInfo() {
-      let zone = this.currentZone;
-      unitCall( zoneEditUrl, { zoneId: zone.zoneId }).then(this.__zoneInfoSuccess).catch(this.__failed);
+      unitCall(url, type).then(this.__operaSuccess).catch(this.__failed).then(this.__initDate);
     },
 
     //操作面板消失
@@ -96,16 +83,16 @@ export default {
 
     //初始化列表数据
     __initDate() {
-      unitCall( zoneListUrl, { pageNum : 1}).then(this.__pageSearchSuccess).catch(this.__failed);
+      unitCall( buildingTypeListUrl, { pageNum : 1}).then(this.__pageSearchSuccess).catch(this.__failed);
     },
 
-    //初始化校区查询成功回调
+    //根据页码查询成功回调
     __pageSearchSuccess(data) {
       if(data.value[0].list) {
         let result = data.value[0].list;
-        this.setZoneList(result);
+        this.setBuildingTypeList(result);
       }else{
-        this.setZoneList([]);
+        this.setBuildingTypeList([]);
       }
       this.totalNum = data.value[0].total ? data.value[0].total : 0;
     },
@@ -114,32 +101,25 @@ export default {
     __paramsSearchSuccess(data) {
       if(data.value[0].list) {
         let result = data.value[0].list;
-        this.setZoneList(result);
+        this.setBuildingTypeList(result);
       }else{
-        this.setZoneList([]);
+        this.setBuildingTypeList([]);
       }
       this.totalNum = data.value[0].total ? data.value[0].total : 0;
       this.initPage = !this.initPage;
     },
 
-    //校区信息查询回调
-    __zoneInfoSuccess(data) {
-      let result = data.value ? data.value : [];
-      this.setZoneInfo(result);
-    },
-
-    //单个校区数据更新操作成功回调
+    //建筑类别修改操作成功回调
     __operaSuccess() {
       this.showMessage = true;
       this.messageType = 0;
       this.confirmClose = !this.confirmClose;
     },
     
-    //vuex引入设置校区数据方法
+    //vuex引入设置类别数据方法
     ...mapMutations({ 
-      setZoneList : 'SET_ZONELIST',
-      setCurrentZone : 'SET_CURRENTZONE',
-      setZoneInfo : 'SET_CURRENTZONEINFO'
+      setBuildingTypeList : 'SET_BUILDINGTYPELIST',
+      setCurrentType : 'SET_CURRENTTYPE',
     })
   },
 
@@ -148,16 +128,15 @@ export default {
     this.__initDate();
   },
 
-  //vuex中引入用户数据
+  //vuex中引入建筑类别数据
   computed: {
     ...mapGetters({
-      zoneList : 'zoneData',
-      currentZone : 'zone'
+      typeList : 'buildingTypeData',
+      currentType : 'buildingType'
     })
   }
 }
 </script>
-
 
 <style lang="scss" scoped>
 .table-responsive {

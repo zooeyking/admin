@@ -1,6 +1,6 @@
 <template>
   <card-modal :modalType="modalType" :visible="visible" @cancel="cancel" @ok="ok" :modalConfig="modalConfig" transition="zoom">
-    <zone-tabs v-if="modalConfig.detail || modalConfig.modify" :tabType="modalConfig.tabType"></zone-tabs>
+    <zone-tabs ref="tabs" v-if="modalConfig.detail || modalConfig.modify" :tabType="modalConfig.tabType"></zone-tabs>
     
     <div class="map-container" v-if="modalConfig.add">
       <div class="info-content">
@@ -10,30 +10,6 @@
               <td class="leftCol"><strong class="is-must">校区名称</strong></td><td class="rightCol"><input v-model="newZone['name']" type="text" class="input is-primary" maxlength="30"></td>
             </tr>
 
-            <!--
-            <tr>
-              <td class="leftCol"><strong>左上坐标</strong></td>
-              <td class="rightCol">
-                  <input v-model="newUser['userMail']" type="number" class="input is-primary short-input" maxlength="15" placeholder="经度">
-                  <input v-model="newUser['userMail']" type="number" class="input is-primary short-input" maxlength="15" placeholder="纬度">
-              </td>
-            </tr>
-            <tr>
-              <td class="leftCol"><strong>右下坐标</strong></td>
-              <td class="rightCol">
-                  <input v-model="newUser['userMail']" type="number" class="input is-primary short-input" maxlength="15" placeholder="经度">
-                  <input v-model="newUser['userMail']" type="number" class="input is-primary short-input" maxlength="15" placeholder="纬度">
-              </td>
-            </tr>
-            <tr>
-              <td class="leftCol"><strong>校区尺寸</strong></td>
-              <td class="rightCol">
-                  <input v-model="newUser['userMail']" type="number" class="input is-primary short-input" maxlength="15" placeholder="长度">
-                  <input v-model="newUser['userMail']" type="number" class="input is-primary short-input" maxlength="15" placeholder="宽度">
-              </td>
-            </tr>
-            -->
-
             <tr>
               <td class="leftCol"><strong>备注</strong></td><td class="rightCol"><textarea v-model="newZone['descp']" class="textarea" maxlength="120" placeholder="至多输入120个字符"></textarea></td>
             </tr>
@@ -41,7 +17,7 @@
         </table>
       </div>
       <div class="map-content">
-        <zone-map ref="campus"></zone-map>
+        <zone-map ref="campus" :centerPoint="centerPoint"></zone-map>
       </div>
     </div>
 
@@ -85,6 +61,7 @@ export default {
     return {
       infoShow: false,
       message: '',
+      centerPoint: {lng: 121.601268, lat: 31.18331},
       newZone: {
         
       }
@@ -101,19 +78,20 @@ export default {
     cancel () {
       this.$emit('close');
       this.infoShow = false;
-      this.newZone = {};
     },
-
-    open () {},
 
     //确认操作
     ok () {
       let finnalZone = {};
       if(this.modalConfig.modify) {
-        finnalZone = Object.assign({}, this.currentZone, this.newZone, {modifyFlag: 1});
+        let tabs = this.$refs.tabs;
+        let map = tabs.$refs.map;
+        let tempZone = tabs.newZone;
+        let tempPosition = JSON.stringify(map.polygon.paths);
+        tempZone.position = tempPosition;
+        finnalZone = Object.assign({}, this.currentZone, tempZone, {modifyFlag: 1});
       }else if(this.modalConfig.del) {
         finnalZone = Object.assign({}, this.currentZone, {delFlag: 1});
-        //finnalUser = Object.assign({}, {delFlag: 1});
       }else {
         let paths = this.$refs.campus.polygon.paths;
         let str = JSON.stringify(paths);
@@ -121,14 +99,16 @@ export default {
         finnalZone = Object.assign({}, this.newZone, {addFlag: 1});
       }
 
-      if(!finnalZone.name || !finnalZone.position) {
-        this.message = '名称和位置信息不能为空!';
+      
+      if(!finnalZone.name || finnalZone.position.length < 100) {
+        this.message = '所填必要信息不合法!';
         this.infoShow = true;
         return;
       }
 
       this.setCurrentZone(finnalZone);
       this.$emit('ok');
+      this.infoShow = false;
     },
 
     //vuex引入设置校区方法
@@ -148,15 +128,14 @@ export default {
 
   watch: {
 
-    zoneList(val) {
-      this.newZone = {
-        
-      }
-    },
-
+    //监听选中的校区
     currentZone(newVal, oldVal){
       if(this.modalConfig.modify) {
         this.newZone = Object.assign({}, newVal);
+      }
+
+      if(this.modalConfig.add) {
+        this.newZone = {};
       }
     }
     

@@ -14,7 +14,6 @@
   </div>
 </template>
 
-
 <script>
 import InformationTable from './information/Table';
 import MyMessage from 'components/common/message/Message';
@@ -47,7 +46,7 @@ export default {
 
     //按照参数查询方法
     paramsSearch(args) {
-      if (args.userName || args.userRealName || args.startDate) {
+      if (args.title || args.cid || args.scid || args.startDate) {
         this.searchParams = args;
       }
       let params = Object.assign({}, this.searchParams, args);
@@ -68,7 +67,6 @@ export default {
     ok() {
       let url = '';
       let information = {...this.currentInformation};
-      console.log(information);
       if(information.addFlag) {
         url = informationEditUrl;
         delete information.addFlag;
@@ -191,7 +189,14 @@ export default {
     },
 
     //单个建筑更新操作成功回调
-    __operaSuccess() {
+    __operaSuccess(data) {
+      
+      if(!data.status) {
+        this.showMessage = true;
+        this.messageType = 1;
+        this.errInfo = data.value || data.message;
+        return;
+      }
       this.showMessage = true;
       this.messageType = 0;
       this.confirmClose = !this.confirmClose;
@@ -203,7 +208,6 @@ export default {
       setZoneList : 'SET_ZONELIST',
       setServiceTypeList : 'SET_SERVICETYPELIST',
       setInformationList : 'SET_INFORMATIONLIST',
-      //setCurrentBuilding : 'SET_CURRENTBUILDING'
     })
   },
 
@@ -221,9 +225,6 @@ export default {
   //vuex中引入建筑数据
   computed: {
     ...mapGetters({
-      buildingList : 'buildingData',
-      zoneList : 'zoneData',
-      serviceTypeList : 'serviceTypeData',
       currentInformation : 'information'
     })
   }

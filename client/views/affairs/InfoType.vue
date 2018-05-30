@@ -5,7 +5,7 @@
         <article class="tile is-child box">
           <div class="pageHeader">
       
-          <!--<search @paramsSearch="paramsSearch"></search><button v-if="userPermission.user_add" class="button is-primary"  @click="showAdd">添加用户</button>-->
+          <!--<button v-if="userPermission.infoType_add" class="button is-primary"  @click="showAdd">添加分类</button>-->
             <button class="button is-primary" @click="showAdd">添加分类</button>
           </div>
         </article>
@@ -16,8 +16,10 @@
       <div v-for="(item, index) in serviceTypeList" :key="index" class="tile is-parent is-2">
         <article class="tile is-child box">
           <h4 class="subtitle">{{item.name}}</h4>
-          <img class="logo-box" :src="item.logoUrl">
+          <img class="logo-box" :src="(imgHeader + item.logoUrl)">
           <div class="control is-grouped btn-box">
+            <!--<p class="control"><a class="button is-primary" v-if="userPermission.infoType_modify" @click="showModify(item)">修改</a></p>--> 
+            <!--<p class="control"><a class="button is-danger" v-if="userPermission.infoType_delete" @click="showDel(item)">删除</a></p>--> 
             <p class="control"><a class="button is-primary" @click="showModify(item)">修改</a></p> 
             <p class="control"><a class="button is-danger" @click="showDel(item)">删除</a></p>
           </div>
@@ -27,7 +29,7 @@
 
     <confirm :visible="confirmShow" @close="closeDetail" :modalConfig="modalConfig" :modalType="modalType" @ok="ok" @upimg="upimg"></confirm>
 
-    <my-message v-if="showMessage" @dispear="dispear" :messageType="messageType"></my-message>
+    <my-message :errInfo="errInfo" v-if="showMessage" @dispear="dispear" :messageType="messageType"></my-message>
   </div>
 </template>
 
@@ -35,7 +37,7 @@
 import confirm from './InfoType/Modal';
 import MyMessage from 'components/common/message/Message';
 import { mapGetters, mapMutations } from 'vuex';
-import { unitCall, serviceTypeListUrl, serviceTypeEditUrl, serviceTypeDeleteUrl, uploadLogoUrl } from 'base/askUrl';
+import { ip, unitCall, serviceTypeListUrl, serviceTypeEditUrl, serviceTypeDeleteUrl, uploadLogoUrl } from 'base/askUrl';
 import { Mixin } from 'base/mixin';
 import axios from 'axios';
 
@@ -51,6 +53,7 @@ export default {
       showMessage: false,
       messageType: 0,
       modalConfig: {},
+      errInfo: '',
       modalType: 'modal-card',
     }
   },
@@ -65,12 +68,13 @@ export default {
       
       // 服务器只需按照正常的上传程序代码即可
       axios.post(uploadLogoUrl,formData).then(res=>{
-        let header = 'http://192.168.1.15:8088/gis-service/files';
-        let url = header + res.data.value[0].url;
+        
+        let header = '/gis-service/files';
+        let url = header + res.data.value.url;
         let newServiceType = {...this.currentServiceType, ...{ logoUrl: url }};
         this.setCurrentServiceType(newServiceType);
       }).catch(err=>{
-        console.log(err);
+        this.__failed;
       })
       
     },
@@ -88,10 +92,11 @@ export default {
         delete type.modifyFlag;
       }else if(type.delFlag) {
         url = serviceTypeDeleteUrl;
+        //url = 'qweqweqwe'
         delete type.delFlag;
       }
       
-      unitCall(url, type).then(this.__operaSuccess).catch(this.__failed).then(this.__initDate);
+      return unitCall(url, type).then(this.__operaSuccess).catch(this.__failed).then(this.__initDate);
     },
 
     //添加分类
@@ -142,7 +147,7 @@ export default {
 
     //初始化列表数据
     __initDate() {
-      unitCall( serviceTypeListUrl, { pageNum : 1}).then(this.__pageSearchSuccess).catch(this.__failed);
+      return unitCall( serviceTypeListUrl, { pageNum : 1}).then(this.__pageSearchSuccess).catch(this.__failed);
     },
 
     //根据页码查询成功回调
@@ -156,7 +161,14 @@ export default {
     },
 
     //机构类别修改操作成功回调
-    __operaSuccess() {
+    __operaSuccess(data) {
+      
+      if(!data.status) {
+        this.showMessage = true;
+        this.messageType = 1;
+        this.errInfo = data.value || data.message;
+        return;
+      }
       this.showMessage = true;
       this.messageType = 0;
       this.confirmShow = false;
@@ -170,8 +182,15 @@ export default {
     })
   },
 
-  //vuex中引入机构类别数据
+  
   computed: {
+
+    //图片url地址头部
+    imgHeader() {
+      return ip;
+    },
+
+    //vuex中引入机构类别数据
     ...mapGetters({
       serviceTypeList : 'serviceTypeData',
       currentServiceType : 'serviceType',

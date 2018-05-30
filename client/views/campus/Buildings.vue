@@ -32,7 +32,6 @@ export default {
 
   data () {
     return {
-      isShow: false,
       showMessage: false,
       messageType: 0,
       confirmClose: true,
@@ -45,7 +44,7 @@ export default {
 
     //按照参数查询方法
     paramsSearch(args) {
-      if (args.userName || args.userRealName || args.startDate) {
+      if (args.name || args.cid || args.acid || args.startDate) {
         this.searchParams = args;
       }
       let params = Object.assign({}, this.searchParams, args);
@@ -98,17 +97,6 @@ export default {
       .catch(this.__failed);
     },
 
-    //根据页码查询成功回调
-    __pageSearchSuccess(data) {
-      if(data.value[0].list) {
-        let result = data.value[0].list;
-        this.setBuildingList(result);
-      }else{
-        this.setBuildingList([]);
-      }
-      this.totalNum = data.value[0].total ? data.value[0].total : 0;
-    },
-
     //获取建筑列表
     __getBuildings() {
       return unitCall(buildingListUrl, { pageNum : 1 });
@@ -122,6 +110,17 @@ export default {
     //获取建筑类别列表
     __getBuildingTypes() {
       return unitCall(buildingTypeListUrl, { pageNum : 1 });
+    },
+
+    //根据页码查询成功回调
+    __pageSearchSuccess(data) {
+      if(data.value[0].list) {
+        let result = data.value[0].list;
+        this.setBuildingList(result);
+      }else{
+        this.setBuildingList([]);
+      }
+      this.totalNum = data.value[0].total ? data.value[0].total : 0;
     },
 
     //获取校区成功回调
@@ -146,7 +145,6 @@ export default {
 
     //根据参数查询成功回调
     __paramsSearchSuccess(data) {
-
       if(data.value[0].list) {
         let result = data.value[0].list;
         this.setBuildingList(result);

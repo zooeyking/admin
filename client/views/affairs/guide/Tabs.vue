@@ -8,25 +8,27 @@
             <table class="table">
               <tbody>
                 <tr>
-                  <td class="leftCol"><strong>名称：</strong></td><td class="rightCol">{{currentGuide.name}}</td>
+                  <td class="leftCol"><strong>名称:</strong></td><td class="rightCol">{{currentGuide.name}}</td>
                 </tr>
                 <tr>
-                  <td class="leftCol"><strong>内容：</strong></td><td class="rightCol">{{currentGuide.context}}</td>
+                  <td class="leftCol"><strong>内容:</strong></td><td class="rightCol">{{currentGuide.context}}</td>
                 </tr>
               </tbody>
             </table>
           </tab-pane>  
           <tab-pane label="关联信息">
-            <table class="table" v-if="currentGuide.serviceInfoList.length > 0 ">
+            <table class="table" v-if="linkInfoList.length > 0 ">
               <thead>
                 <tr>
+                  <th>序号</th>
                   <th>名称</th>
                   <th>描述</th>
                   <th>创建时间</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(item, index) in currentGuide.serviceInfoList">
+                <tr v-for="(item, index) in linkInfoList">
+                  <td>{{index + 1}}</td>
                   <td>{{item.title}}</td>
                   <td>{{item.info}}</td>
                   <td>{{item.createDate}}</td>
@@ -34,27 +36,36 @@
               </tbody>
             </table>
             <div v-else>暂无关联信息</div>
+            <pagination v-if="linkInfoNums > 10" :allItems=" linkInfoNums " @changeIndex="getLinkPages" :pernum="10"></pagination>
           </tab-pane>
         </tabs>
 
         <tabs v-if=" tabType === 'modify' " type="boxed" @tab-selected="tabSelected">
           <tab-pane label="引入信息">
             <div class="map-container">
-              <div class="search">
-                <input class="input is-primary" @keyup.enter="search" v-model="searchParams['title']" placeholder="标题"/>
-                <div class="control">
+
+              <div class="optionContainer">
+                <div class="search">
+                  <input class="input is-primary" @keyup.enter="search" v-model="searchParams['title']" placeholder="标题"/>
                   <div class="control">
-                    <div class="select is-fullwidth">
-                      <select v-model="searchParams.typeId">
-                        <option value="" >全部类型</option>
-                        <option v-for="item in serviceTypeList" :value="item.id" >{{item.name}}</option>
-                      </select>
+                    <div class="control">
+                      <div class="select is-fullwidth">
+                        <select v-model="searchParams.scid">
+                          <option value="" >全部类型</option>
+                          <option v-for="item in serviceTypeList" :value="item.id" >{{item.name}}</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
+                  <span class="button is-primary searchBtn" @click="search(1)"><i class="fa fa-search"></i></span>
                 </div>
-                <span class="button is-primary searchBtn" @click="search"><i class="fa fa-search"></i></span>
                 
+                <div class="optionBox" v-if="unLinkInfoList.length > 0">
+                  <span class="button is-warning searchBtn" @click="checkAll(1)">全选</span>
+                  <span class="button is-warning searchBtn" @click="doLink">引入</span>
+                </div>
               </div>
+
               <div v-if="unLinkInfoList.length > 0">
                 <table class="table">
                   <thead>
@@ -77,11 +88,9 @@
                   </tbody>
                 </table>
                 
-                <!--<pagination v-if="pagesShow" :allItems="searchResult.total" @changeIndex="getIndex" :pernum="20"></pagination>-->
-                <div class="optionBox">
-                  <span class="button is-warning searchBtn" @click="checkAll(1)">全选</span>
-                  <span class="button is-warning searchBtn" @click="doLink">引入</span>
-                </div>
+                <pagination v-if=" unLinkInfoNums > 10" :allItems="unLinkInfoNums" @changeIndex="getUnLinkPages" :pernum="10"></pagination>
+
+                
               </div>
               <div v-else>已关联全部信息</div>
               
@@ -89,25 +98,34 @@
           </tab-pane>
           <tab-pane label="移除信息">
             <div class="map-container">
-              <div class="search">
-                <input class="input is-primary" @keyup.enter="search" v-model="searchParams['title']" placeholder="标题"/>
-                <div class="control">
+
+              <div class="optionContainer">
+                <div class="search">
+                  <input class="input is-primary" @keyup.enter="search" v-model="searchParams['title']" placeholder="标题"/>
                   <div class="control">
-                    <div class="select is-fullwidth">
-                      <select v-model="searchParams.typeId">
-                        <option value="" >全部类型</option>
-                        <option v-for="item in serviceTypeList" :value="item.id" >{{item.name}}</option>
-                      </select>
+                    <div class="control">
+                      <div class="select is-fullwidth">
+                        <select v-model="searchParams.scid">
+                          <option value="" >全部类型</option>
+                          <option v-for="item in serviceTypeList" :value="item.id" >{{item.name}}</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
+                  <span class="button is-primary searchBtn" @click="search(2)"><i class="fa fa-search"></i></span>
                 </div>
-                <span class="button is-primary searchBtn" @click="search"><i class="fa fa-search"></i></span>
+                
+                <div class="optionBox" v-if="linkInfoList.length > 0 ">
+                  <span class="button is-warning searchBtn" @click="checkAll(2)">全选</span>
+                  <span class="button is-danger searchBtn" @click="doUnLink">移除</span>
+                </div>
               </div>
+
               <div v-if="linkInfoList.length > 0 ">
                 <table class="table">
                   <thead>
                     <tr>
-                      <th>排序</th>
+                      <th></th>
                       <th>名称</th>
                       <th>描述</th>
                       <th>创建时间</th>
@@ -125,11 +143,8 @@
                   </tbody>
                 </table>
                 
-                <!--<pagination v-if="pagesShow" :allItems="searchResult.total" @changeIndex="getIndex" :pernum="20"></pagination>-->
-                <div class="optionBox">
-                  <span class="button is-warning searchBtn" @click="checkAll(2)">全选</span>
-                  <span class="button is-warning searchBtn" @click="doUnLink">移除</span>
-                </div>
+                <pagination v-if="linkInfoNums > 10" :allItems=" linkInfoNums" @changeIndex="getLinkPages" :pernum="10"></pagination>
+               
               </div>
               <div v-else>暂无关联信息</div>
               
@@ -143,8 +158,7 @@
                 <table class="table">
                   <thead>
                     <tr>
-                      <th>当前序列</th>
-                      <!--<th>更改序列</th>-->
+                      <th>序列</th>
                       <th>名称</th>
                       <th>描述</th>
                       <th>创建时间</th>
@@ -153,7 +167,6 @@
                   <draggable v-model="orderInfoList" :options="{group:'people'}" @start="drag=true" @end="drag=false" element="tbody">
                     <tr class="dragItem" v-for="(item, index) in orderInfoList">
                       <td>{{parseInt(index) + 1}}</td>
-                      <!--<td><input type="number" name="order" min="1" max="10" v-model="item.order" @change="reSort"></td>-->
                       <td>{{item.title}}</td>
                       <td>{{item.info}}</td>
                       <td>{{item.createDate}}</td>
@@ -161,29 +174,6 @@
                   </draggable>
                 </table>
 
-                <!--
-                <table class="table">
-                  <thead>
-                    <tr>
-                      <th>当前序列</th>
-                      <th>更改序列</th>
-                      <th>名称</th>
-                      <th>描述</th>
-                      <th>创建时间</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="(item, index) in orderInfoList">
-                      <td>{{parseInt(index) + 1}}</td>
-                      <td><input type="number" name="order" min="1" max="10" v-model="item.order" @change="reSort"></td>
-                      <td>{{item.title}}</td>
-                      <td>{{item.info}}</td>
-                      <td>{{item.createDate}}</td>
-                    </tr>
-                  </tbody>
-                </table>
-                -->
-                <!--<pagination v-if="pagesShow" :allItems="searchResult.total" @changeIndex="getIndex" :pernum="20"></pagination>-->
                 <div class="optionBox"><span class="button is-primary searchBtn" @click="saveOrder">保存修改</span></div>
                 
               </div>
@@ -212,8 +202,7 @@ export default {
     tabType: {
       type: String,
       default: 'display'
-    },
-    searchResult: [Object, Array, String]
+    }
   },
 
   components: {
@@ -232,22 +221,25 @@ export default {
         initialFrameHeight: 350
       },
       searchParams:{
-        typeId: ''
+        scid: ''
       },
       selectedInfos: [],
       tabIndex: 1,
-      typeList: [
-        {name:'出行',typeId: 11},
-        {name:'医疗',typeId: 22},
-        {name:'服务',typeId: 33},
-        {name:'其他',typeId: 44},
-      ],
+      linkInfoNums: 0,
+      unLinkInfoNums: 0,
       orderInfoList: []
     }
   },
 
   mounted () {
+    Bus.$on('getUnLinkInfoNums', this.__getUnLinkInfoNums);
+    Bus.$on('getLinkInfoNums', this.__getLinkInfoNums);
+  },
 
+  //清除Bus监听
+  beforeDestroy() {
+    Bus.$off('getUnLinkInfoNums');
+    Bus.$off('getLinkInfoNums');
   },
 
   watch: {
@@ -258,25 +250,7 @@ export default {
 
     'linkInfoList' : {
       handler (val) {
-        
-        this.orderInfoList = JSON.parse(JSON.stringify(val))
-        
-      },
-      deep: true
-    },
-    
-    'searchResult' : {
-      handler (val) {
-        
-        if(typeof val != 'string') {
-          this.infoList = val.list.slice();
-          this.infoList.forEach((item)=>{
-            item.checked = false;
-          })
-        }else{
-          this.infoList = val;
-        }
-        
+        this.orderInfoList = JSON.parse(JSON.stringify(val));
       },
       deep: true
     },
@@ -287,9 +261,19 @@ export default {
 
     //tab切换操作面板
     tabSelected(index) {
+
       this.tabIndex = index;
+
+      if(index === 0) {
+        Bus.$emit('getUnLinkPages', 1);
+      }
+
       if(index === 1) {
-        Bus.$emit('getInfoType');
+        Bus.$emit('getLinkPages', 1);
+      }
+
+      if(index === 2) {
+        Bus.$emit('getAllLinkInfos');
       }
     },
 
@@ -297,8 +281,9 @@ export default {
     checkAll(arg) {
       this.selectedInfos = [];
       if(arg === 1 ) {
+        console.log(this.unLinkInfoList);
         this.unLinkInfoList.forEach((item, index)=>{
-          this.selectedInfos.push(item.id + ',' + index);
+          this.selectedInfos.push(item.id);
         })
       }
 
@@ -320,59 +305,64 @@ export default {
 
     //移除操作
     doUnLink() {
-
       Bus.$emit('doUnLink', this.selectedInfos);
     },
 
-    //时时排序
-    reSort() {
+    //分页获取未关联
+    getUnLinkPages(index) {
+      Bus.$emit('getUnLinkPages', index);
+    },
 
+    //分页获取已关联
+    getLinkPages(index) {
+      Bus.$emit('getLinkPages', index);
+    },
+
+    //引入界面下一页
+    getIndex(num) {
+      this.searchParams.pageNum = num;
+      this.$emit('userSearch', this.searchParams);
+    },
+
+    //获取已关联总数
+    __getLinkInfoNums(total) {
+      this.linkInfoNums = total;
+    },
+
+    //获取未关联总数
+    __getUnLinkInfoNums(total) {
+      this.unLinkInfoNums = total;
     },
 
     //排序操作
     saveOrder() {
-      console.log(this.linkInfoList);
       let tempArr = [];
       let linkArr = this.orderInfoList;
       for(let i=0; i<linkArr.length; i++) {
         let itemOrder =  linkArr[i]['id']+','+ i;
         tempArr.push(itemOrder);
       }
-      
       Bus.$emit('saveOrder', tempArr);
     },
 
-    //用户绑定界面搜索
-    search() {
-      this.$emit('userSearch', this.searchParams);
+    //引入界面搜索
+    search(arg) {
+      if(arg === 1){
+        Bus.$emit('unLinkInfoSearch', this.searchParams);
+      }
+
+      if(arg === 2) {
+        Bus.$emit('linkInfoSearch', this.searchParams);
+      }
     },
 
-    //用户绑定界面下一页
-    getIndex(num) {
-      this.searchParams.pageNum = num;
-      this.$emit('userSearch', this.searchParams);
-      //this.currentIndex = num - 1;
-      //console,log(this.currentIndex);
-    },
-
-    tabRole(index) {
-      //this.selectedUsers.optionType = index;
-      this.optionType = index; 
-    }
   },
 
   computed: {
 
-    //分页显示
-    pagesShow() {
-      return (this.infoList && this.infoList.length>0) ? true : false;
-    },
-
-    //获取当前操作校区数据
+    //获取当前操作引导数据
     ...mapGetters({
       serviceTypeList : 'serviceTypeData',
-      currentServiceType : 'serviceType',
-      informationList : 'informationData',
       currentGuide : 'guide',
       linkInfoList : 'linkInfoData',
       unLinkInfoList : 'unLinkInfoData',
@@ -387,6 +377,16 @@ export default {
     min-height: 50px;
     margin: 0;
   }
+}
+
+.optionContainer {
+  position: relative;
+}
+
+.optionBox {
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 
 .search {

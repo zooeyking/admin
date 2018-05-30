@@ -66,8 +66,6 @@ export default {
       this.infoShow = false;
     },
 
-    open () {},
-
     //确认操作
     ok () {
       let finnalType = {};

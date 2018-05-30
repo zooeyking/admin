@@ -43,20 +43,7 @@ export default {
 
   data () {
     return {
-      isShow: false,
-      confirmShow: false,
-      currentIndex: 0,
-      modalConfig: {},
-      modalType: 'zone-card',
     }
-  },
-
-  mounted () {
-    //console.log(this.zoneList);
-  },
-
-  watch: {
-    
   },
 
   methods: {
@@ -73,11 +60,6 @@ export default {
       this.$emit('open');
     },
 
-    //关闭操作面板
-    closeDetail() {
-      this.confirmShow = false;
-    },
-
     //vuex引入设置数据方法
     ...mapMutations({ 
       setCurrentZone : 'SET_CURRENTZONE',
@@ -86,7 +68,6 @@ export default {
 
   computed: {
     ...mapGetters({
-      currentZone : 'zone',
       zoneList : 'zoneData',
     }) 
   }

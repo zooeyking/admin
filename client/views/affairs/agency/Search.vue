@@ -4,6 +4,18 @@
       <li class="item text">
         <input class="input is-primary" v-model="params.name" @keyup.enter="search" maxlength="30" placeholder="机构名称"/>
       </li>
+      <li class="item text">
+        <div class="control is-horizontal">
+          <div class="control">
+            <div class="select is-fullwidth">
+              <select v-model="params['aeid']">
+                <option value="" >全部</option>
+                <option v-for="item in buildingList" :value="item.id" >{{item.name}}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </li>
       <li class="item dateBox">
         <datepicker @sendValue="setDateValue"></datepicker>
       </li>
@@ -26,8 +38,7 @@ export default {
     return {
       params: {
         pageNum: 1,
-        zoneId:'',
-        typeId:''
+        aeid:''
       },
     }
   },
@@ -52,19 +63,14 @@ export default {
 
   watch: {
 
-    'typeList' : {
-      deep: true,
-      handler(newVal) {
-        
-      }
-    }
+    
   },
 
   //vuex中引入用户数据
   computed: {
     ...mapGetters({
-      zoneList : 'zoneData',
-      typeList : 'buildingTypeData',
+     
+      buildingList : 'buildingData'
     })
   }
 }

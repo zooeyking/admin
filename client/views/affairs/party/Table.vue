@@ -5,7 +5,7 @@
         <article class="tile is-child box">
           <div class="pageHeader">
             <search @paramsSearch="paramsSearch"></search>
-            <!--<button v-if="userPermission.user_add" class="button is-primary"  @click="showAdd">添加用户</button>-->
+            <!--<button v-if="userPermission.party_add" class="button is-primary"  @click="showAdd">添加活动</button>-->
             <button class="button is-primary"  @click="showAdd">添加活动</button>
           </div>
           <table class="table">
@@ -28,8 +28,10 @@
                 <td>
                   <div class="optionWrapper">
                     <!--
-                    <button v-if="userPermission.user_modify" class="button is-warning is-small"  @click="showModify(item)">修改</button>
-                    <button v-if="userPermission.user_delete" class="button is-danger is-small" @click="showDel(item)">删除</button>
+                    <button v-if="userPermission.party_detail" class="button is-primary is-small"  @click="showDetail(item)">查看详情</button>
+                    <button v-if="userPermission.party_process" class="button is-primary is-small"  @click="showProcess(item)">引导配置</button>
+                    <button v-if="userPermission.party_modify" class="button is-warning is-small"  @click="showModify(item)">修改</button>
+                    <button v-if="userPermission.party_delete" class="button is-danger is-small" @click="showDel(item)">删除</button>
                     -->
                     <button class="button is-primary is-small"  @click="showDetail(item)">查看详情</button>
                     <button class="button is-primary is-small"  @click="showProcess(item)">引导配置</button>
@@ -69,6 +71,7 @@ export default {
   },
 
   props: {
+
     //操作面板显示/隐藏控制
     confirmClose: {
       type: Boolean,
@@ -89,12 +92,6 @@ export default {
       currentIndex: 0,
       modalConfig: {},
       modalType: '',
-      partyList1: [
-        {name: 111},
-        {name: 111},
-        {name: 111},
-        {name: 111},
-      ]
     }
   },
 
@@ -178,16 +175,6 @@ export default {
       this.$emit('ok');
     },
 
-    //绑定引导
-    bind() {
-      this.$emit('bind');
-    },
-
-    //解除引导
-    unBind() {
-      this.$emit('unBind');
-    },
-
     //上传图片
     upimg(file) {
       this.$emit('upimg', file);
@@ -209,10 +196,9 @@ export default {
 
   computed: {
 
-    //vuex引入机构组数据
+    //vuex引入活动数据
     ...mapGetters({
       partyList : 'partyData',
-      currentParty : 'party'
     })
   }
 }

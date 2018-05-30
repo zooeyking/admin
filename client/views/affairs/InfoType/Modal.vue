@@ -6,28 +6,17 @@
       <table class="table">
         <tbody>
           <tr>
-            <td class="leftCol"><strong class="is-must">类别名称</strong></td><td class="rightCol"><input v-model="newType['name']" type="text" class="input is-primary" maxlength="15"></td>
+            <td class="leftCol"><strong class="is-must">类别名称:</strong></td><td class="rightCol"><input v-model="newType['name']" type="text" class="input is-primary" maxlength="15"></td>
           </tr>
           <tr>
-            <td class="leftCol"><strong class="is-must">logo图标</strong></td>
+            <td class="leftCol"><strong class="is-must">logo图标:</strong></td>
             <td class="rightCol">
               <input @change="getFile($event)"  type="file" accept="image/*">
               <img class="avatar" :src="imgUrl"/>
-              
-              <!--<button @click="submit($event)"></button><img v-if="newType.url" :src="http://img.zcool.cn/community/0114375543f8ec0000019ae948310f.jpg"/>-->
             </td>
           </tr>
-          <!--
-          <tr v-if="imgUrl">
-            <td class="leftCol"></td>
-            <td class="rightCol">
-              <img class="avatar" :src="imgUrl"/>
-              <input @change.stop.prevent="getFile($event)"  type="file">
-            </td>
-          </tr>
-        -->
           <tr>
-            <td class="leftCol"><strong>描述</strong></td><td class="rightCol"><textarea v-model="newType['descp']" class="textarea" maxlength="120" placeholder="至多输入120个字符"></textarea></td>
+            <td class="leftCol"><strong>描述:</strong></td><td class="rightCol"><textarea v-model="newType['descp']" class="textarea" maxlength="120" placeholder="至多输入120个字符"></textarea></td>
           </tr>
         </tbody>
       </table>
@@ -36,10 +25,10 @@
     <table class="table" v-if="modalConfig.del">
       <tbody>
         <tr>
-          <td class="leftCol"><strong>类别名称</strong></td><td class="rightCol">{{currentType.name}}</td>
+          <td class="leftCol"><strong>类别名称:</strong></td><td class="rightCol">{{currentType.name}}</td>
         </tr>
         <tr>
-          <td class="leftCol"><strong>类别描述</strong></td><td class="rightCol">{{currentType.descp}}</td>
+          <td class="leftCol"><strong>类别描述:</strong></td><td class="rightCol">{{currentType.descp}}</td>
         </tr>
       </tbody>
     </table>
@@ -51,6 +40,7 @@
 <script>
 import { CardModal } from 'vue-bulma-modal';
 import { mapGetters, mapMutations } from 'vuex';
+import { ip } from 'base/askUrl';
 import { uploadLogoUrl } from 'base/askUrl';
 import axios from 'axios';
 
@@ -74,10 +64,6 @@ export default {
     }
   },
 
-  mounted() {
-    
-  },
-
   methods: {
 
     //取消操作
@@ -94,9 +80,7 @@ export default {
       let file = event.target.files[0];
       let windowURL = window.URL || window.webkitURL;
       this.imgUrl = windowURL.createObjectURL(file);
-
       this.$emit('upimg', file);
-      
     },
 
     //确认操作
@@ -111,16 +95,17 @@ export default {
       }
 
       if(!finnalType.name || !finnalType.logoUrl) {
-        this.message = '所需字段不能为空!';
+        this.message = '必要信息不能为空!';
         this.infoShow = true;
         return;
       }
 
       this.setCurrentType(finnalType);
       this.$emit('ok');
+      this.infoShow = false;
     },
 
-    //vuex引入设置用户方法
+    //vuex引入设置信息类型方法
     ...mapMutations({
       setCurrentType : 'SET_CURRENTSERVICETYPE',
     })
@@ -128,7 +113,7 @@ export default {
 
   computed: {
     
-    //vuex引入服务类别数据
+    //vuex引入信息类别数据
     ...mapGetters({
       currentType : 'serviceType'
     })
@@ -143,9 +128,8 @@ export default {
       }else{
         this.newType = {};
       }
-      this.imgUrl = newVal.logoUrl ? newVal.logoUrl : '';
+      this.imgUrl = newVal.logoUrl ? (ip + newVal.logoUrl): '';
     }
-    
   }
 }
 </script>

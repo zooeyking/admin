@@ -1,11 +1,12 @@
 import goodStorage from 'good-storage';
 import jsonp from 'tools/js/jsonp';
-import axios from 'tools/js/axios';
+import axios from 'axios';
+import qs from 'qs';
 import { safe } from './safe';
 //import { mapMutations } from 'vuex';
 
 //请求地址
-const ip = "http://192.168.1.15:8088";
+const ip = "http://192.168.1.15:8089";
 //const ip = "http://10.15.21.68:8098";
 //const ip = "http://192.168.1.70:8099";
 
@@ -44,6 +45,18 @@ function _getParams() {
 };
 
 
+// axios.interceptors.response.use((response) => {
+//   	if (response.data.error_no !== '0') {
+    	
+//    	 	return Promise.reject(response);
+//   	}
+//   	return response.data;
+// }, (error) => {
+//   	Toast.offline('网络传输错误', 1);
+//   	return Promise.reject(error);
+// });
+
+
 //公共请求方法
 const unitCall = function(_url, _params={}) {
 	//公共请求参数
@@ -52,23 +65,38 @@ const unitCall = function(_url, _params={}) {
 	//将实际传入请求参数与公共参数合并
 	let finalParams = Object.assign({}, CommonParams, _params);
 
+	const option = {
+		method: 'POST',
+		headers: { 'content-type': 'application/x-www-form-urlencoded' },
+		data: qs.stringify(finalParams),
+		//data: finalParams,
+		url: _url
+	};
 	
-	return new Promise((resolve, reject) => {
-		
-		jsonp(_url, finalParams, options).then((res)=>{
-			
-			if(res.status == true) {
-          		resolve(res);
-        	}else{
-        		reject(res);
-        	}
+	return new Promise((resolve, reject)=>{
+		axios(option).then((res)=>{
+
+			resolve(res.data);
+
 		}).catch((err)=>{
-			
+			console.log(err);
 			reject(err);
 		})
 	})
 	
-	//return axios(_url,finalParams)
+	// return  axios(option).then((res)=>{
+	// 		  	console.log(res);
+	// 			if(res.data.status == true) {
+	// 	 	  		return Promise.resolve(res.data);
+	// 	 	   	}else{
+	// 	 	   		return Promise.reject(res.data);
+	// 	 	   	}
+	// 		}).catch((err)=>{
+	// 			console.log(err)
+	// 			return Promise.reject(err);
+	// 		})
+	
+	
 	/*
 	return new Promise((resolve, reject) => {
 		
@@ -157,8 +185,11 @@ const unLinkInfoUrl = url + '/guide_detail/removeRelation';
 //引导关联信息列表
 const infoRelationsUrl = url + '/guide_detail/relations';
 
-//引导关联信息列表
+//引导未联信息列表
 const infoNotRelationsUrl = url + '/guide_detail/notRelations';
+
+//引导已关联信息排序
+const sortServiceInfoUrl = url + '/guide_detail/sortServiceInfo';
 
 //获取活动清单
 const partyListUrl = url + '/guide/queryListByWhere';
@@ -209,6 +240,7 @@ const agencyEditUrl = url + '/org_entity/saveOrUpdate';
 const agencyDeleteUrl = url + '/org_entity/deleteById';
 
 export {
+	ip,
 	logInUrl,
 	logOutUrl,
 	CommonParams,
@@ -250,6 +282,7 @@ export {
 	unLinkInfoUrl,
 	infoRelationsUrl,
 	infoNotRelationsUrl,
+	sortServiceInfoUrl,
 	linkGuideUrl,
 	unLinkGuideUrl,
 	guideRelationsUrl,

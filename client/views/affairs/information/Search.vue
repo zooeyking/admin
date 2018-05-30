@@ -2,10 +2,13 @@
   <div class="search">
     <ul class="content">
       <li class="item text">
+        <input class="input is-primary" v-model="params.title" @keyup.enter="search" maxlength="30" placeholder="信息名称"/>
+      </li>
+      <li class="item text">
         <div class="control is-horizontal">
           <div class="control">
             <div class="select is-fullwidth">
-              <select class="is-must" v-model="params.zoneId">
+              <select class="is-must" v-model="params.cid">
                 <option value="" >全部校区</option>
                 <option v-for="item in zoneList" :value="item.id" >{{item.name}}</option>
               </select>
@@ -17,16 +20,13 @@
         <div class="control is-horizontal">
           <div class="control">
             <div class="select is-fullwidth">
-              <select class="is-must" v-model="params.typeId">
+              <select class="is-must" v-model="params.scid">
                 <option value="" >全部类型</option>
                 <option v-for="item in typeList" :value="item.id" >{{item.name}}</option>
               </select>
             </div>
           </div>
         </div>
-      </li>
-      <li class="item text">
-        <input class="input is-primary" v-model="params.title" @keyup.enter="search" maxlength="30" placeholder="信息名称"/>
       </li>
       <li class="item dateBox">
         <datepicker @sendValue="setDateValue"></datepicker>
@@ -50,8 +50,8 @@ export default {
     return {
       params: {
         pageNum: 1,
-        zoneId:'',
-        typeId:''
+        cid:'',
+        scid:''
       },
     }
   },
@@ -88,7 +88,7 @@ export default {
   computed: {
     ...mapGetters({
       zoneList : 'zoneData',
-      typeList : 'buildingTypeData',
+      typeList : 'serviceTypeData',
     })
   }
 }

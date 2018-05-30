@@ -88,11 +88,7 @@ export default {
     getZone() {
       this.__getLinkZone()
       .then(this.__linkZoneSuccess)
-      //.then(this.__getUnLinkZone)
-      //.then(this.__unLinkZoneSuccess)
       .catch(this.__failed)
-      
-      //unitCall( linkZoneUrl, { pageNum : 1}).then(this.__pageSearchSuccess).catch(this.__failed);
     },
 
     bind() {
@@ -216,7 +212,6 @@ export default {
     ...mapGetters({
       zoneList : 'zoneData',
       currentZone : 'zone',
-      organizationList : 'organizationData',
       currentOrganization : 'organization'
     })
   }
